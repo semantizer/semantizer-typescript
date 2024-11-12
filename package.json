@@ -1,0 +1,33 @@
+{
+  "name": "@virtual-assembly/semantizer",
+  "description": "A library to manipulate local or distant RDF documents.",
+  "type": "module",
+  "author": "Maxime Lecoq <maxime@lecoqlibre.fr>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/assemblee-virtuelle/semantizer-typescript.git",
+    "directory": "/"
+  },
+  "version": "1.0.0-alpha.4",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "node --test ./test/"
+  },
+  "devDependencies": {
+    "@rdfjs/serializer-jsonld-ext": "github:rdfjs/serializer-jsonld-ext",
+    "@types/rdf-ext": "^2.5.0",
+    "@types/rdfjs__dataset": "^2.0.7",
+    "jsonld-streaming-parser": "^3.4.0",
+    "typescript": "^4.5"
+  },
+  "main": "./src/test/lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "dependencies": {
+    "rdf-ext": "^2.5.1"
+  }
+}

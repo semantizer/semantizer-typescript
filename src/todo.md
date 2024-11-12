@@ -1,0 +1,30 @@
+TODO: 
+- [x] By default, methods work on all the graphs of the dataset. Pass a DefaultGraph param.
+- [ ] Add method to facilitate quad creation (AddLiteral, AddUrl, etc).
+- [ ] Allow type string for URI params (resource)
+- [ ] Add foaf mixins (Agent, Person, Organization...)
+- [ ] Add construct parameters. Or define methods to create new instances in mixins.
+- [ ] Add a new dataset layer as base.
+- [ ] In core-default, re-export dataFactory, datasetFactory?
+- [ ] Add a rdfs-seeAlso mixin
+- [ ] Loader VS fetcher ?
+- [ ] Type check the constructor params of datasets (Dataset.getObject, MixinFactory)
+- [ ] Ensure the person is builded from a profileDocument.
+- [ ] Add a lastLoaded atribute in dataset ?
+- [ ] Add a SPARQL mixin
+- [ ] Implements access rights   
+- [ ] Add loadAndGet() methods? like loadAndGetPrimaryTopic()?
+- [ ] Add a param (factory: Factory) to get specific concrete types returned from getters (ex: getPrimaryTopic() => Person);
+- [x] Add a RDF model factory (and a Rdfjs dataset one?)
+- [x] Move the DatasetMixin into the mixins directory
+- [x] Return undefined in getObject
+- [x] Re-export types from @rdfjs/types (NamedNode, BlankNode, etc)? This would avoid changing client code when rdfjs change
+- [x] Reorganize source with two folders: packages and mixins
+- [x] Use a DatasetExt ?
+- [x] Move the DatasetImpl class to the core package
+- [x] Add Semantizer:load and Semantizer:build methods
+- [x] In mixins, use the loader from semantizer and accept an overload
+- [x] Add a core package and use the core-default as a pre-configured installation
+- [x] Add a Semantizer at the Dataset level, to get access to the loader?
+- [x] Add a Semantizer class to host the config (loader, DatasetImpl, etc)
+- [x] Add a load() method to load the object itself

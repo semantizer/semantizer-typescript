@@ -1,0 +1,24 @@
+{
+  "name": "@semantizer/mixin-index-strategy-sparql-comunica",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/index.js",
+  "type": "module",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Maxime Lecoq-Gaillard",
+  "license": "MIT",
+  "dependencies": {
+    "@comunica/query-sparql": "^3.2.3",
+    "@semantizer/mixin-index": "^1.0.0"
+  },
+  "devDependencies": {
+    "@comunica/types": "^3.2.1",
+    "@semantizer/types": "^1.0.0",
+    "typescript": "^5.5.2"
+  }
+}
