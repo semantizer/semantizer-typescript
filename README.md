@@ -65,16 +65,21 @@ TDB.
 
 A great thank to all our ongoing and past funders:
 
-<img src="logos/logo-ademe.svg" height="100">
-<img src="logos/logo-fondation-de-france.webp" height="100">
-<img src="logos/logo-fondation-credit-cooperatif.svg" height="50">
-<img src="logos/logo-inria.svg" height="50">
-<img src="logos/logo-startinblox.png" height="50">
+|  | Name | Description |
+| -----------| --------| ----------- |
+| <img src="logos/logo-ademe.svg" alt="logo of ADEME" width="100"> | [ADEME](https://www.ademe.fr/) | The Environment and Energy Management Agency is a French public industrial and commercial establishment. As a player in sustainable development, Ademe participates in the implementation of public policies in terms of energy and environmental protection. Also named the Ecological Transition Agency. |
+| <img src="logos/logo-fondation-de-france.webp" alt="logo of Fondation de France"> | [Fondation de France](https://www.fondationdefrance.org/) | The Fondation de France is a private French organization, recognized as being of public utility and independent. As the leading philanthropy network in France, Fondation de France brings together donors, founders, volunteers and project leaders across the country. Its ambition: to contribute to building effective and sustainable solutions to meet the challenges of society. |
+| <img src="logos/logo-fondation-credit-cooperatif.svg" alt="logo of Fondation Crédit Coopératif"> | [Fondation Crédit Coopératif](https://fondation.credit-cooperatif.coop/) | The Crédit Coopératif Foundation is a French non-profit corporate foundation who supports projects that accelerate the transformations of the ESS and increase its influence, for a more just and united society, in harmony with the planet. |
+| <img src="logos/logo-inria.svg" alt="logo of INRIA"> | [INRIA](https://inria.fr/) | The National Institute for Research in Computer Science and Automation is a French public scientific and technological institution specializing in mathematics and computer science. Also called the National Institute for Research in Digital Science and Technology. |
+| <img src="logos/logo-startinblox.png" alt="logo of Startin’blox"> | [Startin'Blox](https://startinblox.com/) | Startin’blox is a company who develops an innovative and ethical technology based on interoperable standards. It goes against the multiplication of siloed proprietary platforms logic, and argues that a truly open web must be built now. |
 
-This library is supported by these projects:
+This library is supported by these projects or organizations:
 
-<img src="logos/logo-dfc.png" height="100">
-<img src="logos/logo-mycelium.svg" height="100">
+|  | Name | Description |
+| -----------| --------| ----------- |
+| <img src="logos/logo-dfc.png" alt="logo of DFC" width="200"> | [Data Food Consortium](https://www.datafoodconsortium.org/) | Data Food Consortium is an international collective of actors working on a interoperability project between short food supply chain platforms in order to allow them to communicate. It aims to support, equip, and give more space to producers, independent distributors and short supply chain.  |
+| <img src="logos/logo-mycelium.svg" alt="logo of Mycelium" height="200"> | [Mycelium](https://mycelium-software.org) | Mycelium is a digital commons project for farmers. Its objective is to equip the farming world with management applications that are interoperable, free and ethical. Its scope extends to the management of farming activity as a whole: invoicing, production, planning, distribution, etc. |
+| <img src="logos/logo-av.png" alt="logo of AV" width="100" height="100"> | [Assemblée Virtuelle](https://assemblee-virtuelle.org/) | The Virtual Assembly is a French association who brings together an ecosystem of actors developing common resources together to serve the transition. The softwares developed or promoted within the Virtual Assembly are intended to promote the development of decentralized and federated information systems, serving the autonomy and networking of their user communities. |
 
 ## History
 
