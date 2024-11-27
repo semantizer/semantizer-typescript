@@ -36,8 +36,8 @@ export interface Dataset extends DatasetRdfjs, Countable {
      * @param language 
      * @param graph The search to search for literal into. Default is all graphs of the dataset.
      */
-    getLiteral(thing: Resource, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal | undefined;
-    getLiteralAll(thing: Resource, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal[];
+    getLiteral(thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal | undefined;
+    getLiteralAll(thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal[];
 
     getLinkedObject(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer | undefined;
     // getObject(predicate: Resource, thing?: Resource, graph?: NamedNode): DatasetWithOrigin | undefined;

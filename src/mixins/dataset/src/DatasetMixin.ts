@@ -97,7 +97,7 @@ export function DatasetMixin<
             throw new Error('Method not implemented.');
         }
         
-        public getLiteral(thing: Resource, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal | undefined {
+        public getLiteral(thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal | undefined {
             const literal = this.match(thing, predicate, graph);
             for (const q of literal) {
                 if (q.object.termType === "Literal")
@@ -106,7 +106,7 @@ export function DatasetMixin<
             return undefined;
         }
         
-        getLiteralAll(thing: Resource, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal[] {
+        getLiteralAll(thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal[] {
             throw new Error('Method not implemented.');
         }
 

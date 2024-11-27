@@ -1,8 +1,8 @@
 # Semantizer
 
-Semantizer is a TypeScript library to ease the development of applications working with RDF documents. This library is modular and offers mixins that provide useful methods to manipulate [RDF datasets](https://www.w3.org/TR/rdf11-concepts/#section-dataset). Semantizer also give you the ability to easily write your own mixins to fit to your data models. Doing so you can quickly obtain a layer to load, modify and save your RDF data. In particular, this library can be used to build [Solid](https://solidproject.org) applications.
+Semantizer is a TypeScript library to ease the development of applications working with RDF documents. This library is modular and offers mixins that provide useful methods to manipulate [RDF datasets](https://www.w3.org/TR/rdf11-concepts/#section-dataset). Semantizer also gives you the ability to easily write your own mixins to fit to your data models. Doing so you can quickly obtain a layer to load, modify and save your RDF data. In particular, this library can be used to build [Solid](https://solidproject.org) applications.
 
-Semantizer supports the whole RDF model out of the box, including blank nodes. The default implementation uses RDFJS but this can be changed. Semantizer can be used in replacement or with other libraries such as LDO or solid-client.
+Semantizer supports the RDF model out of the box, including blank nodes. The default implementation uses RDFJS but this can be changed. Semantizer can be used in replacement or with other libraries such as LDO or solid-client.
 
 ## Get started
 
@@ -12,22 +12,22 @@ npm install @semantizer/default
 
 ```ts
 import semantizer from "@semantizer/default";
-import { webIdProfileFactory } from "@semantizer/mixin-solid-webid";
+import { foafPersonFactory } from "@semantizer/mixin-foaf-person";
 
 // To create an RDF dataset
 const localDataset = semantizer.build();
-localDataset.addLiteral(...);
 
-// To create an RDF dataset using the solid-webid mixin
-const localWebId = semantizer.build(webIdProfileFactory);
-const localPrimaryTopic = localWebId.getPrimaryTopic();
+// To create an RDF dataset using the foaf-person mixin
+const localPerson = semantizer.build(foafPersonFactory);
+localPerson.addGivenName("John Smith");
+console.log(localPerson.getGivenName()); // shows "John Smith"
 
 // To load a distant dataset
 const distantDataset = await semantizer.load("http://example.org/dataset");
 
-// To load a distant dataset using the solid-webid mixin
-const distantWebId = await semantizer.load("http://example.org/webid", webIdProfileFactory);
-const distantPrimaryTopic = distantWebId.getPrimaryTopic();
+// To load a distant dataset using the foaf-person mixin
+const distantPerson = await semantizer.load("http://example.org/john-smith", foafPersonFactory);
+console.log(distantPerson.getGivenName()); // shows "John Smith"
 ```
 
 ## Available mixins
@@ -37,6 +37,7 @@ The base mixin is the "dataset" mixin. It offers basic methods such as `getLiter
 | Mixin      | Description |
 | -----------| ----------- |
 | [dataset](./src/mixins/dataset/) | The base mixin. Provides essential methods. |
+| [foaf-person](./src/mixins/foaf/) | The [foaf:Person](http://xmlns.com/foaf/spec/#term_Person) mixin. |
 | [index](./src/mixins/index/) | A mixin to query indexes. |
 | [literal-helper-add](./src/mixins/literal-helper-add/) | A mixin that provides helper methods to add literals to the dataset with various datatypes. |
 | [solid-webid](./src/mixins/solid-webid/) | A mixin to manipulate [Solid WebId profiles](https://solid.github.io/webid-profile/). |
@@ -73,7 +74,7 @@ A great thank to all our ongoing and past funders:
 | <img src="logos/logo-inria.svg" alt="logo of INRIA"> | [INRIA](https://inria.fr/) | The National Institute for Research in Computer Science and Automation is a French public scientific and technological institution specializing in mathematics and computer science. Also called the National Institute for Research in Digital Science and Technology. |
 | <img src="logos/logo-startinblox.png" alt="logo of Startin’blox"> | [Startin'Blox](https://startinblox.com/) | Startin’blox is a company who develops an innovative and ethical technology based on interoperable standards. It goes against the multiplication of siloed proprietary platforms logic, and argues that a truly open web must be built now. |
 
-This library is supported by these projects or organizations:
+This library is also supported by these projects or organizations:
 
 |  | Name | Description |
 | -----------| --------| ----------- |
@@ -83,4 +84,4 @@ This library is supported by these projects or organizations:
 
 ## History
 
-This library was writen for the [Data Food Consortium](https://datafoodconsortium.org) project (DFC) which aims to provide interoperability between food supply chain platforms. We use the semantizer library inside our connector library to help developers to exchange data expressed with the DFC ontology.
+This library was initially writen for the [Data Food Consortium](https://datafoodconsortium.org) and [Mycelium](https://mycelium-software.org) projects which aims to provide interoperability between short food supply chain actors.
