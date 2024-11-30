@@ -135,6 +135,14 @@ export function DatasetMixin<
             return addQuadWithLinkedObjectsRecursively(matchedDataset);
         }
         
+        public addLinkedObject(thing: Resource, predicate: NamedNode, object: Resource): void {
+            this.add(this.getSemantizer().getConfiguration().getRdfDataModelFactory().quad(
+                thing, 
+                predicate, 
+                object
+            ));
+        }
+
         // TODO: handle this != document, get the document first?
         public getLinkedObject(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer | undefined {
             const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getOrigin() : thingOrDataset : undefined;
