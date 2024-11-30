@@ -58,7 +58,7 @@ export function createPerson(semantizer: Semantizer, params?: PersonCreateParams
     const person = semantizer.build(personWithHelperLiteralAddFactory);
     const dataFactory = semantizer.getConfiguration().getRdfDataModelFactory();
 
-    const subject = dataFactory.namedNode("");
+    const subject = dataFactory.namedNode('');
     const namePredicate = dataFactory.namedNode(DFC + 'name');
 
     if (params) {

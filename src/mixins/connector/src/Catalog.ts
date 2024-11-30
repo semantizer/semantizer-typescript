@@ -1,9 +1,18 @@
 import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Semantizer } from "@semantizer/types";
-import { CatalogItem, catalogItemFactory } from "./CatalogItem.js";
+import { CatalogItem, CatalogItemCreateParams, catalogItemFactory, createCatalogItem } from "./CatalogItem.js";
+import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
+import { OfferCreateParams, createOffer } from "./Offer.js";
 
 export type Catalog = DatasetSemantizer & CatalogOperations;
 
 const DFC = 'https://github.com/datafoodconsortium/ontology/releases/latest/download/DFC_BusinessOntology.owl#';
+
+export interface CatalogCreateParams {
+    name?: string;
+    // offers?: OfferCreateParams[];
+    catalogItems?: CatalogItemCreateParams[];
+    // enterprise (maintainedBy)
+}
 
 export interface CatalogOperations {
     getName(): string | undefined;
@@ -41,4 +50,39 @@ export function CatalogMixin<
 
 export function catalogFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(CatalogMixin);
+}
+
+export function catalogWithHelperLiteralAddFactory(semantizer: Semantizer) {
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(CatalogMixin, LiteralHelperAddMixin(_DatasetImpl));
+}
+
+export function createCatalog(semantizer: Semantizer, params?: CatalogCreateParams): Catalog {
+    const catalog = semantizer.build(catalogWithHelperLiteralAddFactory);
+    const dataFactory = semantizer.getConfiguration().getRdfDataModelFactory();
+
+    const subject = dataFactory.namedNode('');
+    const rdfType = dataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+    const namePredicate = dataFactory.namedNode(DFC + 'name');
+    const listsPredicate = dataFactory.namedNode(DFC + 'lists');
+
+    catalog.addLinkedObject(subject, rdfType, dataFactory.namedNode(DFC + 'Catalog'));
+
+    if (params) {
+        if (params.name) {
+            catalog.addStringNoLocale(subject, namePredicate, params.name);
+        }
+
+        if (params.catalogItems) {
+            params.catalogItems.forEach(catalogItemCreateParams => {
+                const catalogItem = createCatalogItem(semantizer, catalogItemCreateParams);
+                catalog.addLinkedObject(subject, listsPredicate, dataFactory.namedNode(catalogItemCreateParams.subject ?? ''));
+                catalog.addAll(catalogItem);
+            });
+        }
+
+        
+    }
+
+    return catalog;
 }

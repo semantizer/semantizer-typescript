@@ -66,7 +66,7 @@ export function createEnterprise(semantizer: Semantizer, params?: EnterpriseCrea
     const enterprise = semantizer.build(enterpriseWithHelperLiteralAddFactory);
     const dataFactory = semantizer.getConfiguration().getRdfDataModelFactory();
 
-    const subject = dataFactory.namedNode("");
+    const subject = dataFactory.namedNode('');
 
     if (params) {
         params.name && enterprise.addStringNoLocale(subject, dataFactory.namedNode(DFC + 'name'), params.name);
