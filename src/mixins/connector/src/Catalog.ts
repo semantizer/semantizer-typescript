@@ -69,9 +69,7 @@ export function createCatalog(semantizer: Semantizer, params?: CatalogCreatePara
     catalog.addLinkedObject(subject, rdfType, dataFactory.namedNode(DFC + 'Catalog'));
 
     if (params) {
-        if (params.name) {
-            catalog.addStringNoLocale(subject, namePredicate, params.name);
-        }
+        params.name && catalog.addStringNoLocale(subject, namePredicate, params.name);
 
         if (params.catalogItems) {
             params.catalogItems.forEach(catalogItemCreateParams => {
