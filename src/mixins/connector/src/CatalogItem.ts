@@ -1,5 +1,6 @@
 import { DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
-import { OfferCreateParams, createOffer } from "./Offer";
+import { Offer, OfferCreateParams, createOffer, offerFactory } from "./Offer";
+import { SuppliedProduct, suppliedProductFactory } from "./SuppliedProduct";
 
 export type CatalogItem = DatasetSemantizer & CatalogItemOperations;
 
@@ -20,6 +21,8 @@ export interface CatalogItemCreateParams {
 
 export interface CatalogItemOperations {
     getName(): string | undefined;
+    getReferencedProduct(): SuppliedProduct | undefined;
+    getOffers(): Offer[];
 }
 
 export function CatalogItemMixin<
@@ -29,9 +32,21 @@ export function CatalogItemMixin<
     return class CatalogItemMixinImpl extends Base implements CatalogItemOperations {
 
         public getName(): string | undefined {
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode(DFC + 'name');
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'name');
             return this.getLiteral(this.getOrigin()!, predicate)?.value;
+        }
+
+        public getReferencedProduct(): SuppliedProduct | undefined {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'references');
+            return this.getSemantizer().build(suppliedProductFactory, this.getLinkedObject(predicate));
+        }
+
+        public getOffers(): Offer[] {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'offeredThrough');
+            return this.getLinkedObjectAll(predicate).map(d => this.getSemantizer().build(offerFactory, d));
         }
 
     }
@@ -44,21 +59,24 @@ export function catalogItemFactory(semantizer: Semantizer) {
 
 export function createCatalogItem(semantizer: Semantizer, params?: CatalogItemCreateParams): CatalogItem {
     const catalogItem = semantizer.build(catalogItemFactory);
-    const dataFactory = semantizer.getConfiguration().getRdfDataModelFactory();
+    const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
 
-    const subject = params?.subject ? dataFactory.namedNode(params.subject) : dataFactory.namedNode('');
-    const rdfType = dataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-    const referencesPredicate = dataFactory.namedNode(DFC + 'references');
-    const offeredThroughPredicate = dataFactory.namedNode(DFC + 'offeredThrough');
+    const subject = params?.subject ? namedNode(params.subject) : namedNode('');
+    const rdfType = namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+    const referencesPredicate = namedNode(DFC + 'references');
+    const offeredThroughPredicate = namedNode(DFC + 'offeredThrough');
 
-    catalogItem.addLinkedObject(subject, rdfType, dataFactory.namedNode(DFC + 'CatalogItem'));
+    catalogItem.addLinkedObject(subject, rdfType, namedNode(DFC + 'CatalogItem'));
 
-    params && params.references && catalogItem.addLinkedObject(subject, referencesPredicate, dataFactory.namedNode(params.references));
+    params && params.references && catalogItem.addLinkedObject(subject, referencesPredicate, namedNode(params.references));
 
     if (params && params.offers) {
         params.offers.forEach(offerCreateParams => {
+            if (!offerCreateParams.uri || offerCreateParams.uri === '') {
+                offerCreateParams.uri = self.crypto.randomUUID();
+            }
             const offer = createOffer(semantizer, {...offerCreateParams, catalogItem: params.subject});
-            catalogItem.addLinkedObject(subject, offeredThroughPredicate, dataFactory.namedNode(offerCreateParams.subject ?? ''));
+            catalogItem.addLinkedObject(subject, offeredThroughPredicate, namedNode(offerCreateParams.uri ?? ''));
             catalogItem.addAll(offer);
         });
     }

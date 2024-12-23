@@ -20,6 +20,8 @@ export interface SuppliedProductCreateParams {
 export interface SuppliedProductOperations {
     getName(): string | undefined;
     getDescription(): string | undefined;
+    getQuantityUnit(): string | undefined;
+    getQuantityValue(): number | undefined;
     getCatalogItems(): CatalogItem[];
 }
 
@@ -30,20 +32,33 @@ export function SuppliedProductMixin<
     return class CatalogMixinImpl extends Base implements SuppliedProductOperations {
 
         public getName(): string | undefined {
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode(DFC + 'name');
+            const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'name');
             return this.getLiteral(this.getOrigin()!, predicate)?.value;
         }
 
         public getDescription(): string | undefined {
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode(DFC + 'description');
+            const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'description');
             return this.getLiteral(this.getOrigin()!, predicate)?.value;
         }
 
+        public getQuantityUnit(): string | undefined {
+            const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'hasQuantity');
+            const quantitativeValue = this.getLinkedObject(predicate);
+            return this.getLiteral(this.getOrigin()!, predicate)?.value;
+        }
+
+        public getQuantityValue(): number | undefined {
+            const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'description');
+            return undefined;
+        }
+
         public getCatalogItems(): CatalogItem[] {
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode(DFC + 'lists');
+            const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'lists');
             return this.getLinkedObjectAll(predicate).map(d => this.getSemantizer().build(catalogItemFactory, d));
         }
 
@@ -62,27 +77,31 @@ export function suppliedProductWithHelperLiteralAddFactory(semantizer: Semantize
 
 export function createSuppliedProduct(semantizer: Semantizer, params?: SuppliedProductCreateParams): SuppliedProduct {
     const suppliedProduct = semantizer.build(suppliedProductWithHelperLiteralAddFactory);
-    const dataFactory = semantizer.getConfiguration().getRdfDataModelFactory();
+    const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
 
-    const subject = dataFactory.namedNode('');
-    const rdfType = dataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-    const namePredicate = dataFactory.namedNode(DFC + 'name');
-    const descriptionPredicate = dataFactory.namedNode(DFC + 'description');
-    const suppliedByPredicate = dataFactory.namedNode(DFC + 'suppliedBy');
-    const hasQuantityPredicate = dataFactory.namedNode(DFC + 'hasQuantity');
-    const valuePredicate = dataFactory.namedNode(DFC + 'value');
+    const subject = namedNode('');
+    const rdfType = namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+    const namePredicate = namedNode(DFC + 'name');
+    const hasTypePredicate = namedNode(DFC + 'hasType');
+    const descriptionPredicate = namedNode(DFC + 'description');
+    const suppliedByPredicate = namedNode(DFC + 'suppliedBy');
+    const hasQuantityPredicate = namedNode(DFC + 'hasQuantity');
+    const hasUnitPredicate = namedNode(DFC + 'hasUnit');
+    const valuePredicate = namedNode(DFC + 'value');
 
-    suppliedProduct.addLinkedObject(subject, rdfType, dataFactory.namedNode(DFC + 'SuppliedProduct'));
+    suppliedProduct.addLinkedObject(subject, rdfType, namedNode(DFC + 'SuppliedProduct'));
 
     if (params) {
         params.name && suppliedProduct.addStringNoLocale(subject, namePredicate, params.name);
+        params.types && params.types.forEach(type => suppliedProduct.addLinkedObject(subject, hasTypePredicate, namedNode(type)));
         params.description && suppliedProduct.addStringNoLocale(subject, descriptionPredicate, params.description);
-        params.enterprise && suppliedProduct.addLinkedObject(subject, suppliedByPredicate, dataFactory.namedNode(params.enterprise));
+        params.enterprise && suppliedProduct.addLinkedObject(subject, suppliedByPredicate, namedNode(params.enterprise));
 
         if (params.quantityValue && params.quantityUnit) {
-            const quantitativeValue = dataFactory.blankNode();
+            const quantitativeValue = semantizer.getConfiguration().getRdfDataModelFactory().blankNode();
             suppliedProduct.addLinkedObject(subject, hasQuantityPredicate, quantitativeValue);
-            suppliedProduct.addLinkedObject(quantitativeValue, rdfType, dataFactory.namedNode(DFC + 'QuantitativeValue'));
+            suppliedProduct.addLinkedObject(quantitativeValue, rdfType, namedNode(DFC + 'QuantitativeValue'));
+            suppliedProduct.addLinkedObject(quantitativeValue, hasUnitPredicate, namedNode(params.quantityUnit));
             suppliedProduct.addDecimal(quantitativeValue, valuePredicate, params.quantityValue);
         } 
     }
