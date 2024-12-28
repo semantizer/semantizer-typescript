@@ -11,10 +11,9 @@ export interface SuppliedProductCreateParams {
     description?: string;
     quantityValue?: number;
     quantityUnit?: string;
-    types?: string[];
+    types?: string[]; // SKOS concepts
     enterprise?: string;
     catalogItems?: string[]; // Catalog[] -> URI reference
-    categories?: string[]; // SKOS concepts
 }
 
 export interface SuppliedProductOperations {
@@ -22,6 +21,7 @@ export interface SuppliedProductOperations {
     getDescription(): string | undefined;
     getQuantityUnit(): string | undefined;
     getQuantityValue(): number | undefined;
+    getProductTypes(): string[]; // SKOS concepts
     getCatalogItems(): CatalogItem[];
 }
 
@@ -37,6 +37,12 @@ export function SuppliedProductMixin<
             return this.getLiteral(this.getOrigin()!, predicate)?.value;
         }
 
+        public getProductTypes(): string[] {
+            const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const predicate = namedNode(DFC + 'hasType');
+            return this.getLinkedObjectAll(predicate).map(t => t.getOrigin()?.value ?? 'unknown');
+        }
+
         public getDescription(): string | undefined {
             const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const predicate = namedNode(DFC + 'description');
@@ -45,15 +51,18 @@ export function SuppliedProductMixin<
 
         public getQuantityUnit(): string | undefined {
             const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = namedNode(DFC + 'hasQuantity');
-            const quantitativeValue = this.getLinkedObject(predicate);
-            return this.getLiteral(this.getOrigin()!, predicate)?.value;
+            const quantityPredicate = namedNode(DFC + 'hasQuantity');
+            const hasUnitPredicate = namedNode(DFC + 'hasUnit');
+            const quantitativeValue = this.getLinkedObject(quantityPredicate);
+            return quantitativeValue?.getLinkedObject(hasUnitPredicate)?.getOrigin()?.value;
         }
 
         public getQuantityValue(): number | undefined {
             const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = namedNode(DFC + 'description');
-            return undefined;
+            const quantityPredicate = namedNode(DFC + 'hasQuantity');
+            const valuePredicate = namedNode(DFC + 'value');
+            const quantitativeValue = this.getLinkedObject(quantityPredicate);
+            return Number.parseFloat(quantitativeValue?.getLiteral(namedNode(''), valuePredicate)?.value ?? '');
         }
 
         public getCatalogItems(): CatalogItem[] {

@@ -4,5 +4,6 @@ export * from "./Catalog.js";
 export * from "./CatalogItem.js";
 export * from "./Offer.js";
 export * from "./Order.js";
+export * from "./OrderLine.js";
 export * from "./Price.js";
 export * from "./SuppliedProduct.js";
