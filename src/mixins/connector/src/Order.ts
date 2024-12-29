@@ -83,7 +83,9 @@ export function createOrder(semantizer: Semantizer, params?: OrderCreateParams):
         params.state && order.addLinkedObject(subject, orderStatePredicate, namedNode(params.state));
 
         params.parts?.forEach(part => {
-            const orderLine = createOrderLine(semantizer, part);
+            const orderLineSubject = '#' + self.crypto.randomUUID();
+            const orderLine = createOrderLine(semantizer, {subject: orderLineSubject, ...part});
+            order.addLinkedObject(subject, namedNode(DFC + 'hasPart'), namedNode(orderLineSubject));
             order.addAll(orderLine);
         });
     }

@@ -6,6 +6,7 @@ export type OrderLine = DatasetSemantizer & OrderLineOperations;
 const DFC = 'https://github.com/datafoodconsortium/ontology/releases/latest/download/DFC_BusinessOntology.owl#';
 
 export interface OrderLineCreateParams {
+    subject?: string;
     quantity?: number;
     price?: number;
     offer?: string;
@@ -56,22 +57,22 @@ export function orderLineWithHelperLiteralAddFactory(semantizer: Semantizer) {
 }
 
 export function createOrderLine(semantizer: Semantizer, params?: OrderLineCreateParams): OrderLine {
-    const order = semantizer.build(orderLineWithHelperLiteralAddFactory);
+    const orderLine = semantizer.build(orderLineWithHelperLiteralAddFactory);
     const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
 
-    const subject = namedNode('');
+    const subject = namedNode(params?.subject ? params.subject : '');
     const rdfType = namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
     const quantityPredicate = namedNode(DFC + 'quantity');
     const pricePredicate = namedNode(DFC + 'hasPrice');
     const concernsPredicate = namedNode(DFC + 'concerns');
 
-    order.addLinkedObject(subject, rdfType, namedNode(DFC + 'OrderLine'));
+    orderLine.addLinkedObject(subject, rdfType, namedNode(DFC + 'OrderLine'));
 
     if (params) {
-        params.quantity && order.addDecimal(subject, quantityPredicate, params.quantity);
-        params.price && order.addDecimal(subject, pricePredicate, params.price);
-        params.offer && order.addLinkedObject(subject, concernsPredicate, namedNode(params.offer));
+        params.quantity && orderLine.addDecimal(subject, quantityPredicate, params.quantity);
+        params.price && orderLine.addDecimal(subject, pricePredicate, params.price);
+        params.offer && orderLine.addLinkedObject(subject, concernsPredicate, namedNode(params.offer));
     }
 
-    return order;
+    return orderLine;
 }
