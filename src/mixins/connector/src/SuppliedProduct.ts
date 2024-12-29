@@ -14,6 +14,10 @@ export interface SuppliedProductCreateParams {
     types?: string[]; // SKOS concepts
     enterprise?: string;
     catalogItems?: string[]; // Catalog[] -> URI reference
+    subProducts?: {
+        product: string;
+        quantity: number;
+    }[];
 }
 
 export interface SuppliedProductOperations {
@@ -84,9 +88,13 @@ export function suppliedProductWithHelperLiteralAddFactory(semantizer: Semantize
     return semantizer.getMixinFactory(SuppliedProductMixin, LiteralHelperAddMixin(_DatasetImpl));
 }
 
+function createDatasetWithHelperAddFactory(semantizer: Semantizer) {
+    return semantizer.getMixinFactory(LiteralHelperAddMixin);
+}
+
 export function createSuppliedProduct(semantizer: Semantizer, params?: SuppliedProductCreateParams): SuppliedProduct {
     const suppliedProduct = semantizer.build(suppliedProductWithHelperLiteralAddFactory);
-    const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
+    const { namedNode, quad, literal } = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = namedNode('');
     const rdfType = namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
@@ -112,7 +120,38 @@ export function createSuppliedProduct(semantizer: Semantizer, params?: SuppliedP
             suppliedProduct.addLinkedObject(quantitativeValue, rdfType, namedNode(DFC + 'QuantitativeValue'));
             suppliedProduct.addLinkedObject(quantitativeValue, hasUnitPredicate, namedNode(params.quantityUnit));
             suppliedProduct.addDecimal(quantitativeValue, valuePredicate, params.quantityValue);
-        } 
+        }
+
+        if (params.subProducts && params.subProducts.length > 0) {
+            const transformation = semantizer.build();
+            const transformationUuid = self.crypto.randomUUID();
+            const transformationSubject = namedNode('#' + transformationUuid);
+            transformation.addLinkedObject(transformationSubject, rdfType, namedNode(DFC + 'AsPlannedTransformation'));
+
+            params.subProducts?.forEach(subProduct => {
+                const consumptionFlow = semantizer.build(createDatasetWithHelperAddFactory);
+                const consumptionFlowUuid = self.crypto.randomUUID();
+                const consumptionFlowSubject = namedNode('#' + consumptionFlowUuid);
+                consumptionFlow.addLinkedObject(consumptionFlowSubject, rdfType, namedNode(DFC + 'AsPlannedConsumptionFlow'));
+                consumptionFlow.addDecimal(consumptionFlowSubject, namedNode(DFC + 'quantity'), subProduct.quantity);
+                const subProductUri = namedNode(`../../supplied-products/${subProduct.product}/index`);
+                consumptionFlow.addLinkedObject(consumptionFlowSubject, namedNode(DFC + 'consumes'), subProductUri);
+                transformation.addLinkedObject(transformationSubject, namedNode(DFC + 'hasIncome'), consumptionFlowSubject);
+                suppliedProduct.addAll(consumptionFlow);
+            });
+
+            const productionFlow = semantizer.build(createDatasetWithHelperAddFactory);
+            const productionFlowUuid = self.crypto.randomUUID();
+            const productionFlowSubject = namedNode('#' + productionFlowUuid);
+            productionFlow.addLinkedObject(productionFlowSubject, rdfType, namedNode(DFC + 'AsPlannedProductionFlow'));
+            productionFlow.addDecimal(productionFlowSubject, namedNode(DFC + 'quantity'), 1);
+            productionFlow.addLinkedObject(productionFlowSubject, namedNode(DFC + 'outcomeOf'), transformationSubject);
+            transformation.addLinkedObject(transformationSubject, namedNode(DFC + 'hasOutcome'), productionFlowSubject);
+            suppliedProduct.addAll(productionFlow);
+
+            suppliedProduct.addLinkedObject(subject, namedNode(DFC + 'producedBy'), productionFlowSubject);
+            suppliedProduct.addAll(transformation);
+        }
     }
     
     return suppliedProduct;
