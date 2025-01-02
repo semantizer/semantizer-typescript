@@ -27,6 +27,7 @@ export interface SuppliedProductOperations {
     getQuantityValue(): number | undefined;
     getProductTypes(): string[]; // SKOS concepts
     getCatalogItems(): CatalogItem[];
+    getCatalogItemsUriAll(offerUri?: string): string[];
 }
 
 export function SuppliedProductMixin<
@@ -34,6 +35,10 @@ export function SuppliedProductMixin<
 >(Base: TBase) {
 
     return class CatalogMixinImpl extends Base implements SuppliedProductOperations {
+        
+        public getCatalogItemsUriAll(offerUri?: string): string[] {
+            throw new Error("Method not implemented.");
+        }
 
         public getName(): string | undefined {
             const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
@@ -71,7 +76,7 @@ export function SuppliedProductMixin<
 
         public getCatalogItems(): CatalogItem[] {
             const { namedNode} = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = namedNode(DFC + 'lists');
+            const predicate = namedNode(DFC + 'referencedBy');
             return this.getLinkedObjectAll(predicate).map(d => this.getSemantizer().build(catalogItemFactory, d));
         }
 

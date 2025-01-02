@@ -1,4 +1,4 @@
-import { BlankNode, Dataset as DatasetRdfjs, DefaultGraph, Literal, NamedNode, Quad, Stream } from "@rdfjs/types";
+import { BlankNode, Dataset as DatasetRdfjs, DefaultGraph, Term, Literal, NamedNode, Quad, Stream } from "@rdfjs/types";
 import { Countable, QuadIterableSemantizer, Resource, WithOrigin, WithSemantizer } from './Common';
 import { Semantizer } from "./Semantizer";
 import { Loader, LoaderQuadStream } from "./Loader";
@@ -53,6 +53,41 @@ export interface Dataset extends DatasetRdfjs, Countable {
 
     load(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetLoadOptions): Promise<void>;
     loadQuadStream(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetQuadStreamOptions): Promise<Stream<Quad>>;
+
+    addObjectUri(subject: NamedNode | BlankNode, predicate: NamedNode, value: NamedNode, graph?: NamedNode): void;
+    addObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void;
+    addObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void;
+    addObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void;
+    addObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, value: number, graph?: NamedNode): void;
+    addObjectInteger(subject: NamedNode, predicate: NamedNode, value: number, graph?: NamedNode): void;
+    addObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void;
+    addObjectStringNoLocale(subject: NamedNode, predicate: NamedNode, value: string, graph?: NamedNode): void;
+    addObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, locale: string, graph?: NamedNode): void;
+    addObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void;
+
+    getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term | undefined;
+    getObjectUri(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | undefined;
+    getObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean | undefined;
+    getObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined;
+    getObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined;
+    getObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined;
+    getObjectInteger(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined;
+    getObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined;
+    getObjectStringNoLocale(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined;
+    getObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string | undefined;
+    getObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined;
+
+    getObjectLinkedAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term[] | undefined
+    getObjectUriAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode[] | undefined;
+    getObjectBooleanAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean[] | undefined;
+    getObjectDateAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined;
+    getObjectDatetimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined;
+    getObjectDecimalAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined;
+    getObjectIntegerAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined;
+    getObjectStringEnglishAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined;
+    getObjectStringNoLocaleAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined;
+    getObjectStringWithLocaleAll(subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string[] | undefined;
+    getObjectTimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined;
 }
 
 // export interface Graph extends DatasetRdfjs {

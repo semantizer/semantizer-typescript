@@ -46,6 +46,7 @@ export function CatalogItemMixin<
         public getOffers(): Offer[] {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const predicate = namedNode(DFC + 'offeredThrough');
+            // NOT "THIS" below
             return this.getLinkedObjectAll(predicate).map(d => this.getSemantizer().build(offerFactory, d));
         }
 

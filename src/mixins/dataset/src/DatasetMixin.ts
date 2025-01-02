@@ -261,6 +261,202 @@ export function DatasetMixin<
             }
         }
 
+        public addObjectUri(subject: NamedNode, predicate: NamedNode, value: NamedNode, graph?: NamedNode): void {
+            throw new Error('Method not implemented.');
+        }
+
+        public addObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
+            this.add(dataFactory.quad(subject, predicate, literal, graph));
+        }
+        
+        public addObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#date'));
+            this.add(dataFactory.quad(subject, predicate, literal, graph));
+        }
+        
+        public addObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#datetime'));
+            this.add(dataFactory.quad(subject, predicate, literal, graph));
+        }
+        
+        public addObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, value: number, graph?: NamedNode): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#decimal'));
+            this.add(dataFactory.quad(subject, predicate, literal, graph));
+        }
+        
+        public addObjectInteger(subject: NamedNode | BlankNode, predicate: NamedNode, value: number, graph?: NamedNode): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
+            this.add(dataFactory.quad(subject, predicate, literal, graph));
+        }
+        
+        public addObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
+            throw new Error("Method not implemented.");
+        }
+        
+        public addObjectStringNoLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value);
+            this.add(dataFactory.quad(subject, predicate, literal, graph));
+        }
+
+        public addObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, locale: string, graph?: NamedNode): void {
+            throw new Error("Method not implemented.");
+        }
+        
+        public addObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
+            throw new Error("Method not implemented.");
+        }
+
+        public getObjectUri(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | undefined {
+            const results = this.getObjectUriAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean | undefined {
+            const results = this.getObjectBooleanAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
+            const results = this.getObjectDateAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
+            const results = this.getObjectDatetimeAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined {
+            const results = this.getObjectDecimalAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectInteger(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined {
+            const results = this.getObjectIntegerAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined {
+            const results = this.getObjectStringEnglishAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectStringNoLocale(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined {
+            const results = this.getObjectStringNoLocaleAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string | undefined {
+            const results = this.getObjectStringWithLocaleAll(subject, predicate, locale, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+        
+        public getObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
+            const results = this.getObjectTimeAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+
+        public getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term | undefined {
+            const results = this.getObjectLinkedAll(subject, predicate, graph);
+            return results && results[0] ? results[0] : undefined;
+        }
+
+        public getObjectLinkedAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term[] | undefined {
+            let results: Term[] | undefined = undefined;
+            const matched = this.match(subject, predicate, null, graph);
+            if (matched.size > 0) {
+                results = [];
+                for (const q of matched) {
+                    if (q.object.termType === "NamedNode" || q.object.termType === "BlankNode") {
+                        results.push(q.object);
+                    } else {
+                        throw new Error("Invalid term type when getting object value.");
+                    }
+                }
+            }
+            return results;
+        }
+
+        getObjectAll<ObjectType, Datatype extends NamedNode, Constructor extends (value: string) => ObjectType>(datatype: Datatype, constructor: Constructor, subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): ObjectType[] | undefined {
+            let results: ObjectType[] | undefined = undefined;
+            const matched = this.match(subject, predicate, null, graph);
+            if (matched.size > 0) {
+                results = [];
+                for (const q of matched) {
+                    if (q.object.termType === "Literal" && q.object.datatype.equals(datatype)) {
+                        results.push(constructor(q.object.value));
+                    } else {
+                        throw new Error("Invalid term type when getting object value.");
+                    }
+                }
+            }
+            return results;
+        }
+
+        public getObjectUriAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode[] | undefined {
+            let results: NamedNode[] | undefined = undefined;
+            const matched = this.match(subject, predicate, null, graph);
+            if (matched.size > 0) {
+                results = [];
+                for (const q of matched) {
+                    if (q.object.termType === "NamedNode") {
+                        results.push(q.object);
+                    } else {
+                        throw new Error("Invalid term type when getting object value.");
+                    }
+                }
+            }
+            return results;
+        }
+        
+        public getObjectBooleanAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean[] | undefined {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#boolean'), (value: string) => Boolean(value), subject, predicate, graph);
+        }
+        
+        public getObjectDateAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#date'), (value: string) => new Date(value), subject, predicate, graph);
+        }
+        
+        public getObjectDatetimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
+            throw new Error('Method not implemented.');
+        }
+        
+        public getObjectDecimalAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#decimal'), (value: string) => Number.parseFloat(value), subject, predicate, graph);
+        }
+        
+        public getObjectIntegerAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#integer'), (value: string) => Number.parseInt(value), subject, predicate, graph);
+        }
+        
+        public getObjectStringEnglishAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined {
+            throw new Error('Method not implemented.');
+        }
+        
+        public getObjectStringNoLocaleAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#string'), (value: string) => value, subject, predicate, graph);
+        }
+        
+        public getObjectStringWithLocaleAll(subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string[] | undefined {
+            throw new Error('Method not implemented.');
+        }
+        
+        public getObjectTimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
+            throw new Error('Method not implemented.');
+        }
+
     }
 
 }
