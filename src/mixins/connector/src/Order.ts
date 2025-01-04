@@ -64,7 +64,7 @@ export function orderWithHelperLiteralAddFactory(semantizer: Semantizer) {
 }
 
 export function createOrder(semantizer: Semantizer, params?: OrderCreateParams): Order {
-    const order = semantizer.build(orderWithHelperLiteralAddFactory);
+    const order = semantizer.build(orderFactory);
     const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = namedNode('');
@@ -77,8 +77,8 @@ export function createOrder(semantizer: Semantizer, params?: OrderCreateParams):
     order.addLinkedObject(subject, rdfType, namedNode(DFC + 'Order'));
 
     if (params) {
-        params.number && order.addStringNoLocale(subject, numberPredicate, params.number);
-        params.date && order.addDate(subject, datePredicate, new Date(params.date));
+        params.number && order.addObjectStringNoLocale(subject, numberPredicate, params.number);
+        params.date && order.addObjectDate(subject, datePredicate, new Date(params.date));
         params.customer && order.addLinkedObject(subject, orderedByPredicate, namedNode(params.customer));
         params.state && order.addLinkedObject(subject, orderStatePredicate, namedNode(params.state));
 

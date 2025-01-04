@@ -65,7 +65,7 @@ export interface Dataset extends DatasetRdfjs, Countable {
     addObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, locale: string, graph?: NamedNode): void;
     addObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void;
 
-    getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term | undefined;
+    getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | BlankNode | undefined;
     getObjectUri(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | undefined;
     getObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean | undefined;
     getObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined;

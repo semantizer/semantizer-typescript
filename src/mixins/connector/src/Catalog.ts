@@ -1,4 +1,4 @@
-import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
+import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer, Term } from "@semantizer/types";
 import { CatalogItem, CatalogItemCreateParams, catalogItemFactory, createCatalogItem } from "./CatalogItem.js";
 import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 import { OfferCreateParams, createOffer } from "./Offer.js";
@@ -15,9 +15,7 @@ export interface CatalogCreateParams {
 }
 
 export interface OfferParams {
-    price?: NamedNode | BlankNode; // number;
-    // vatRate?: number;
-    // currency?: NamedNode;
+    price?: NamedNode | BlankNode;
     customerCategory?: NamedNode;
     stockLimitation?: number;
     discount?: number;
@@ -44,6 +42,16 @@ export interface CatalogItemGetParams extends CatalogItemParams {
     uri: NamedNode;
 }
 
+export interface PriceParams {
+    value?: number;
+    currency?: NamedNode | BlankNode;
+    vatRate?: number;
+}
+
+export interface PriceGetParams extends PriceParams {
+    uri: NamedNode | BlankNode;
+}
+
 export interface CatalogOperations {
     getName(): string | undefined;
     getDescription(): string | undefined;
@@ -55,11 +63,14 @@ export interface CatalogOperations {
     getCatalogItem(catalogItem: NamedNode): CatalogItemGetParams;
     getCatalogItems(catalogItems: NamedNode[]): CatalogItemGetParams[];
     getCatalogItemsAll(): CatalogItemGetParams[];
+    getCatalogItemsOfProduct(product: NamedNode): NamedNode[];
     setCatalogItem(catalogItem: NamedNode, newValue: CatalogItemParams): void;
 
     getOffer(offer: NamedNode): OfferGetParams;
     getOffers(offers: NamedNode[]): OfferGetParams[];
     setOffer(offer: NamedNode, newValue: OfferParams): void;
+
+    getPrice(offer: NamedNode): PriceGetParams | undefined; // TODO: harmonize return type
 }
 
 export function CatalogMixin<
@@ -67,7 +78,7 @@ export function CatalogMixin<
 >(Base: TBase) {
 
     return class CatalogMixinImpl extends Base implements CatalogOperations {
-        
+
         public getCatalogItemsAll(): CatalogItemGetParams[] {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const catalogItems = this.getObjectUriAll(this.getOrigin()!, namedNode(DFC + 'lists'));
@@ -99,6 +110,17 @@ export function CatalogMixin<
             return catalogItems.map(catalogItem => this.getCatalogItem(catalogItem));
         }
 
+        public getCatalogItemsOfProduct(product: NamedNode): NamedNode[] {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return this.match(null, namedNode(DFC + 'references'), product)
+                .reduce<NamedNode[]>((acc, quad) => {
+                    if (quad.subject.termType === 'NamedNode') {
+                        acc.push(quad.subject);
+                    }
+                    return acc;
+                }, []);
+        }
+
         public setCatalogItem(catalogItem: NamedNode, newValue: CatalogItemParams): void {
             throw new Error("Method not implemented.");
         }
@@ -112,16 +134,9 @@ export function CatalogMixin<
 
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
 
-            // const price = offerDataset.getObjectUri(offer, namedNode(DFC + 'hasPrice'));
-            // const price: Term = offerDataset.getObjectLinked(offer, namedNode(DFC + 'hasPrice'));
-            // const priceDataset = semantizer.load(price, priceFactory)
-            // offerDataset.getSubGraph()
-
             return {
                 uri: offer,
-                // price: number;
-                // vatRate?: number;
-                // currency: ,
+                price: offerDataset.getObjectLinked(offer, namedNode(DFC + 'hasPrice')),
                 customerCategory: offerDataset.getObjectUri(offer, namedNode(DFC + 'customerCategory')),
                 stockLimitation: offerDataset.getObjectInteger(offer, namedNode(DFC + 'stockLimitation')),
                 discount: offerDataset.getObjectDecimal(offer, namedNode(DFC + 'discount')),
@@ -131,9 +146,33 @@ export function CatalogMixin<
             }
         }
 
-        public getOffers(offers: NamedNode[]): OfferGetParams[] {
-            return offers.map(offer => this.getOffer(offer));
+        public getPrice(offer: NamedNode): PriceGetParams | undefined {
+            let result: PriceGetParams | undefined = undefined;
+            const offerResult = this.getOffer(offer);
+
+            if (offerResult.price) {
+                const priceDataset = this.getSubGraph(offerResult.price);
+
+                if (!priceDataset) {
+                    throw new Error("Unable to find the catalogItem " + offer.value);
+                }
+
+                const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+
+                result = {
+                    uri: offerResult.price,
+                    value: priceDataset.getObjectDecimal(offerResult.price, namedNode(DFC + 'value')),
+                    vatRate: priceDataset.getObjectDecimal(offerResult.price, namedNode(DFC + 'vatRate')),
+                    currency: priceDataset.getObjectLinked(offerResult.price, namedNode(DFC + 'currency')),
+                }
+            }
+
+            return result;
         }
+
+            public getOffers(offers: NamedNode[]): OfferGetParams[] {
+                return offers.map(offer => this.getOffer(offer));
+            }
 
         public setOffer(offer: NamedNode, newValue: OfferParams): void {
             throw new Error("Method not implemented.");

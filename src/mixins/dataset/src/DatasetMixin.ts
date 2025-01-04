@@ -363,9 +363,19 @@ export function DatasetMixin<
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term | undefined {
+        public getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | BlankNode | undefined {
+            let result: NamedNode | BlankNode | undefined = undefined;
             const results = this.getObjectLinkedAll(subject, predicate, graph);
-            return results && results[0] ? results[0] : undefined;
+            
+            if (results && results[0]) {
+                if (results[0].termType === 'NamedNode') {
+                    result = (results[0] as NamedNode);
+                } else if (results[0].termType === 'BlankNode') {
+                    result = (results[0] as BlankNode);
+                } else throw new Error();
+            } 
+            
+            return result;
         }
 
         public getObjectLinkedAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term[] | undefined {

@@ -1,4 +1,4 @@
-import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Semantizer } from "@semantizer/types";
+import { DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
 import { CatalogItem, catalogItemFactory } from "./CatalogItem.js";
 import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 
@@ -21,23 +21,34 @@ export interface SuppliedProductCreateParams {
 }
 
 export interface SuppliedProductOperations {
+    addCatalogItem(catalogItem: NamedNode): void
     getName(): string | undefined;
     getDescription(): string | undefined;
     getQuantityUnit(): string | undefined;
     getQuantityValue(): number | undefined;
     getProductTypes(): string[]; // SKOS concepts
     getCatalogItems(): CatalogItem[];
-    getCatalogItemsUriAll(offerUri?: string): string[];
+    getCatalogItemsUriAll(): NamedNode[] | undefined;
+    setCatalogItems(catalogItems: NamedNode[]): void
 }
 
 export function SuppliedProductMixin<
     TBase extends DatasetSemantizerMixinConstructor
 >(Base: TBase) {
 
-    return class CatalogMixinImpl extends Base implements SuppliedProductOperations {
+    return class SuppliedProductMixinImpl extends Base implements SuppliedProductOperations {
         
-        public getCatalogItemsUriAll(offerUri?: string): string[] {
-            throw new Error("Method not implemented.");
+        public getCatalogItemsUriAll(): NamedNode[] | undefined {
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return this.getObjectUriAll(this.getOrigin()!, namedNode(DFC + 'referencedBy'));
+        }
+
+        public setCatalogItems(catalogItems: NamedNode[]): void {
+
+        }
+
+        public addCatalogItem(catalogItem: NamedNode): void {
+            
         }
 
         public getName(): string | undefined {

@@ -11,9 +11,9 @@ export {
     Dataset as DatasetRdfjs
 } from "@rdfjs/types";
 
-export * from "./lib/types/src/Common.js";
-export * from "./lib/types/src/Semantizer.js";
-export * from "./lib/types/src/Loader.js";
-export * from "./lib/types/src/Datasets.js";
+export * from "./lib/Common.js";
+export * from "./lib/Semantizer.js";
+export * from "./lib/Loader.js";
+export * from "./lib/Datasets.js";
 
 

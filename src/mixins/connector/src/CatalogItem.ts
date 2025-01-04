@@ -74,7 +74,7 @@ export function createCatalogItem(semantizer: Semantizer, params?: CatalogItemCr
     if (params && params.offers) {
         params.offers.forEach(offerCreateParams => {
             if (!offerCreateParams.uri || offerCreateParams.uri === '') {
-                offerCreateParams.uri = self.crypto.randomUUID();
+                offerCreateParams.uri = `#${self.crypto.randomUUID()}`;
             }
             const offer = createOffer(semantizer, {...offerCreateParams, catalogItem: params.subject});
             catalogItem.addLinkedObject(subject, offeredThroughPredicate, namedNode(offerCreateParams.uri ?? ''));
