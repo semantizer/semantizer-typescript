@@ -40,15 +40,16 @@ export function SuppliedProductMixin<
         
         public getCatalogItemsUriAll(): NamedNode[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            return this.getObjectUriAll(this.getOrigin()!, namedNode(DFC + 'referencedBy'));
+            return this.getObjectUriAll(namedNode(''), namedNode(DFC + 'referencedBy')); // WARNING HERE the subject can be something else?
         }
 
         public setCatalogItems(catalogItems: NamedNode[]): void {
-
+            throw new Error("Not implemented.");
         }
 
         public addCatalogItem(catalogItem: NamedNode): void {
-            
+            const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            this.addObjectUri(namedNode(''), namedNode(DFC + 'referencedBy'), catalogItem);
         }
 
         public getName(): string | undefined {
