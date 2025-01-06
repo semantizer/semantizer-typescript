@@ -1,21 +1,46 @@
 import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerRdfjsMixinConstructor, DatasetQuadStreamOptions } from '@semantizer/types';
-// import { DatasetCore } from "@rdfjs/types"; // PB if deleted
+import { getRelativeUrl, isUrlAbsolute } from './utils';
 
 export function DatasetMixin<
     TBase extends DatasetSemantizerRdfjsMixinConstructor // PB: can be impl other than rdfjs
 >(Base: TBase) {
 
     return class DatasetMixinImpl extends Base implements DatasetSemantizer {
-        
+
+        public transformAllSubjectAndObjectAbsoluteUrisToRelativeUris(baseUri?: string): void {
+            if (baseUri || (this.getOrigin() && this.getOrigin()!.value !== '')) {
+                const quadsToDelete: Quad[] = [];
+                const base = baseUri ?? this.getOrigin()!.value;
+                const rdfFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+
+                const transformUrl = (url: NamedNode): NamedNode => rdfFactory.namedNode(getRelativeUrl(url.value, base));
+
+                for (const quad of this) {
+                    const isQuadSubjectAnAbsoluteUrl = quad.subject.termType === 'NamedNode' && isUrlAbsolute(quad.subject.value);
+                    const isQuadObjectAnAbsoluteUrl = quad.object.termType === 'NamedNode' && isUrlAbsolute(quad.object.value);
+                    const isQuadPredicateRdfType = quad.predicate.termType === 'NamedNode' && quad.predicate.equals(rdfFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'));
+
+                    if (isQuadSubjectAnAbsoluteUrl || isQuadObjectAnAbsoluteUrl) {
+                        quadsToDelete.push(quad);
+                        const newSubject = isQuadSubjectAnAbsoluteUrl ? transformUrl(quad.subject as NamedNode) : quad.subject;
+                        const newObject = !isQuadPredicateRdfType && isQuadObjectAnAbsoluteUrl ? transformUrl(quad.object as NamedNode) : quad.object;
+                        this.add(rdfFactory.quad(newSubject, quad.predicate, newObject));
+                    }
+                }
+
+                quadsToDelete.forEach(quadsToDelete => this.delete(quadsToDelete));
+            } else throw new Error("The dataset has no origin.");
+        }
+
         // TODO: check matchedQuad type (BlankNode type?)?
         public getRdfTypeAll(namedGraph?: NamedNode): NamedNode[] {
             const results: NamedNode[] = [];
-            
+
             const subject = namedGraph ? namedGraph : this.getOrigin();
             const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
             const graph = namedGraph ? namedGraph : this.getSemantizer().getConfiguration().getRdfDataModelFactory().defaultGraph();
-            
-            if (subject) {   
+
+            if (subject) {
                 for (const matchedQuad of this.match(subject, predicate, undefined, graph)) {
                     results.push(matchedQuad.object as NamedNode);
                 }
@@ -33,7 +58,7 @@ export function DatasetMixin<
             }
             return true;
         }
-        
+
         public getNamedGraphAll(namedGraph: NamedNode): DatasetSemantizer[] {
             throw new Error('Method not implemented.');
         }
@@ -45,7 +70,7 @@ export function DatasetMixin<
         public isEmpty(): boolean {
             return this.size === 0;
         }
-        
+
         public hasNamedGraph(): boolean {
             for (const quad of this) {
                 if (quad.graph) {
@@ -58,7 +83,7 @@ export function DatasetMixin<
         countNamedGraph(): number {
             throw new Error('Method not implemented.');
         }
-        
+
         public getNamedGraph(namedGraph: NamedNode): DatasetSemantizer | undefined {
             const matchedDataset = this.matchDatasetSemantizerWithLinkedObjects(namedGraph);
             if (matchedDataset.isEmpty()) {
@@ -68,7 +93,7 @@ export function DatasetMixin<
                 return matchedDataset;
             }
         }
-        
+
         public getDefaultGraph(): DatasetSemantizer {
             const defaultGraph = this.getSemantizer().getConfiguration().getRdfDataModelFactory().defaultGraph();
             const dataset = this.matchDatasetSemantizerWithLinkedObjects(undefined, undefined, undefined, defaultGraph);
@@ -96,7 +121,7 @@ export function DatasetMixin<
         public getSubGraphAll(namedGraph?: NamedNode): DatasetSemantizer[] {
             throw new Error('Method not implemented.');
         }
-        
+
         public getLiteral(thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal | undefined {
             const literal = this.match(thing, predicate, graph);
             for (const q of literal) {
@@ -105,7 +130,7 @@ export function DatasetMixin<
             }
             return undefined;
         }
-        
+
         getLiteralAll(thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal[] {
             throw new Error('Method not implemented.');
         }
@@ -134,11 +159,11 @@ export function DatasetMixin<
             }
             return addQuadWithLinkedObjectsRecursively(matchedDataset);
         }
-        
+
         public addLinkedObject(thing: Resource, predicate: NamedNode, object: Resource): void {
             this.add(this.getSemantizer().getConfiguration().getRdfDataModelFactory().quad(
-                thing, 
-                predicate, 
+                thing,
+                predicate,
                 object
             ));
         }
@@ -156,7 +181,7 @@ export function DatasetMixin<
             }
             return undefined;
         }
-        
+
         public getLinkedObjectAll(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer[] {
             const things: DatasetSemantizer[] = [];
             const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getOrigin() : thingOrDataset : undefined;
@@ -172,7 +197,7 @@ export function DatasetMixin<
         }
 
         public async loadQuadStream(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetQuadStreamOptions): Promise<Stream<Quad>> {
-            resource = resource? resource: this;
+            resource = resource ? resource : this;
             const resourceUri = this.getUriOfResource(resource);
             const loader = options?.quadStreamLoader ? options.quadStreamLoader : this.getSemantizer().getConfiguration().getLoaderQuadStream();
             return loader.load(resourceUri);
@@ -182,13 +207,13 @@ export function DatasetMixin<
         public async forEachSubGraph(callbackfn: (value: DatasetSemantizer, index?: number, array?: DatasetSemantizer[]) => Promise<void>, graph?: NamedNode | DefaultGraph): Promise<void> {
             let index = 0;
             const subjects: string[] = [];
-            
+
             const processGraph = async (graphDataset: DatasetSemantizer) => {
                 for (const quad of graphDataset) {
                     if (quad.subject.termType === 'NamedNode') {
                         if (!subjects.includes(quad.subject.value)) {
                             subjects.push(quad.subject.value); // mark quad as "already treated"
-                            const thing = this.getNamedGraph(quad.subject); 
+                            const thing = this.getNamedGraph(quad.subject);
                             if (thing) {
                                 await callbackfn(thing, index);
                             }
@@ -233,16 +258,16 @@ export function DatasetMixin<
             }
             throw new Error("Can't find the uri of the resource.");
         }
-        
+
         /**
          * 
          * @param resource 
          * @param options 
          */
         public async load(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetLoadOptions): Promise<void> {
-            resource = resource? resource: this;
+            resource = resource ? resource : this;
             if (typeof resource !== 'string' && 'getOrigin' in resource && resource.getOrigin()?.termType === 'NamedNode') { // if the resource to load is a NamedNode (and not a BlankNode which are already loaded)
-                const loader = options && options.loader? options.loader: this.getSemantizer().getConfiguration().getLoader();
+                const loader = options && options.loader ? options.loader : this.getSemantizer().getConfiguration().getLoader();
                 const resourceUri = this.getUriOfResource(resource);
                 const resourceNamedNode = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(resourceUri);
                 const startTime = new Date();
@@ -262,7 +287,8 @@ export function DatasetMixin<
         }
 
         public addObjectUri(subject: NamedNode, predicate: NamedNode, value: NamedNode, graph?: NamedNode): void {
-            throw new Error('Method not implemented.');
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            this.add(dataFactory.quad(subject, predicate, value, graph));
         }
 
         public addObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
@@ -270,35 +296,35 @@ export function DatasetMixin<
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
             this.add(dataFactory.quad(subject, predicate, literal, graph));
         }
-        
+
         public addObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#date'));
             this.add(dataFactory.quad(subject, predicate, literal, graph));
         }
-        
+
         public addObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#datetime'));
             this.add(dataFactory.quad(subject, predicate, literal, graph));
         }
-        
+
         public addObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, value: number, graph?: NamedNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#decimal'));
             this.add(dataFactory.quad(subject, predicate, literal, graph));
         }
-        
+
         public addObjectInteger(subject: NamedNode | BlankNode, predicate: NamedNode, value: number, graph?: NamedNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
             this.add(dataFactory.quad(subject, predicate, literal, graph));
         }
-        
+
         public addObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
             throw new Error("Method not implemented.");
         }
-        
+
         public addObjectStringNoLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value);
@@ -308,7 +334,7 @@ export function DatasetMixin<
         public addObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, locale: string, graph?: NamedNode): void {
             throw new Error("Method not implemented.");
         }
-        
+
         public addObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
             throw new Error("Method not implemented.");
         }
@@ -317,64 +343,64 @@ export function DatasetMixin<
             const results = this.getObjectUriAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean | undefined {
             const results = this.getObjectBooleanAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
             const results = this.getObjectDateAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
             const results = this.getObjectDatetimeAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined {
             const results = this.getObjectDecimalAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectInteger(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined {
             const results = this.getObjectIntegerAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined {
             const results = this.getObjectStringEnglishAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectStringNoLocale(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined {
             const results = this.getObjectStringNoLocaleAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string | undefined {
             const results = this.getObjectStringWithLocaleAll(subject, predicate, locale, graph);
             return results && results[0] ? results[0] : undefined;
         }
-        
+
         public getObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
             const results = this.getObjectTimeAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
         public getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | BlankNode | undefined {
-            let result: NamedNode | BlankNode | undefined = undefined;
+            let result: NamedNode | BlankNode | undefined = undefined;
             const results = this.getObjectLinkedAll(subject, predicate, graph);
-            
+
             if (results && results[0]) {
                 if (results[0].termType === 'NamedNode') {
                     result = (results[0] as NamedNode);
                 } else if (results[0].termType === 'BlankNode') {
                     result = (results[0] as BlankNode);
                 } else throw new Error();
-            } 
-            
+            }
+
             return result;
         }
 
@@ -425,44 +451,44 @@ export function DatasetMixin<
             }
             return results;
         }
-        
+
         public getObjectBooleanAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#boolean'), (value: string) => Boolean(value), subject, predicate, graph);
         }
-        
+
         public getObjectDateAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#date'), (value: string) => new Date(value), subject, predicate, graph);
         }
-        
+
         public getObjectDatetimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
             throw new Error('Method not implemented.');
         }
-        
+
         public getObjectDecimalAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#decimal'), (value: string) => Number.parseFloat(value), subject, predicate, graph);
         }
-        
+
         public getObjectIntegerAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#integer'), (value: string) => Number.parseInt(value), subject, predicate, graph);
         }
-        
+
         public getObjectStringEnglishAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined {
             throw new Error('Method not implemented.');
         }
-        
+
         public getObjectStringNoLocaleAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#string'), (value: string) => value, subject, predicate, graph);
         }
-        
+
         public getObjectStringWithLocaleAll(subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string[] | undefined {
             throw new Error('Method not implemented.');
         }
-        
+
         public getObjectTimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
             throw new Error('Method not implemented.');
         }

@@ -45,6 +45,19 @@ export interface Dataset extends DatasetRdfjs, Countable {
     getLinkedObjectAll(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer[];
 
     /**
+     * This method will try to transform any subject or object URI of this dataset that is absolute into a relative one using 
+     * the `baseUrl` base URI or the dataset origin URI (default). The modification affects the current dataset.
+     * 
+     * This is especially useful if you have a document that use relative paths. Calling this method before to make a PUT request will avoid to 
+     * erase the relative URIs of the origin document. Some RDF serialisations like Turtle implies that all the parsed URIs from a document will 
+     * resolve to absolute URIs.
+     * 
+     * @param baseUri The base URI to compute the relative URIs from. If not present, the dataset will try to use its origin.
+     * @throws {Error} If the `baseUri` and the document origin are not defined.
+     */
+    transformAllSubjectAndObjectAbsoluteUrisToRelativeUris(baseUri?: string): void;
+
+    /**
      * 
      * @param callbackfn 
      * @param namedGraph Default is DefaultGraph
