@@ -27,6 +27,9 @@ export function SolidChangelogN3Mixin<
                 changelog += '}\n';
             }
 
+            // TODO: handle deletes and where
+            changelog += '.';
+
             return changelog;
         }
 
