@@ -36,10 +36,11 @@ The base mixin is the "dataset" mixin. It offers basic methods such as `getLiter
 
 | Mixin      | Description |
 | -----------| ----------- |
+| [changelog](./src/mixins/changelog/) | A mixin to record the changes made to a dataset. |
 | [dataset](./src/mixins/dataset/) | The base mixin. Provides essential methods. |
 | [foaf-person](./src/mixins/foaf/) | The [foaf:Person](http://xmlns.com/foaf/spec/#term_Person) mixin. |
 | [index](./src/mixins/index/) | A mixin to query indexes. |
-| [literal-helper-add](./src/mixins/literal-helper-add/) | A mixin that provides helper methods to add literals to the dataset with various datatypes. |
+| [solid-changelog-n3](./src/mixins/solid-changelog-n3/) | A mixin to serialize a dataset changelog into a N3 patch. |
 | [solid-webid](./src/mixins/solid-webid/) | A mixin to manipulate [Solid WebId profiles](https://solid.github.io/webid-profile/). |
 | [typeindex](./src/mixins/typeindex/) | A mixin to manipulate [TypeIndexes](https://solid.github.io/type-indexes/). |
 | [webid](./src/mixins/webid/) | A mixin to manipulate [WebId](https://w3c.github.io/WebID/spec/identity/) profiles. |
