@@ -1,8 +1,8 @@
 import { Semantizer, DatasetSemantizer, DatasetSemantizerMixinConstructor } from '@semantizer/types';
 
-export type Catalog = DatasetSemantizer & SolidContainerOperations;
-
 const LDP = 'http://www.w3.org/ns/ldp#';
+
+export type SolidContainer = DatasetSemantizer & SolidContainerOperations;
 
 export interface SolidContainerOperations {
     getContainedResources(): DatasetSemantizer[];
@@ -12,7 +12,7 @@ export function SolidContainerMixin<
     TBase extends DatasetSemantizerMixinConstructor
 >(Base: TBase) {
 
-    return class SolidContainerMixinImpl extends Base implements SolidContainerOperations {
+    return class SolidContainerMixinImpl extends Base implements SolidContainer {
 
         public getContainedResources(): DatasetSemantizer[] {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
@@ -25,6 +25,5 @@ export function SolidContainerMixin<
 }
 
 export function solidContainerFactory(semantizer: Semantizer) {
-    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
     return semantizer.getMixinFactory(SolidContainerMixin);
 }
