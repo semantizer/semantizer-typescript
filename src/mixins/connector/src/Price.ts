@@ -1,4 +1,3 @@
-import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Semantizer } from "@semantizer/types";
 
 export type Price = DatasetSemantizer & PriceOperations;
@@ -43,13 +42,8 @@ export function priceFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(PriceMixin);
 }
 
-export function priceWithHelperLiteralAddFactory(semantizer: Semantizer) {
-    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(PriceMixin, LiteralHelperAddMixin(_DatasetImpl));
-}
-
 export function createPrice(semantizer: Semantizer, params?: PriceCreateParams): Price {
-    const price = semantizer.build(priceWithHelperLiteralAddFactory);
+    const price = semantizer.build(priceFactory);
     const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = namedNode('');
@@ -59,7 +53,7 @@ export function createPrice(semantizer: Semantizer, params?: PriceCreateParams):
     price.addLinkedObject(subject, rdfType, namedNode(DFC + 'Price'));
 
     if (params) {
-        params.value && price.addDecimal(subject, namePredicate, params.value);
+        params.value && price.addObjectDecimal(subject, namePredicate, params.value);
     }
 
     return price;

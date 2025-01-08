@@ -16,7 +16,8 @@
     "@semantizer/default": "^1.0.0",
     "@semantizer/mixin-webid": "^1.0.0",
     "@semantizer/mixin-solid-webid": "^1.0.0",
-    "@semantizer/mixin-literal-helper-add": "^1.0.0"
+    "@semantizer/mixin-changelog": "^1.0.0",
+    "@semantizer/mixin-solid-changelog-n3": "^1.0.0"
   },
   "devDependencies": {
     "@semantizer/types": "^1.0.0",

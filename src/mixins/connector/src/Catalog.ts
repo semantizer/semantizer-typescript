@@ -1,6 +1,5 @@
 import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer, Term } from "@semantizer/types";
 import { CatalogItem, CatalogItemCreateParams, catalogItemFactory, createCatalogItem } from "./CatalogItem.js";
-import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 import { OfferCreateParams, createOffer } from "./Offer.js";
 
 export type Catalog = DatasetSemantizer & CatalogOperations;

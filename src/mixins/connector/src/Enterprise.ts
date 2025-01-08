@@ -2,7 +2,6 @@ import { SolidWebIdProfile, SolidWebIdProfileConstructor, SolidWebIdProfileMixin
 import { Semantizer } from "@semantizer/types";
 import { Catalog, catalogFactory } from "./Catalog.js";
 import { WebIdProfileMixin } from "@semantizer/mixin-webid";
-import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 
 export type Enterprise = SolidWebIdProfile & EnterpriseOperations;
 
@@ -68,13 +67,8 @@ export function enterpriseFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(EnterpriseMixin, SolidWebIdProfileMixin(WebIdProfileMixin(_DatasetImpl)));
 }
 
-export function enterpriseWithHelperLiteralAddFactory(semantizer: Semantizer) {
-    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(EnterpriseMixin, LiteralHelperAddMixin(SolidWebIdProfileMixin(WebIdProfileMixin(_DatasetImpl))));
-}
-
 export function createEnterprise(semantizer: Semantizer, params?: EnterpriseCreateParams): Enterprise {
-    const enterprise = semantizer.build(enterpriseWithHelperLiteralAddFactory);
+    const enterprise = semantizer.build(enterpriseFactory);
     const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = namedNode('');
@@ -83,18 +77,18 @@ export function createEnterprise(semantizer: Semantizer, params?: EnterpriseCrea
     enterprise.addLinkedObject(subject, rdfType, namedNode(DFC + 'Enterprise'));
 
     if (params) {
-        params.name && enterprise.addStringNoLocale(subject, namedNode(DFC + 'name'), params.name);
-        params.description && enterprise.addStringNoLocale(subject, namedNode(DFC + 'description'), params.description);
-        params.image && enterprise.addStringNoLocale(subject, namedNode(DFC + 'image'), params.image);
-        params.street && enterprise.addStringNoLocale(subject, namedNode(DFC + 'street'), params.street);
-        params.postalCode && enterprise.addStringNoLocale(subject, namedNode(DFC + 'postalCode'), params.postalCode);
-        params.city && enterprise.addStringNoLocale(subject, namedNode(DFC + 'city'), params.city);
-        params.country && enterprise.addStringNoLocale(subject, namedNode(DFC + 'country'), params.country);
-        params.vatNumber && enterprise.addStringNoLocale(subject, namedNode(DFC + 'vatNumber'), params.vatNumber);
-        params.siretNumber && enterprise.addStringNoLocale(subject, namedNode(DFC + 'siretNumber'), params.siretNumber);
-        params.phoneNumber && enterprise.addStringNoLocale(subject, namedNode(DFC + 'phoneNumber'), params.phoneNumber);
-        params.email && enterprise.addStringNoLocale(subject, namedNode(DFC + 'email'), params.email);
-        params.website && enterprise.addStringNoLocale(subject, namedNode(DFC + 'website'), params.website);
+        params.name && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'name'), params.name);
+        params.description && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'description'), params.description);
+        params.image && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'image'), params.image);
+        params.street && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'street'), params.street);
+        params.postalCode && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'postalCode'), params.postalCode);
+        params.city && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'city'), params.city);
+        params.country && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'country'), params.country);
+        params.vatNumber && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'vatNumber'), params.vatNumber);
+        params.siretNumber && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'siretNumber'), params.siretNumber);
+        params.phoneNumber && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'phoneNumber'), params.phoneNumber);
+        params.email && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'email'), params.email);
+        params.website && enterprise.addObjectStringNoLocale(subject, namedNode(DFC + 'website'), params.website);
     }
     
     return enterprise;

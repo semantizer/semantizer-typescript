@@ -1,4 +1,3 @@
-import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Semantizer } from "@semantizer/types";
 import { createOrderLine, OrderLineCreateParams } from "./OrderLine";
 
@@ -56,11 +55,6 @@ export function OrderMixin<
 
 export function orderFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(OrderMixin);
-}
-
-export function orderWithHelperLiteralAddFactory(semantizer: Semantizer) {
-    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(OrderMixin, LiteralHelperAddMixin(_DatasetImpl));
 }
 
 export function createOrder(semantizer: Semantizer, params?: OrderCreateParams): Order {

@@ -2,7 +2,6 @@ import { SolidWebIdProfile, SolidWebIdProfileConstructor, SolidWebIdProfileMixin
 import { Semantizer } from "@semantizer/types";
 import { Enterprise, enterpriseFactory } from "./Enterprise.js";
 import { WebIdProfileMixin } from "@semantizer/mixin-webid";
-import { LiteralHelperAddMixin, WithLiteralHelperAdd } from "@semantizer/mixin-literal-helper-add";
 
 export type Person = SolidWebIdProfile & PersonOperations;
 
@@ -49,13 +48,8 @@ export function personFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(PersonMixin, SolidWebIdProfileMixin(WebIdProfileMixin(_DatasetImpl)));
 }
 
-export function personWithHelperLiteralAddFactory(semantizer: Semantizer) {
-    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(PersonMixin, LiteralHelperAddMixin(SolidWebIdProfileMixin(WebIdProfileMixin(_DatasetImpl))));
-}
-
 export function createPerson(semantizer: Semantizer, params?: PersonCreateParams): Person {
-    const person = semantizer.build(personWithHelperLiteralAddFactory);
+    const person = semantizer.build(personFactory);
     const dataFactory = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = dataFactory.namedNode('');
@@ -63,7 +57,7 @@ export function createPerson(semantizer: Semantizer, params?: PersonCreateParams
 
     if (params) {
         if (params.name) {
-            person.addStringNoLocale(subject, namePredicate, params.name);
+            person.addObjectStringNoLocale(subject, namePredicate, params.name);
         }
     }
     

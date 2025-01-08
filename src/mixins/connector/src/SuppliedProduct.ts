@@ -1,6 +1,7 @@
 import { DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
 import { CatalogItem, catalogItemFactory } from "./CatalogItem.js";
-import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
+import { SolidChangelogN3, SolidChangelogN3Mixin } from "@semantizer/mixin-solid-changelog-n3";
+import { ChangelogMixin } from "@semantizer/mixin-changelog";
 
 export type SuppliedProduct = DatasetSemantizer & SuppliedProductOperations;
 
@@ -100,17 +101,13 @@ export function suppliedProductFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(SuppliedProductMixin);
 }
 
-export function suppliedProductWithHelperLiteralAddFactory(semantizer: Semantizer) {
+export function suppliedProductWithChangelogFactory(semantizer: Semantizer) {
     const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(SuppliedProductMixin, LiteralHelperAddMixin(_DatasetImpl));
-}
-
-function createDatasetWithHelperAddFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(LiteralHelperAddMixin);
+    return semantizer.getMixinFactory<new (...args: any[]) => SolidChangelogN3, SuppliedProduct & SolidChangelogN3>(SuppliedProductMixin, SolidChangelogN3Mixin(ChangelogMixin(_DatasetImpl)));
 }
 
 export function createSuppliedProduct(semantizer: Semantizer, params?: SuppliedProductCreateParams): SuppliedProduct {
-    const suppliedProduct = semantizer.build(suppliedProductWithHelperLiteralAddFactory);
+    const suppliedProduct = semantizer.build(suppliedProductFactory);
     const { namedNode, quad, literal } = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = namedNode('');
@@ -126,9 +123,9 @@ export function createSuppliedProduct(semantizer: Semantizer, params?: SuppliedP
     suppliedProduct.addLinkedObject(subject, rdfType, namedNode(DFC + 'SuppliedProduct'));
 
     if (params) {
-        params.name && suppliedProduct.addStringNoLocale(subject, namePredicate, params.name);
+        params.name && suppliedProduct.addObjectStringNoLocale(subject, namePredicate, params.name);
         params.types && params.types.forEach(type => suppliedProduct.addLinkedObject(subject, hasTypePredicate, namedNode(type)));
-        params.description && suppliedProduct.addStringNoLocale(subject, descriptionPredicate, params.description);
+        params.description && suppliedProduct.addObjectStringNoLocale(subject, descriptionPredicate, params.description);
         params.enterprise && suppliedProduct.addLinkedObject(subject, suppliedByPredicate, namedNode(params.enterprise));
 
         if (params.quantityValue && params.quantityUnit) {
@@ -136,7 +133,7 @@ export function createSuppliedProduct(semantizer: Semantizer, params?: SuppliedP
             suppliedProduct.addLinkedObject(subject, hasQuantityPredicate, quantitativeValue);
             suppliedProduct.addLinkedObject(quantitativeValue, rdfType, namedNode(DFC + 'QuantitativeValue'));
             suppliedProduct.addLinkedObject(quantitativeValue, hasUnitPredicate, namedNode(params.quantityUnit));
-            suppliedProduct.addDecimal(quantitativeValue, valuePredicate, params.quantityValue);
+            suppliedProduct.addObjectDecimal(quantitativeValue, valuePredicate, params.quantityValue);
         }
 
         if (params.subProducts && params.subProducts.length > 0) {
@@ -146,22 +143,22 @@ export function createSuppliedProduct(semantizer: Semantizer, params?: SuppliedP
             transformation.addLinkedObject(transformationSubject, rdfType, namedNode(DFC + 'AsPlannedTransformation'));
 
             params.subProducts?.forEach(subProduct => {
-                const consumptionFlow = semantizer.build(createDatasetWithHelperAddFactory);
+                const consumptionFlow = semantizer.build();
                 const consumptionFlowUuid = self.crypto.randomUUID();
                 const consumptionFlowSubject = namedNode('#' + consumptionFlowUuid);
                 consumptionFlow.addLinkedObject(consumptionFlowSubject, rdfType, namedNode(DFC + 'AsPlannedConsumptionFlow'));
-                consumptionFlow.addDecimal(consumptionFlowSubject, namedNode(DFC + 'quantity'), subProduct.quantity);
+                consumptionFlow.addObjectDecimal(consumptionFlowSubject, namedNode(DFC + 'quantity'), subProduct.quantity);
                 const subProductUri = namedNode(`../../supplied-products/${subProduct.product}/index`);
                 consumptionFlow.addLinkedObject(consumptionFlowSubject, namedNode(DFC + 'consumes'), subProductUri);
                 transformation.addLinkedObject(transformationSubject, namedNode(DFC + 'hasIncome'), consumptionFlowSubject);
                 suppliedProduct.addAll(consumptionFlow);
             });
 
-            const productionFlow = semantizer.build(createDatasetWithHelperAddFactory);
+            const productionFlow = semantizer.build();
             const productionFlowUuid = self.crypto.randomUUID();
             const productionFlowSubject = namedNode('#' + productionFlowUuid);
             productionFlow.addLinkedObject(productionFlowSubject, rdfType, namedNode(DFC + 'AsPlannedProductionFlow'));
-            productionFlow.addDecimal(productionFlowSubject, namedNode(DFC + 'quantity'), 1);
+            productionFlow.addObjectDecimal(productionFlowSubject, namedNode(DFC + 'quantity'), 1);
             productionFlow.addLinkedObject(productionFlowSubject, namedNode(DFC + 'outcomeOf'), transformationSubject);
             transformation.addLinkedObject(transformationSubject, namedNode(DFC + 'hasOutcome'), productionFlowSubject);
             suppliedProduct.addAll(productionFlow);

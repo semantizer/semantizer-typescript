@@ -1,4 +1,3 @@
-import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Semantizer } from "@semantizer/types";
 
 export type OrderLine = DatasetSemantizer & OrderLineOperations;
@@ -51,13 +50,8 @@ export function orderLineFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(OrderLineMixin);
 }
 
-export function orderLineWithHelperLiteralAddFactory(semantizer: Semantizer) {
-    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(OrderLineMixin, LiteralHelperAddMixin(_DatasetImpl));
-}
-
 export function createOrderLine(semantizer: Semantizer, params?: OrderLineCreateParams): OrderLine {
-    const orderLine = semantizer.build(orderLineWithHelperLiteralAddFactory);
+    const orderLine = semantizer.build(orderLineFactory);
     const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = namedNode(params?.subject ? params.subject : '');
@@ -69,8 +63,8 @@ export function createOrderLine(semantizer: Semantizer, params?: OrderLineCreate
     orderLine.addLinkedObject(subject, rdfType, namedNode(DFC + 'OrderLine'));
 
     if (params) {
-        params.quantity && orderLine.addDecimal(subject, quantityPredicate, params.quantity);
-        params.price && orderLine.addDecimal(subject, pricePredicate, params.price);
+        params.quantity && orderLine.addObjectDecimal(subject, quantityPredicate, params.quantity);
+        params.price && orderLine.addObjectDecimal(subject, pricePredicate, params.price);
         params.offer && orderLine.addLinkedObject(subject, concernsPredicate, namedNode(params.offer));
     }
 

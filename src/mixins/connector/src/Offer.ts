@@ -1,4 +1,3 @@
-import { LiteralHelperAddMixin } from "@semantizer/mixin-literal-helper-add";
 import { DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
 import { Price, priceFactory } from "./Price";
 
@@ -52,13 +51,8 @@ export function offerFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(OfferMixin);
 }
 
-export function offerWithHelperLiteralAddFactory(semantizer: Semantizer) {
-    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(OfferMixin, LiteralHelperAddMixin(_DatasetImpl));
-}
-
 export function createOffer(semantizer: Semantizer, params?: OfferCreateParams): Offer {
-    const offer = semantizer.build(offerWithHelperLiteralAddFactory);
+    const offer = semantizer.build(offerFactory);
     const dataFactory = semantizer.getConfiguration().getRdfDataModelFactory();
 
     const subject = params?.uri ? dataFactory.namedNode(params.uri) : dataFactory.namedNode('');
@@ -77,8 +71,8 @@ export function createOffer(semantizer: Semantizer, params?: OfferCreateParams):
             const price = dataFactory.blankNode();
             offer.addLinkedObject(subject, hasPricePredicate, price);
             offer.addLinkedObject(price, rdfType, dataFactory.namedNode(DFC + 'Price'));
-            offer.addDecimal(price, valuePredicate, params.price.value);
-            params.price.vatRate && offer.addDecimal(price, vatRatePredicate, params.price.vatRate);
+            offer.addObjectDecimal(price, valuePredicate, params.price.value);
+            params.price.vatRate && offer.addObjectDecimal(price, vatRatePredicate, params.price.vatRate);
         }
     }
 
