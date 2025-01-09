@@ -41,7 +41,8 @@ export function SuppliedProductMixin<
         
         public getCatalogItemsUriAll(): NamedNode[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            return this.getObjectUriAll(namedNode(''), namedNode(DFC + 'referencedBy')); // WARNING HERE the subject can be something else?
+            // !!!! TODO !!!!!
+            return this.getObjectUriAll(this.getOrigin() ?? namedNode(''), namedNode(DFC + 'referencedBy')); // WARNING HERE the subject can be something else?
         }
 
         public setCatalogItems(catalogItems: NamedNode[]): void {

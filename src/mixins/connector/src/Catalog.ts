@@ -25,6 +25,14 @@ export interface OfferParams {
 
 export interface OfferGetParams extends OfferParams {
     uri: NamedNode;
+    catalogItem?: NamedNode;
+    price?: NamedNode | BlankNode;
+    customerCategory?: NamedNode;
+    stockLimitation?: number;
+    discount?: number;
+    manager?: NamedNode;
+    saleSessions?: NamedNode[];
+    orderLines?: NamedNode[];
 }
 
 export interface CatalogItemParams {
@@ -135,6 +143,7 @@ export function CatalogMixin<
 
             return {
                 uri: offer,
+                catalogItem: offerDataset.getObjectUri(offer, namedNode(DFC + 'offers')),
                 price: offerDataset.getObjectLinked(offer, namedNode(DFC + 'hasPrice')),
                 customerCategory: offerDataset.getObjectUri(offer, namedNode(DFC + 'customerCategory')),
                 stockLimitation: offerDataset.getObjectInteger(offer, namedNode(DFC + 'stockLimitation')),
