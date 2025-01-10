@@ -1,22 +1,27 @@
 {
   "name": "@semantizer/mixin-solid-webid",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.0-beta.1",
+  "description": "A Semantizer mixin to manipulate Solid WebId profiles",
+  "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
   "type": "module",
   "types": "./lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/mixins/solid-webid"
+  },
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Maxime Lecoq-Gaillard",
   "license": "MIT",
   "dependencies": {
-    "@semantizer/mixin-typeindex": "^1.0.0"
+    "@semantizer/mixin-typeindex": "^1.0.0-beta.1"
   },
   "devDependencies": {
-    "@semantizer/types": "^1.0.0",
+    "@semantizer/types": "^1.0.0-beta.1",
     "typescript": "^5.5.2"
   }
 }
