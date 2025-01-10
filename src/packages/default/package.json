@@ -1,10 +1,15 @@
 {
   "name": "@semantizer/default",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.0-beta.1",
+  "description": "A basic Semantizer setup to use for development including some core packages and the dataset mixin",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/default"
+  },
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
@@ -14,14 +19,14 @@
   "license": "MIT",
   "dependencies": {
     "@rdfjs/data-model": "^2.0.2",
-    "@semantizer/core": "^1.0.0",
-    "@semantizer/core-rdfjs": "^1.0.0",
-    "@semantizer/loader-rdfjs": "^1.0.0",
-    "@semantizer/loader-quad-stream-rdfjs": "^1.0.0",
-    "@semantizer/mixin-dataset": "^1.0.0"
+    "@semantizer/core": "^1.0.0-beta.1",
+    "@semantizer/core-rdfjs": "^1.0.0-beta.1",
+    "@semantizer/loader-rdfjs": "^1.0.0-beta.1",
+    "@semantizer/loader-quad-stream-rdfjs": "^1.0.0-beta.1",
+    "@semantizer/mixin-dataset": "^1.0.0-beta.1"
   },
   "devDependencies": {
-    "@semantizer/types": "^1.0.0",
+    "@semantizer/types": "^1.0.0-beta.1",
     "typescript": "^5.5.2"
   }
 }
