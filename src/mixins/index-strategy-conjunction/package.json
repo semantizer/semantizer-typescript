@@ -1,22 +1,27 @@
 {
   "name": "@semantizer/mixin-index-strategy-conjunction",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.0-beta.1",
+  "description": "A Semantizer mixin to query indexes with a conjunction strategy",
+  "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
   "type": "module",
   "types": "./lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/mixins/index-strategy-conjunction"
+  },
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Maxime Lecoq-Gaillard",
   "license": "MIT",
   "dependencies": {
-    "@semantizer/mixin-index": "^1.0.0"
+    "@semantizer/mixin-index": "^1.0.0-beta.1"
   },
   "devDependencies": {
-    "@semantizer/types": "^1.0.0",
+    "@semantizer/types": "^1.0.0-beta.1",
     "typescript": "^5.5.2"
   }
 }
