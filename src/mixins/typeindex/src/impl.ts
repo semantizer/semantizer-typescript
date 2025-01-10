@@ -1,7 +1,6 @@
 import { DatasetSemantizer, Semantizer, DatasetSemantizerMixinConstructor, NamedNode, BlankNode } from "@semantizer/types";
 import { TypeIndex } from "./types.js";
 import { TYPE_INDEX } from "./voc.js";
-import { DatasetCore as DatasetRdfjs, Quad } from "@rdfjs/types"; // TODO: PB if commented
 
 const RDF = {
     TYPE: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
