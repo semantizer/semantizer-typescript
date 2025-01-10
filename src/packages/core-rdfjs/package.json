@@ -1,10 +1,15 @@
 {
   "name": "@semantizer/core-rdfjs",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.0-beta.1",
+  "description": "A RDFJS dataset that can be used by other Semantizer packages and mixins (adapter)",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/core-rdfjs"
+  },
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
@@ -13,10 +18,10 @@
   "author": "Maxime Lecoq-Gaillard",
   "license": "MIT",
   "dependencies": {
-    "@semantizer/rdfjs-dataset-impl": "^1.0.0"
+    "@semantizer/rdfjs-dataset-impl": "^1.0.0-beta.1"
   },
   "devDependencies": {
-    "@semantizer/types": "^1.0.0",
+    "@semantizer/types": "^1.0.0-beta.1",
     "typescript": "^5.5.2"
   }
 }
