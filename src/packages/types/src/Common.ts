@@ -8,15 +8,42 @@ export interface WithSemantizer {
     // toRdfjsDataset(): DatasetRdfjs;
 }
 
+export interface WithBaseUri {
+    getBaseUri(): NamedNode;
+    setBaseUri(baseUri: NamedNode): void;
+}
+
+/**
+ * @deprecated Please use the `WithBaseUri` interface instead. This will be removed.
+*/
 export interface WithOrigin {
+    /**
+     * @deprecated Please use the `getBaseUri()` method instead.
+     */
     getOrigin(): NamedNode | BlankNode | undefined;
+
+    /**
+     * @deprecated Please use the `setBaseUri()` method instead.
+     */
     setOrigin(uri: NamedNode | BlankNode): void;
+
+    /**
+     * @deprecated This will be removed.
+     */
     getOriginDocument(): NamedNode | undefined;
+
+    /**
+     * @deprecated This will be removed.
+     */
     getOriginThing(): NamedNode | BlankNode | undefined;
+
+    /**
+     * @deprecated This will be removed.
+     */
     setOriginThing(term: NamedNode | BlankNode): void;
 }
 
-export type QuadIterableSemantizer = Iterable<Quad> & WithSemantizer & WithOrigin;
+export type QuadIterableSemantizer = Iterable<Quad> & WithSemantizer & WithOrigin & WithBaseUri;
 
 export interface Countable {
     count(): number;

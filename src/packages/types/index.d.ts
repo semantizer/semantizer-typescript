@@ -1,5 +1,9 @@
 export { 
     Term, 
+    Quad_Subject,
+    Quad_Predicate,
+    Quad_Object,
+    Quad_Graph,
     DataFactory, 
     NamedNode, 
     BlankNode, 
