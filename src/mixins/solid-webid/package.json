@@ -1,6 +1,6 @@
 {
   "name": "@semantizer/mixin-solid-webid",
-  "version": "1.0.0-beta.2.0.0",
+  "version": "1.0.0-beta.2.0.1",
   "description": "A Semantizer mixin to manipulate Solid WebId profiles",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
