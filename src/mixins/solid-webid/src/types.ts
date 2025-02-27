@@ -1,20 +1,27 @@
-import { TypeIndex } from "@semantizer/mixin-typeindex";
-import { DatasetSemantizer, Loader } from "@semantizer/types";
+import { WebIdProfile } from "@semantizer/mixin-webid";
+import { DatasetSemantizer, Loader, NamedNode } from "@semantizer/types";
 
 export interface SolidWebIdProfileOperations {
-    getPrimaryTopic(): SolidWebId;
     loadExtendedProfile(loader?: Loader): Promise<void>;
 }
 
 export interface SolidWebIdOperations {
-    getPublicTypeIndex(): TypeIndex | undefined;
-    getSeeAlsoAll(): DatasetSemantizer[]; // SolidWebIdProfile;
-    getPreferencesFile(): DatasetSemantizer | undefined;
-    getLdpInbox(): DatasetSemantizer | undefined;
-    getStorageAll(): DatasetSemantizer[];
+    getPublicTypeIndex(): NamedNode | undefined;
+    getPrivateTypeIndex(): Promise<NamedNode | undefined>;
+    getSeeAlsoAll(): NamedNode[] | undefined;
+    getPreferencesFile(): NamedNode | undefined;
+    getLdpInbox(): NamedNode | undefined;
+    getStorageAll(): NamedNode[] | undefined;
 }
 
-export type SolidWebIdProfile = DatasetSemantizer & SolidWebIdProfileOperations;
+export interface SolidPreferencesOperations {
+    getSeeAlsoAll(): NamedNode[] | undefined;
+    getPrivateTypeIndex(): NamedNode | undefined;
+}
+
+export type SolidWebIdProfile = WebIdProfile & SolidWebIdProfileOperations;
 export type SolidWebId = DatasetSemantizer & SolidWebIdOperations;
+export type SolidPreferences = DatasetSemantizer & SolidPreferencesOperations;
 export type SolidWebIdProfileConstructor = new (...args: any[]) => SolidWebIdProfile;
 export type SolidWebIdConstructor = new (...args: any[]) => SolidWebId;
+export type SolidPreferencesConstructor = new (...args: any[]) => SolidPreferences;

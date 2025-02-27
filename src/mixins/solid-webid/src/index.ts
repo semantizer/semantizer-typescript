@@ -1,13 +1,2 @@
-export { 
-    SolidWebIdProfileMixin,
-    solidWebIdProfileFactory,
-    SolidWebIdMixin, 
-    solidWebIdFactory
- } from "./impl.js";
-
-export {
-    SolidWebIdProfile,
-    SolidWebId,
-    SolidWebIdProfileConstructor,
-    SolidWebIdConstructor
-} from "./types.js";
+export * from "./impl.js";
+export * from "./types.js";

@@ -1,7 +1,6 @@
-import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Loader, Semantizer } from "@semantizer/types";
-import { SolidWebId, SolidWebIdProfile } from "./types";
-import { TypeIndex, typeIndexFactory } from "@semantizer/mixin-typeindex";
-import { Dataset } from "@rdfjs/types"; // PB if deleted
+import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Loader, NamedNode, Semantizer } from "@semantizer/types";
+import { SolidPreferences, SolidWebId, SolidWebIdProfile } from "./types";
+import { WebIdProfileConstructor, WebIdProfileMixin } from "@semantizer/mixin-webid";
 
 const ns = {
     solid: 'http://www.w3.org/ns/solid/terms#',
@@ -12,63 +11,76 @@ const ns = {
 }
 
 export function SolidWebIdProfileMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends WebIdProfileConstructor
 >(Base: TBase) {
     return class SolidWebIdProfileImpl extends Base implements SolidWebIdProfile {
         
         public async loadExtendedProfile(loader?: Loader): Promise<void> {
-            for (const profile of this.getPrimaryTopic().getSeeAlsoAll()) {
-                await this.load(profile, { loader });
+            const primaryTopicUri = this.getPrimaryTopic();
+            if (primaryTopicUri) {
+                const primaryTopic: SolidWebId = await this.getSemantizer().load(primaryTopicUri.value, solidWebIdFactory);
+                const otherProfiles = primaryTopic.getSeeAlsoAll();
+                if (otherProfiles) {
+                    for (const profile of otherProfiles) {
+                        await this.load(profile, { loader });
+                    }
+                }
             }
-        }
-
-        public getPrimaryTopic(): SolidWebId {
-            const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(ns.foaf + 'primaryTopic');
-            const webId = this.getLinkedObject(predicate); // TODO: add a param to apply a mixin?
-            
-            if (webId) {
-                return this.getSemantizer().build(solidWebIdFactory, webId);
-            }
-            
-            throw new Error("Missing primary topic");
         }
 
     }
 }
-
-// const dataFactory = (dataset: DatasetSemantizer) => dataset.getSemantizer().getConfiguration().getRdfDataModelFactory();
-// const namedNode = (dataset: DatasetSemantizer) => dataFactory(dataset).namedNode;
-// const p = namedNode(this)(ns.ldp + 'inbox');
 
 export function SolidWebIdMixin<
     TBase extends DatasetSemantizerMixinConstructor
 >(Base: TBase) {
     return class SolidWebIdImpl extends Base implements SolidWebId {
         
-        public getPreferencesFile(): DatasetSemantizer | undefined {
-            const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(ns.pim + 'preferencesFile');
-            return this.getLinkedObject(predicate);
+        public getPreferencesFile(): NamedNode | undefined {
+            return this.getObjectUri(this.getBaseUri(), ns.pim + 'preferencesFile', this.getDefaultGraphTerm());
         }
         
-        public getLdpInbox(): DatasetSemantizer | undefined {
-            const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(ns.ldp + 'inbox');
-            return this.getLinkedObject(predicate);
+        public getLdpInbox(): NamedNode | undefined {
+            return this.getObjectUri(this.getBaseUri(), ns.ldp + 'inbox', this.getDefaultGraphTerm());
         }
         
-        public getStorageAll(): DatasetSemantizer[] {
-            const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(ns.pim + 'storage');
-            return this.getLinkedObjectAll(predicate);
+        public getStorageAll(): NamedNode[] | undefined {
+            return this.getObjectUriAll(this.getBaseUri(), ns.pim + 'storage', this.getDefaultGraphTerm());
         }
 
-        public getPublicTypeIndex(): TypeIndex | undefined {
-            const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(ns.solid + 'publicTypeIndex');
-            const dataset = this.getLinkedObject(predicate);
-            return this.getSemantizer().build(typeIndexFactory, dataset);
+        public getPublicTypeIndex(): NamedNode | undefined {
+            return this.getObjectUri(this.getBaseUri(), ns.solid + 'publicTypeIndex', this.getDefaultGraphTerm());
         }
 
-        public getSeeAlsoAll(): DatasetSemantizer[] {
-            const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(ns.rdfs + 'seeAlso');
-            return this.getLinkedObjectAll(predicate);
+        public async getPrivateTypeIndex(): Promise<NamedNode | undefined> {
+            let privateTypeIndexUri: NamedNode | undefined = undefined;
+            const preferencesFileUri = this.getPreferencesFile();
+            if (preferencesFileUri) {
+                const preferencesFile: SolidPreferences = await this.getSemantizer().load(preferencesFileUri.value, solidPreferencesFactory);
+                privateTypeIndexUri = preferencesFile.getPrivateTypeIndex();
+            }
+            return privateTypeIndexUri;
+        }
+
+        public getSeeAlsoAll(): NamedNode[] | undefined {
+            return this.getObjectUriAll(this.getBaseUri(), ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
+        }
+
+    }
+
+}
+
+export function SolidPreferencesMixin<
+    TBase extends DatasetSemantizerMixinConstructor
+>(Base: TBase) {
+    return class SolidPreferencesImpl extends Base implements SolidPreferences {
+
+        public getPrivateTypeIndex(): NamedNode | undefined {
+            return this.getObjectUri(this.getBaseUri(), ns.solid + 'privateTypeIndex', this.getDefaultGraphTerm());
+        }
+
+        public getSeeAlsoAll(): NamedNode[] | undefined {
+            return this.getObjectUriAll(this.getBaseUri(), ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
         }
 
     }
@@ -77,15 +89,13 @@ export function SolidWebIdMixin<
 
 export function solidWebIdProfileFactory(semantizer: Semantizer) {
     const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
-    return semantizer.getMixinFactory(SolidWebIdProfileMixin, _DatasetImpl);
+    return semantizer.getMixinFactory(SolidWebIdProfileMixin, WebIdProfileMixin(_DatasetImpl));
 }
 
 export function solidWebIdFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(SolidWebIdMixin);
 }
 
-// export const sf = makeMixinFactory(SolidWebIdMixin);
-
-// function makeMixinFactory(mixin: any) {
-//     return (semantizer: Semantizer) => semantizer.getMixinFactory(mixin);
-// }
+export function solidPreferencesFactory(semantizer: Semantizer) {
+    return semantizer.getMixinFactory(SolidPreferencesMixin);
+}

@@ -1,10 +1,10 @@
-import { DatasetSemantizer, Resource, NamedNode } from "@semantizer/types";
+import { DatasetSemantizer, NamedNode, Term } from "@semantizer/types";
 
-export interface WebIdProfileNonDestructiveOperations {
-    getMaker(): DatasetSemantizer | undefined;
-    getPrimaryTopic(thing?: Resource, graph?: NamedNode): DatasetSemantizer | undefined;
+export interface WebIdProfileOperations {
+    getMaker(subject?: Term | string, graph?: Term | string): NamedNode | undefined;
+    getPrimaryTopic(subject?: Term | string, graph?: Term | string): NamedNode | undefined;
 }
 
-export type WebIdProfile = DatasetSemantizer & WebIdProfileNonDestructiveOperations;
+export type WebIdProfile = DatasetSemantizer & WebIdProfileOperations;
 
 export type WebIdProfileConstructor = new (...args: any[]) => WebIdProfile;
