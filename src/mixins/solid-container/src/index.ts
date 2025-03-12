@@ -1,11 +1,11 @@
-import { Semantizer, DatasetSemantizer, DatasetSemantizerMixinConstructor } from '@semantizer/types';
+import { Semantizer, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode } from '@semantizer/types';
 
 const LDP = 'http://www.w3.org/ns/ldp#';
 
 export type SolidContainer = DatasetSemantizer & SolidContainerOperations;
 
 export interface SolidContainerOperations {
-    getContainedResources(): DatasetSemantizer[];
+    getContainedResources(): NamedNode[] | undefined;
 }
 
 export function SolidContainerMixin<
@@ -14,10 +14,8 @@ export function SolidContainerMixin<
 
     return class SolidContainerMixinImpl extends Base implements SolidContainer {
 
-        public getContainedResources(): DatasetSemantizer[] {
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode(LDP + 'contains');
-            return this.getLinkedObjectAll(predicate);
+        public getContainedResources(): NamedNode[] | undefined {
+            return this.getObjectUriAll(this.getBaseUri(), LDP + 'contains');
         }
 
     }

@@ -1,11 +1,16 @@
 {
   "name": "@semantizer/rdfjs-dataset-impl",
-  "version": "1.0.0-beta.1",
-  "description": "This package contains an RDFJS Dataset implementation.",
+  "version": "1.0.0-beta.2",
+  "description": "This package contains an RDFJS Dataset implementation",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/rdfjs-dataset-impl"
+  },
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
@@ -19,7 +24,7 @@
   },
   "devDependencies": {
     "typescript": "^5.5.2",
-    "@rdfjs/types": "^1.1.0-beta.1",
+    "@rdfjs/types": "^2.0.0",
     "@types/rdfjs__dataset": "^2.0.7",
     "@types/rdfjs__fetch": "^3.0.7",
     "@types/rdfjs__to-ntriples": "^3.0.0"

@@ -1,4 +1,4 @@
-import { Configuration, Constructor, Semantizer, DatasetSemantizer, MixinFactory, MixinFactoryFunction, DatasetImplConstructor, QuadIterableSemantizer } from "@semantizer/types";
+import { Configuration, Constructor, Semantizer, DatasetSemantizer, MixinFactory, MixinFactoryFunction, DatasetImplConstructor, QuadIterableSemantizer, Fetch, NamedNode } from "@semantizer/types";
 import { MixinFactoryImpl } from "./MixinFactoryImpl.js";
 
 type T = new (...args: any[]) => DatasetSemantizer;
@@ -26,10 +26,9 @@ export class SemantizerImpl implements Semantizer {
         return baseClass ? new MixinFactoryImpl(this, mixin, baseClass) : new MixinFactoryImpl<DatasetImplConstructor, TMixin>(this, mixin, this.getConfiguration().getDatasetImpl());
     }
 
-    public async load<TBase extends Constructor, TMixin extends DatasetSemantizer>(resource: string): Promise<DatasetSemantizer>;
-    public async load<TBase extends Constructor, TMixin extends DatasetSemantizer>(resource: string, mixinFactoryFunction: MixinFactoryFunction<TBase, TMixin>): Promise<TMixin>;
-    public async load<TBase extends Constructor, TMixin extends DatasetSemantizer>(resource: string, mixinFactoryFunction?: MixinFactoryFunction<TBase, TMixin>): Promise<DatasetSemantizer | TMixin> {
-        return mixinFactoryFunction ? await mixinFactoryFunction(this).load(resource) : this.getConfiguration().getDatasetBaseFactory().load(this, resource);
+    public async load<TBase extends Constructor, TMixin extends DatasetSemantizer>(resource: string | NamedNode, mixinFactoryFunction: MixinFactoryFunction<TBase, TMixin>, fetch?: Fetch): Promise<TMixin>;
+    public async load<TBase extends Constructor, TMixin extends DatasetSemantizer>(resource: string | NamedNode, mixinFactoryFunction?: MixinFactoryFunction<TBase, TMixin>, fetch?: Fetch): Promise<DatasetSemantizer | TMixin> {
+        return mixinFactoryFunction ? await mixinFactoryFunction(this).load(resource, fetch) : this.getConfiguration().getDatasetBaseFactory().load(this, resource, fetch);
     }
 
     public build<TBase extends Constructor, TMixin extends DatasetSemantizer>(): DatasetSemantizer;

@@ -1,4 +1,4 @@
-import { DatasetImplConstructor, DatasetSemantizer, DatasetBaseFactory, Semantizer, QuadIterableSemantizer } from "@semantizer/types";
+import { DatasetImplConstructor, DatasetSemantizer, DatasetBaseFactory, Semantizer, QuadIterableSemantizer, Fetch, NamedNode } from "@semantizer/types";
 
 // constructs a DatasetRdfjs & WithSemantizer & WithOrigin
 export class DatasetBaseFactoryImpl<
@@ -17,14 +17,16 @@ export class DatasetBaseFactoryImpl<
      * @param resource 
      * @returns 
      */
-    public async load(semantizer: Semantizer, resource: string): Promise<DatasetSemantizer> {
-        const datasetCore = await semantizer.getConfiguration().getLoader().load(resource);
+    public async load(semantizer: Semantizer, resource: string | NamedNode, fetch?: Fetch): Promise<DatasetSemantizer> {
+        const resourceString = typeof resource === 'string' ? resource : resource.value;
+        const url = new URL(resourceString); // check URL is valid
+        const datasetCore = await semantizer.getConfiguration().getLoader().load(url.toString(), fetch);
         // TODO: resource should be passed below as a URI of a document (without fragment).
         return new this._impl(semantizer, resource, datasetCore);
     }
 
     public build(semantizer: Semantizer, sourceDataset?: QuadIterableSemantizer): DatasetSemantizer {
-        const origin = sourceDataset? sourceDataset.getOrigin(): undefined;
+        const origin = sourceDataset? sourceDataset.getBaseUri(): undefined;
         const dataset = new this._impl(semantizer, origin, sourceDataset); // warning: no check on params (TS mixin)
         return dataset;
     }

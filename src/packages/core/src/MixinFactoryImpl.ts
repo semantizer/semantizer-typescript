@@ -1,4 +1,4 @@
-import { Constructor, DatasetImplConstructor, DatasetSemantizer, MixinFactory, QuadIterableSemantizer, Semantizer } from "@semantizer/types";
+import { Constructor, DatasetImplConstructor, DatasetSemantizer, Fetch, MixinFactory, NamedNode, QuadIterableSemantizer, Semantizer } from "@semantizer/types";
 
 // (TODO move to default ? or to a dedicated package.)
 // (Add also a MixinFactoryDatasetCore package ?)
@@ -19,19 +19,25 @@ export class MixinFactoryImpl<
     /**
      * This method creates a base dataset (Dataset mixin) and passes it to the build method 
      * to get the mixed in resulting dataset.
-     * @param resource 
-     * @returns 
+     * @param resourceUri 
+     * @throws An `Error` if the `resourceUri` is not a valid URL.
+     * @returns A `DatasetSemantizer` based mixin.
      */
-    public async load(resource: string): Promise<TMixin> {
-        const datasetCore = await this._semantizer.getConfiguration().getLoader().load(resource);
-        // TODO: resource should be passed below as a URI of a document (without fragment).
-        const dataset = new (this._semantizer.getConfiguration().getDatasetImpl())(this._semantizer, resource, datasetCore);
+    public async load(resourceUri: string | NamedNode, fetch?: Fetch): Promise<TMixin> {
+        const ressourceUriString = typeof resourceUri === 'string' ? resourceUri : resourceUri.value;
+        // First, we check the resource URL and remove the fragment part
+        const resourceUrl = new URL(ressourceUriString); // throws if not a valid URL
+        resourceUrl.hash = ''; // delete the hash part
+
+        const baseUri = this._semantizer.getConfiguration().getRdfDataModelFactory().namedNode(resourceUrl.toString());
+        const datasetCore = await this._semantizer.getConfiguration().getLoader().load(resourceUrl.toString(), fetch);
+        const dataset = new (this._semantizer.getConfiguration().getDatasetImpl())(this._semantizer, baseUri, datasetCore);
         return this.build(dataset);
     }
 
     public build(sourceDataset?: QuadIterableSemantizer): TMixin {
-        const origin = sourceDataset? sourceDataset.getOrigin(): undefined;
-        const dataset = new this._mixedClass(this._semantizer, origin, sourceDataset); // warning: no check on params (TS mixin)
+        const baseUri = sourceDataset? sourceDataset.getBaseUri(): undefined;
+        const dataset = new this._mixedClass(this._semantizer, baseUri, sourceDataset); // warning: no check on params (TS mixin)
         return dataset;
     }
 

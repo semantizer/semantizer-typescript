@@ -1,10 +1,14 @@
 import { Changelog, ChangelogMixin, ChangelogMixinConstructor } from '@semantizer/mixin-changelog';
-import { DatasetSemantizer, Quad, Semantizer } from '@semantizer/types';
+import { DatasetSemantizer, NamedNode, Quad, Semantizer } from '@semantizer/types';
 
 export type SolidChangelogN3 = Changelog & SolidChangelogN3Operations;
 
+interface Serializer {
+    transform(quads: Iterable<Quad>): string;
+}
+
 export interface SolidChangelogN3Operations {
-    getSolidChangelogN3(turtleSerializerFunction: (quad: Quad) => string): string;
+    getSolidChangelogN3(turtleSerializer: Serializer): string;
 }
 
 export function SolidChangelogN3Mixin<
@@ -13,22 +17,39 @@ export function SolidChangelogN3Mixin<
 
     return class SolidChangelogN3MixinImpl extends Base implements SolidChangelogN3Operations {
 
-        public getSolidChangelogN3(turtleSerializerFunction: (quad: Quad) => string): string {
-            let changelog = "@prefix solid: <http://www.w3.org/ns/solid/terms#>.\n";
-            changelog += `_:patch a solid:InsertDeletePatch;\n`;
+        public getSolidChangelogN3(turtleSerializer: Serializer): string {
+            // let prefixes: string[] = ["@prefix solid: <http://www.w3.org/ns/solid/terms#>."];
+            const prefixes = new Set<string>();
+            prefixes.add("@prefix solid: <http://www.w3.org/ns/solid/terms#>.");
+            let inserted: string = '';
+            let deleted: string = '';
 
             if (this.getChangelogAddedQuads().length > 0) {
-                changelog += 'solid:inserts { ';
-
-                this.getChangelogAddedQuads().forEach((addedQuad, index) => {
-                    changelog += `${turtleSerializerFunction(addedQuad)} `;
-                });
-
-                changelog += '}\n';
+                inserted += 'solid:inserts { ';
+                const transformed = turtleSerializer.transform(this.getChangelogAddedQuads());
+                transformed.split("\n").filter(line => line.startsWith("@prefix")).forEach(prefix => prefixes.add(prefix));
+                inserted += transformed.split("\n").filter(line => !line.startsWith("@prefix")).join("\n");
+                inserted += '}';
+                inserted += this.getChangelogDeletedQuads().length > 0 ? ';\n' : '.';
             }
 
-            // TODO: handle deletes and where
-            changelog += '.';
+            if (this.getChangelogDeletedQuads().length > 0) {
+                deleted += 'solid:deletes { ';
+                const transformed = turtleSerializer.transform(this.getChangelogDeletedQuads());
+                transformed.split("\n").filter(line => line.startsWith("@prefix")).forEach(prefix => prefixes.add(prefix));
+                deleted += transformed.split("\n").filter(line => !line.startsWith("@prefix")).join("\n");
+                deleted += '}.';
+                // deleted += this.getChangelogDeletedQuads().length > 0 ? ';\n' : '.';
+            }
+
+            let changelog = Array.from(prefixes).join('\n') + '\n\n';
+
+            if (this.getChangelogAddedQuads().length > 0) {
+                changelog += `_:patch a solid:InsertDeletePatch;\n`;
+            }
+
+            changelog += inserted;
+            changelog += deleted;
 
             return changelog;
         }

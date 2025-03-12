@@ -1,5 +1,5 @@
-import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerRdfjsMixinConstructor, DatasetQuadStreamOptions } from '@semantizer/types';
-import { getRelativeUrl, isUrlAbsolute } from './utils';
+import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerRdfjsMixinConstructor, DatasetQuadStreamOptions, Quad_Subject, Quad_Predicate, Quad_Graph } from '@semantizer/types';
+import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromTermOrStringOrNull, isUrlAbsolute } from './utils';
 
 export function DatasetMixin<
     TBase extends DatasetSemantizerRdfjsMixinConstructor // PB: can be impl other than rdfjs
@@ -104,6 +104,11 @@ export function DatasetMixin<
             return dataset;
         }
 
+        public getDefaultGraphTerm(): DefaultGraph {
+            const rdfFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            return rdfFactory.defaultGraph();
+        }
+
         isDefaultGraphEmpty(): boolean {
             throw new Error('Method not implemented.');
         }
@@ -111,14 +116,14 @@ export function DatasetMixin<
             throw new Error('Method not implemented.');
         }
 
-        public getSubGraph(subject: BlankNode | NamedNode, namedGraph?: NamedNode): DatasetSemantizer | undefined {
-            const defaultGraph = this.getSemantizer().getConfiguration().getRdfDataModelFactory().defaultGraph();
-            const datasetRdfjs = this.match(subject, undefined, undefined, namedGraph ?? defaultGraph);
+        public getSubGraph(subject: BlankNode | NamedNode | string, parentGraph: NamedNode | DefaultGraph): DatasetSemantizer | undefined {
+            const termSubject = typeof subject === 'string' ? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(subject) : subject;
+            const datasetRdfjs = this.match(termSubject, undefined, undefined, parentGraph);
             const dataset = this.getSemantizer().build();
             return dataset.addAll(datasetRdfjs);
         }
 
-        public getSubGraphAll(namedGraph?: NamedNode): DatasetSemantizer[] {
+        public getSubGraphAll(parentGraph: NamedNode | DefaultGraph | string): DatasetSemantizer[] {
             throw new Error('Method not implemented.');
         }
 
@@ -286,95 +291,117 @@ export function DatasetMixin<
             }
         }
 
-        public addObjectUri(subject: NamedNode, predicate: NamedNode, value: NamedNode, graph?: NamedNode): void {
+        public addObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string, graph?: Quad_Graph | string): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            this.add(dataFactory.quad(subject, predicate, value, graph));
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            const valueNamedNode = typeof value === 'string' ? dataFactory.namedNode(value) : value;
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, valueNamedNode, graphTerm));
         }
 
-        public addObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
+        public addObjectBlankNode(subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNode: BlankNode, graph?: Quad_Graph | string): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, blankNode, graphTerm));
+        }
+
+        public addObjectBlankNodeEmpty(subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNodeName: string, graph?: Quad_Graph | string): BlankNode {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const blankNode = dataFactory.blankNode(blankNodeName);
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, blankNode, graphTerm));
+            return blankNode;
+        }
+
+        public addObjectBoolean(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
-            this.add(dataFactory.quad(subject, predicate, literal, graph));
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
-        public addObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
+        public addObjectDate(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#date'));
-            this.add(dataFactory.quad(subject, predicate, literal, graph));
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
-        public addObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
+        public addObjectDatetime(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#datetime'));
-            this.add(dataFactory.quad(subject, predicate, literal, graph));
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
-        public addObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, value: number, graph?: NamedNode): void {
+        public addObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#decimal'));
-            this.add(dataFactory.quad(subject, predicate, literal, graph));
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
-        public addObjectInteger(subject: NamedNode | BlankNode, predicate: NamedNode, value: number, graph?: NamedNode): void {
+        public addObjectInteger(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
-            this.add(dataFactory.quad(subject, predicate, literal, graph));
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
-        public addObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
+        public addObjectStringEnglish(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void {
             throw new Error("Method not implemented.");
         }
 
-        public addObjectStringNoLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, graph?: NamedNode): void {
+        public addObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const literal = dataFactory.literal(value);
-            this.add(dataFactory.quad(subject, predicate, literal, graph));
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
-        public addObjectStringWithLocale(subject: NamedNode | BlankNode, predicate: NamedNode, value: string, locale: string, graph?: NamedNode): void {
+        public addObjectStringWithLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, locale: string, graph?: Quad_Graph | string): void {
             throw new Error("Method not implemented.");
         }
 
-        public addObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, value: Date, graph?: NamedNode): void {
+        public addObjectTime(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void {
             throw new Error("Method not implemented.");
         }
 
-        public getObjectUri(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | undefined {
+        public getObjectUri(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode | undefined {
             const results = this.getObjectUriAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectBoolean(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean | undefined {
+        public getObjectBoolean(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): boolean | undefined {
             const results = this.getObjectBooleanAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectDate(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
+        public getObjectDate(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined {
             const results = this.getObjectDateAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectDatetime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
+        public getObjectDatetime(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined {
             const results = this.getObjectDatetimeAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectDecimal(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined {
+        public getObjectDecimal(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number | undefined {
             const results = this.getObjectDecimalAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectInteger(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number | undefined {
+        public getObjectInteger(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number | undefined {
             const results = this.getObjectIntegerAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectStringEnglish(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined {
+        public getObjectStringEnglish(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string | undefined {
             const results = this.getObjectStringEnglishAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectStringNoLocale(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string | undefined {
+        public getObjectStringNoLocale(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string | undefined {
             const results = this.getObjectStringNoLocaleAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
@@ -384,12 +411,12 @@ export function DatasetMixin<
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectTime(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date | undefined {
+        public getObjectTime(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined {
             const results = this.getObjectTimeAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;
         }
 
-        public getObjectLinked(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode | BlankNode | undefined {
+        public getObjectLinked(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode | BlankNode | undefined {
             let result: NamedNode | BlankNode | undefined = undefined;
             const results = this.getObjectLinkedAll(subject, predicate, graph);
 
@@ -404,9 +431,10 @@ export function DatasetMixin<
             return result;
         }
 
-        public getObjectLinkedAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Term[] | undefined {
+        public getObjectLinkedAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Term[] | undefined {
             let results: Term[] | undefined = undefined;
-            const matched = this.match(subject, predicate, null, graph);
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
+            const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);
             if (matched.size > 0) {
                 results = [];
                 for (const q of matched) {
@@ -420,9 +448,10 @@ export function DatasetMixin<
             return results;
         }
 
-        getObjectAll<ObjectType, Datatype extends NamedNode, Constructor extends (value: string) => ObjectType>(datatype: Datatype, constructor: Constructor, subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): ObjectType[] | undefined {
+        getObjectAll<ObjectType, Datatype extends NamedNode, Constructor extends (value: string) => ObjectType>(datatype: Datatype, constructor: Constructor, subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): ObjectType[] | undefined {
             let results: ObjectType[] | undefined = undefined;
-            const matched = this.match(subject, predicate, null, graph);
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
+            const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);
             if (matched.size > 0) {
                 results = [];
                 for (const q of matched) {
@@ -436,9 +465,10 @@ export function DatasetMixin<
             return results;
         }
 
-        public getObjectUriAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): NamedNode[] | undefined {
+        public getObjectUriAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode[] | undefined {
             let results: NamedNode[] | undefined = undefined;
-            const matched = this.match(subject, predicate, null, graph);
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
+            const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);
             if (matched.size > 0) {
                 results = [];
                 for (const q of matched) {
@@ -452,35 +482,35 @@ export function DatasetMixin<
             return results;
         }
 
-        public getObjectBooleanAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): boolean[] | undefined {
+        public getObjectBooleanAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): boolean[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#boolean'), (value: string) => Boolean(value), subject, predicate, graph);
         }
 
-        public getObjectDateAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
+        public getObjectDateAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#date'), (value: string) => new Date(value), subject, predicate, graph);
         }
 
-        public getObjectDatetimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
+        public getObjectDatetimeAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined {
             throw new Error('Method not implemented.');
         }
 
-        public getObjectDecimalAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined {
+        public getObjectDecimalAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#decimal'), (value: string) => Number.parseFloat(value), subject, predicate, graph);
         }
 
-        public getObjectIntegerAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): number[] | undefined {
+        public getObjectIntegerAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#integer'), (value: string) => Number.parseInt(value), subject, predicate, graph);
         }
 
-        public getObjectStringEnglishAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined {
+        public getObjectStringEnglishAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string[] | undefined {
             throw new Error('Method not implemented.');
         }
 
-        public getObjectStringNoLocaleAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): string[] | undefined {
+        public getObjectStringNoLocaleAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string[] | undefined {
             const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#string'), (value: string) => value, subject, predicate, graph);
         }
@@ -489,8 +519,15 @@ export function DatasetMixin<
             throw new Error('Method not implemented.');
         }
 
-        public getObjectTimeAll(subject: NamedNode | BlankNode, predicate: NamedNode, graph?: NamedNode): Date[] | undefined {
+        public getObjectTimeAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined {
             throw new Error('Method not implemented.');
+        }
+
+        public deleteObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value);
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
     }

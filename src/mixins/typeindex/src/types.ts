@@ -1,4 +1,4 @@
-import { Dataset, DatasetSemantizer } from "@semantizer/types";
+import { Dataset, DatasetSemantizer, NamedNode, Term } from "@semantizer/types";
 
 export interface TypeIndexNonDestructiveOperations {
     // getStatementForClass(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
@@ -18,10 +18,14 @@ export interface TypeIndexNonDestructiveOperations {
     // // Add other forEach like: forEachOfInstance, forEachOfInstanceContainer?
     // forEachOfClass(forClass: string, callbackfn: (value: TypeIndexRegistration, index?: number, array?: TypeIndexRegistration[]) => void, thisArg?: any): void;
 
-    getRegisteredInstanceForClass(forClass: string): DatasetSemantizer | undefined; // TODO: check arity: onlyOne or Many?
+    registerInstanceForClass(registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void;
+
+    getRegistrationForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined;
+    getRegisteredInstanceForClass(forClass: NamedNode | string, graph?: Term | string): NamedNode | undefined; // TODO: check arity: onlyOne or Many?
+    getRegisteredInstanceForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined; // TODO: check arity: onlyOne or Many?
 }
 
-export interface TypeIndexDestructiveOperations {
+// export interface TypeIndexDestructiveOperations {
     // createRegistration(): TypeIndexRegistration;
     // createRegistrationForInstance(forClass: string, instance: string, nameHintOrUri?: string): TypeIndexRegistration;
     // createRegistrationForInstanceContainer(forClass: string, instanceContainer: string, nameHintOrUri?: string): TypeIndexRegistration;
@@ -41,40 +45,40 @@ export interface TypeIndexDestructiveOperations {
     // removeForClassAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration;
     // removeInstanceAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration;
     // removeInstanceContainerAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration; 
-}
+// }
 
-export interface TypeIndexRegistrationNonDestructiveOperations {
-    isForClass(forClass: string): boolean;
-    toString(): string;
+// export interface TypeIndexRegistrationNonDestructiveOperations {
+//     isForClass(forClass: string): boolean;
+//     toString(): string;
 
-    getInstance(): string | undefined;
-    getInstanceAll(): string[];
-    getInstanceContainerAll(): string[];
-    getInstanceAndInstanceContainerAll(): string[];
-}
+//     getInstance(): string | undefined;
+//     getInstanceAll(): string[];
+//     getInstanceContainerAll(): string[];
+//     getInstanceAndInstanceContainerAll(): string[];
+// }
 
-export interface TypeIndexRegistrationDestructiveOperations {
-    addForClass(forClass: string): this;
-    addInstance(instance: string): this;
-    addInstanceContainer(instanceContainer: string): this;
-    setForClass(forClass: string): this;
-    removeForClass(forClass: string): this;
-    removeInstance(instance: string): this;
-    removeInstanceContainer(instanceContainer: string): this;
-    removeForClassAll(): this;
-    removeInstanceAll(): this;
-    removeInstanceContainerAll(): this; 
-}
+// export interface TypeIndexRegistrationDestructiveOperations {
+//     addForClass(forClass: string): this;
+//     addInstance(instance: string): this;
+//     addInstanceContainer(instanceContainer: string): this;
+//     setForClass(forClass: string): this;
+//     removeForClass(forClass: string): this;
+//     removeInstance(instance: string): this;
+//     removeInstanceContainer(instanceContainer: string): this;
+//     removeForClassAll(): this;
+//     removeInstanceAll(): this;
+//     removeInstanceContainerAll(): this; 
+// }
 
-export interface TypeIndexStatementNonDestructiveOperations {
-    isForClass(forClass: string): boolean;
-    isForInstance(instance: string): boolean;
-    isForInstanceContainer(instanceContainer: string): boolean;
-}
+// export interface TypeIndexStatementNonDestructiveOperations {
+//     isForClass(forClass: string): boolean;
+//     isForInstance(instance: string): boolean;
+//     isForInstanceContainer(instanceContainer: string): boolean;
+// }
 
 // export type TypeIndexStatementWithNonDestructiveOperations = StatementWithNonDestructiveOperations & TypeIndexStatementNonDestructiveOperations;
 // export type TypeIndexStatement = Statement & TypeIndexStatementNonDestructiveOperations;
 // export type TypeIndexRegistrationWithNonDestructiveOperations = ThingWithNonDestructiveOperations<TypeIndexStatement> & TypeIndexRegistrationNonDestructiveOperations;
 // export type TypeIndexRegistration = Thing<TypeIndexStatement> & TypeIndexRegistrationNonDestructiveOperations & TypeIndexRegistrationDestructiveOperations;
 // export type TypeIndexWithNonDestructiveOperations = DocumentWithNonDestructiveOperations<TypeIndexRegistrationWithNonDestructiveOperations> & TypeIndexNonDestructiveOperations;
-export type TypeIndex = Dataset & TypeIndexNonDestructiveOperations; // & TypeIndexDestructiveOperations;
+export type TypeIndex = DatasetSemantizer & TypeIndexNonDestructiveOperations; // & TypeIndexDestructiveOperations;

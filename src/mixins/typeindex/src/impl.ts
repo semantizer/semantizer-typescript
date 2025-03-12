@@ -1,38 +1,87 @@
-import { DatasetSemantizer, Semantizer, DatasetSemantizerMixinConstructor, NamedNode, BlankNode } from "@semantizer/types";
+import { DatasetSemantizerMixinConstructor, NamedNode, Semantizer, Term } from "@semantizer/types";
 import { TypeIndex } from "./types.js";
-import { TYPE_INDEX } from "./voc.js";
+import { RDF, TYPE_INDEX } from "./voc.js";
 
-const RDF = {
-    TYPE: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
-}
-
-
-// DocumentWritableConstructor<TypeIndexRegistration, Thing> ThingWritable<TypeIndexStatement>
 export function TypeIndexMixin<
     TBase extends DatasetSemantizerMixinConstructor
 >(Base: TBase) {
     return class TypeIndexImpl extends Base implements TypeIndex {
 
-        public getRegistrationForClass(forClass: string): DatasetSemantizer | undefined {
+        public registerInstanceForClass(registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void {
+            // const rdfFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            // const registrationNamedNode = typeof registration  === 'string' ? rdfFactory.namedNode(registration) : registration;
+            // const forClassNamedNode = typeof forClass  === 'string' ? rdfFactory.namedNode(forClass) : forClass;
+            // const instanceNamedNode = typeof instance  === 'string' ? rdfFactory.namedNode(instance) : instance;
+            this.addObjectUri(registration, RDF.TYPE, TYPE_INDEX.TypeRegistration, this.getDefaultGraphTerm());
+            this.addObjectUri(registration, TYPE_INDEX.forClass, forClass, this.getDefaultGraphTerm());
+            this.addObjectUri(registration, TYPE_INDEX.instance, instance);
+            // this.add(
+            //     rdfFactory.quad(
+            //         registrationNamedNode,
+            //         rdfFactory.namedNode(RDF.TYPE),
+            //         rdfFactory.namedNode(TYPE_INDEX.TypeRegistration),
+            //     )
+            // );
+            // this.add(
+            //     rdfFactory.quad(
+            //         registrationNamedNode,
+            //         rdfFactory.namedNode(TYPE_INDEX.forClass),
+            //         forClassNamedNode,
+            //     )
+            // );
+            // this.add(
+            //     rdfFactory.quad(
+            //         registrationNamedNode,
+            //         rdfFactory.namedNode(TYPE_INDEX.instance),
+            //         instanceNamedNode,
+            //     )
+            // );
+        }
+
+        public getRegistrationForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined {
+            const results: NamedNode[] = [];
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const datasetCore = this.match(
+            const namedGraph = graph ? (typeof graph === 'string') ? dataFactory.namedNode(graph) : graph : undefined;
+            const registrations = this.match(
                 undefined,
                 dataFactory.namedNode(TYPE_INDEX.forClass),
-                dataFactory.namedNode(forClass)
+                (typeof forClass === 'string') ? dataFactory.namedNode(forClass) : forClass,
+                namedGraph
             );
-            for (const q of datasetCore) {
-                const registration = this.getSubGraph(q.subject as NamedNode | BlankNode);
-                if (registration) {
-                    return this.getSemantizer().build(registration);
+            for (const registration of registrations) {
+                if (registration.subject.termType === 'NamedNode') {
+                    results.push(registration.subject);
                 }
             }
-            return undefined;
+            return  results.length > 0 ? results : undefined;
         }
         
-        public getRegisteredInstanceForClass(forClass: string): DatasetSemantizer | undefined {
+        public getRegisteredInstanceForClass(forClass: NamedNode | string, graph?: Term | string): NamedNode | undefined {
+            const registrations = this.getRegisteredInstanceForClassAll(forClass);
+            return registrations && registrations[0] ? registrations[0] : undefined;
+        }
+
+        public getRegisteredInstanceForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined {
+            const results: NamedNode[] = [];
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const registration = this.getRegistrationForClass(forClass);
-            return registration?.getLinkedObject(dataFactory.namedNode(TYPE_INDEX.instance));
+            const namedGraph = graph ? (typeof graph === 'string') ? dataFactory.namedNode(graph) : graph : undefined;
+            const registrations = this.getRegistrationForClassAll(forClass, graph);
+            if (registrations) {
+                for (const registration of registrations) {
+                    const instances = this.match(
+                        registration,
+                        dataFactory.namedNode(TYPE_INDEX.instance),
+                        undefined,
+                        namedGraph
+                    );
+                    for (const instance of instances) {
+                        if (instance.object.termType === 'NamedNode') {
+                            results.push(instance.object);
+                        }
+                    }
+                }
+            }
+            return results.length > 0 ? results : undefined;
         }
 
     }
@@ -41,6 +90,20 @@ export function TypeIndexMixin<
 export function typeIndexFactory(semantizer: Semantizer) {
     // const _DatasetImpl = semantizer.getDatasetImpl();
     return semantizer.getMixinFactory(TypeIndexMixin); //, _DatasetImpl);
+}
+
+export function createPublicTypeIndex(semantizer: Semantizer): TypeIndex {
+    const typeIndex = semantizer.build(typeIndexFactory);
+    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.TypeIndex, typeIndex.getDefaultGraphTerm());
+    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.ListedDocument, typeIndex.getDefaultGraphTerm());
+    return typeIndex;
+}
+
+export function createPrivateTypeIndex(semantizer: Semantizer): TypeIndex {
+    const typeIndex = semantizer.build(typeIndexFactory);
+    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.TypeIndex, typeIndex.getDefaultGraphTerm());
+    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.UnlistedDocument, typeIndex.getDefaultGraphTerm());
+    return typeIndex;
 }
 
 // export function TypeIndexRegistrationMixin<

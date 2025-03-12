@@ -1,3 +1,5 @@
+import { Quad_Graph, Quad_Predicate, Quad_Subject, Semantizer, Term } from "@semantizer/types";
+
 export function isUrlAbsolute(url: string) {
     try {
         new URL(url);
@@ -81,4 +83,28 @@ export function getRelativeUrl(url: string, baseUrl: string): string {
     const relativeSegments = '../'.repeat(backtracking) + absoluteSegments.slice(commonIndex).join('/');
 
     return relativeSegments || './';
+}
+
+export function getTermsFromQuadSubjectPredicateAndGraph(semantizer: Semantizer, subject: Quad_Subject | string, predicate: Quad_Predicate | string, graph?: Quad_Graph | string): { subjectTerm: Quad_Subject, predicateTerm: Quad_Predicate, graphTerm?: Quad_Graph } {
+    const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
+    const subjectTerm = typeof subject === 'string' ? namedNode(subject) : subject;
+    const predicateTerm = typeof predicate === 'string' ? namedNode(predicate) : predicate;
+    const graphTerm = typeof graph === 'string' ? namedNode(graph) : graph;
+    return {
+        subjectTerm,
+        predicateTerm,
+        graphTerm
+    }
+}
+
+export function getTermsFromTermOrStringOrNull(semantizer: Semantizer, subject: Term | null | string, predicate: Term | null | string, graph?: Term | null | string): { subjectTerm: Term | null, predicateTerm: Term | null, graphTerm?: Term | null } {
+    const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
+    const subjectTerm = typeof subject === 'string' ? namedNode(subject) : subject;
+    const predicateTerm = typeof predicate === 'string' ? namedNode(predicate) : predicate;
+    const graphTerm = typeof graph === 'string' ? namedNode(graph) : graph;
+    return {
+        subjectTerm,
+        predicateTerm,
+        graphTerm
+    }
 }

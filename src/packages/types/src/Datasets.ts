@@ -1,7 +1,7 @@
 import { BlankNode, Dataset as DatasetRdfjs, DefaultGraph, Term, Literal, NamedNode, Quad, Stream, Quad_Subject, Quad_Predicate, Quad_Graph } from "@rdfjs/types";
 import { Countable, QuadIterableSemantizer, Resource, WithBaseUri, WithOrigin, WithSemantizer } from './Common';
 import { Semantizer } from "./Semantizer";
-import { Loader, LoaderQuadStream } from "./Loader";
+import { Fetch, Loader, LoaderQuadStream } from "./Loader";
 
 export interface Dataset extends DatasetRdfjs, Countable {
     // addQuad(subject, predicate, object, graph?): void; // graph default is set to DefaultGraph
@@ -123,6 +123,8 @@ export interface Dataset extends DatasetRdfjs, Countable {
     getObjectStringNoLocaleAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string[] | undefined;
     getObjectStringWithLocaleAll(subject: Term | string | null, predicate: Term | string | null, locale: string, graph?: Term | string | null): string[] | undefined;
     getObjectTimeAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined;
+
+    deleteObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void;
 }
 
 
@@ -139,6 +141,6 @@ export interface DatasetQuadStreamOptions {
 }
 
 export interface DatasetBaseFactory {
-    load(semantizer: Semantizer, resource: string): Promise<DatasetSemantizer>;
+    load(semantizer: Semantizer, resource: string | NamedNode, fetch?: Fetch): Promise<DatasetSemantizer>;
     build(semantizer: Semantizer, sourceDataset?: QuadIterableSemantizer): DatasetSemantizer;
 }
