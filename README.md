@@ -32,7 +32,9 @@ console.log(distantPerson.getGivenName()); // shows "John Smith"
 
 ## Available mixins
 
-The base mixin is the "dataset" mixin. It offers basic methods such as `getLiteral()`, `getLinkedObject()` and so on. The documentation of each mixin is available into the mixin directory. Click on the name of a mixin below to access to its documentation.
+The base mixin is the "dataset" mixin. It offers basic methods such as `getObjectLiteral()`, `getObjectUri()` and so on. You can especially look at the `DatasetSemantizer` type defined in the [types package](./src/packages/types/) to list the available methods of the dataset mixin.
+
+The documentation of each mixin is available into the mixin directory. Click on the name of a mixin below to access to its documentation (work in progress).
 
 | Mixin      | Description |
 | -----------| ----------- |
@@ -59,6 +61,8 @@ TDB.
 | [core](./src/packages/core/) | Text |
 | [core-rdfjs](./src/packages/core-rdfjs/) | Text |
 | [default](./src/packages/default/) | Text |
+| [http-error](./src/packages/http-error/) | Text |
+| [loader-n3](./src/packages/loader-n3/) | Text |
 | [loader-quad-stream-rdfjs](./src/packages/loader-quad-stream-rdfjs/) | Text |
 | [loader-rdfjs](./src/packages/loader-rdfjs/) | Text |
 | [rdfjs-dataset-impl](./src/packages/rdfjs-dataset-impl/) | Text |
@@ -75,7 +79,7 @@ A great thank to all our ongoing and past funders:
 | <img src="logos/logo-fondation-credit-cooperatif.svg" alt="logo of Fondation Crédit Coopératif"> | [Fondation Crédit Coopératif](https://fondation.credit-cooperatif.coop/) | The Crédit Coopératif Foundation is a French non-profit corporate foundation who supports projects that accelerate the transformations of the ESS and increase its influence, for a more just and united society, in harmony with the planet. |
 | <img src="logos/logo-inria.svg" alt="logo of INRIA"> | [INRIA](https://inria.fr/) | The National Institute for Research in Computer Science and Automation is a French public scientific and technological institution specializing in mathematics and computer science. Also called the National Institute for Research in Digital Science and Technology. |
 | <img src="logos/logo-startinblox.png" alt="logo of Startin’blox"> | [Startin'Blox](https://startinblox.com/) | Startin’blox is a company who develops an innovative and ethical technology based on interoperable standards. It goes against the multiplication of siloed proprietary platforms logic, and argues that a truly open web must be built now. |
-| <img src="logos/logo-alma-food.png" alt="logo of Alma Food" width="200" height="100"> | [Alma Food](https://almafood.fr/) | Alma Food is a Young Innovative Company recognized since 2021 by the French Ministry of Higher Education, Research and Innovation. Alma Food draws on in-depth knowledge of the product information and food processing business and provides a labeling service for short circuits. Alma Food thus improves the quality of nutritional information and transparency for better protection of the environment and support for farmers. |
+| <img src="logos/logo-alma-food.png" alt="logo of Alma Food"> | [Alma Food](https://almafood.fr/) | Alma Food is a Young Innovative Company recognized since 2021 by the French Ministry of Higher Education, Research and Innovation. Alma Food draws on in-depth knowledge of the product information and food processing business and provides a labeling service for short circuits. Alma Food thus improves the quality of nutritional information and transparency for better protection of the environment and support for farmers. |
 
 This library is also supported by these projects or organizations:
 
