@@ -1,6 +1,6 @@
 {
   "name": "@semantizer/core",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.2.0.0",
   "author": "Maxime Lecoq-Gaillard",
   "description": "This package contains the base implementation of Semantizer.",
   "main": "./lib/index.js",
@@ -19,7 +19,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@semantizer/types": "^1.0.0-beta.2",
+    "@semantizer/types": "^1.0.0-beta.2.1.0",
     "typescript": "^5.5.2"
   }
 }
