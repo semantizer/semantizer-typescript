@@ -530,6 +530,83 @@ export function DatasetMixin<
             this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
         }
 
+        public deleteObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string | NamedNode, graph?: Quad_Graph | string): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const namedNode = typeof value === 'string' ? dataFactory.namedNode(value) : value;
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.delete(dataFactory.quad(subjectTerm, predicateTerm, namedNode, graphTerm));
+        }
+
+        public deleteObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void {
+            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+            const literal = dataFactory.literal(value.toString());
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
+        }
+
+        public setObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void {
+            if (oldValue !== newValue) {
+                if (oldValue) {
+                    this.deleteObjectDecimal(subject, predicate, oldValue, graph);
+                }
+                if (newValue) {
+                    this.addObjectDecimal(subject, predicate, newValue, graph);
+                }
+            }
+        }
+
+        public setObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | undefined, oldValue?: string, graph?: Quad_Graph | string): void {
+            if (oldValue !== newValue) {
+                if (oldValue) {
+                    this.deleteObjectStringNoLocale(subject, predicate, oldValue, graph);
+                }
+                if (newValue) {
+                    this.addObjectStringNoLocale(subject, predicate, newValue, graph);
+                }
+            }
+        }
+
+        public setObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | NamedNode | undefined, oldValue?: string | NamedNode, graph?: Quad_Graph | string): void {
+            if (oldValue !== newValue) {
+                if (oldValue) {
+                    this.deleteObjectUri(subject, predicate, oldValue, graph);
+                }
+                if (newValue) {
+                    this.addObjectUri(subject, predicate, newValue, graph);
+                }
+            }
+        }
+
+        public setObjectStringNoLocaleAll(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: string[] | undefined, graph?: Quad_Graph | string): void {
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.deleteMatches(subjectTerm, predicateTerm, undefined, graphTerm);
+            if (newValues) {
+                for (const newValue of newValues) {
+                    this.addObjectStringNoLocale(subject, predicate, newValue, graph);
+                }
+            }
+        }
+
+        public setObjectUriAll(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: string[] | NamedNode[] | undefined, graph?: Quad_Graph | string): void {
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.deleteMatches(subjectTerm, predicateTerm, undefined, graphTerm);
+            if (newValues) {
+                for (const newValue of newValues) {
+                    this.addObjectUri(subject, predicate, newValue, graph);
+                }
+            }
+        }
+
+        public setObjectDecimalAll(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: number[] | undefined, graph?: Quad_Graph | string): void {
+            const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+            this.deleteMatches(subjectTerm, predicateTerm, undefined, graphTerm);
+            if (newValues) {
+                for (const newValue of newValues) {
+                    this.addObjectDecimal(subject, predicate, newValue, graph);
+                }
+            }
+        }
+
     }
 
 }
