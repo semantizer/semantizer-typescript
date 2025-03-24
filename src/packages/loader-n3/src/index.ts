@@ -1,4 +1,5 @@
 import N3 from "n3";
+import { HttpError } from "@semantizer/http-error";
 import { DatasetCoreRdfjs, Quad, Loader, Fetch } from "@semantizer/types";
 
 type DatasetCoreRdfjsConstructor = (quads: Quad[]) => DatasetCoreRdfjs<Quad, Quad>;
@@ -16,7 +17,7 @@ export class LoaderN3 implements Loader {
         const response = await effectiveFetchFunction(uri);
 
         if (!response.ok) {
-            throw new Error(response.statusText);
+            throw new HttpError(response.statusText, response.status);
         }
 
         const parser = new N3.Parser({ format: 'text/turtle', baseIRI: uri });
