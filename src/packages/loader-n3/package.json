@@ -1,6 +1,6 @@
 {
   "name": "@semantizer/loader-n3",
-  "version": "1.0.0-beta.1.0.0",
+  "version": "1.0.0-beta.1.0.1",
   "description": "A Semantizer package to load datasets from the network using the N3 library",
   "author": "Maxime Lecoq-Gaillard",
   "main": "lib/index.js",
@@ -24,6 +24,7 @@
     "typescript": "^5.5.2"
   },
   "dependencies": {
-    "n3": "^1.24.0"
+    "n3": "^1.24.0",
+    "@semantizer/http-error": "^1.0.0-beta.1.0.0"
   }
 }
