@@ -1,0 +1,24 @@
+{
+  "name": "@semantizer/http-error",
+  "version": "1.0.0-beta.1.0.0",
+  "description": "A Semantizer package to throw HTTP Error",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/http-error"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.2"
+  }
+}
