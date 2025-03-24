@@ -1,6 +1,6 @@
 {
   "name": "@semantizer/mixin-solid-changelog-n3",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.1.0.0",
   "description": "",
   "main": "./lib/index.js",
   "type": "module",
@@ -8,15 +8,16 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
   },
   "author": "Maxime Lecoq-Gaillard",
   "license": "MIT",
   "dependencies": {
-    "@semantizer/mixin-changelog": "^1.0.0"
+    "@semantizer/mixin-changelog": "^1.0.0-beta.1.0.0"
   },
   "devDependencies": {
-    "@semantizer/types": "^1.0.0-beta.2",
+    "@semantizer/types": "^1.0.0-beta.2.1.0",
     "typescript": "^5.5.2"
   }
 }
