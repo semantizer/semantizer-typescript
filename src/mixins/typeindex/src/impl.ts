@@ -8,34 +8,9 @@ export function TypeIndexMixin<
     return class TypeIndexImpl extends Base implements TypeIndex {
 
         public registerInstanceForClass(registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void {
-            // const rdfFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            // const registrationNamedNode = typeof registration  === 'string' ? rdfFactory.namedNode(registration) : registration;
-            // const forClassNamedNode = typeof forClass  === 'string' ? rdfFactory.namedNode(forClass) : forClass;
-            // const instanceNamedNode = typeof instance  === 'string' ? rdfFactory.namedNode(instance) : instance;
             this.addObjectUri(registration, RDF.TYPE, TYPE_INDEX.TypeRegistration, this.getDefaultGraphTerm());
             this.addObjectUri(registration, TYPE_INDEX.forClass, forClass, this.getDefaultGraphTerm());
             this.addObjectUri(registration, TYPE_INDEX.instance, instance);
-            // this.add(
-            //     rdfFactory.quad(
-            //         registrationNamedNode,
-            //         rdfFactory.namedNode(RDF.TYPE),
-            //         rdfFactory.namedNode(TYPE_INDEX.TypeRegistration),
-            //     )
-            // );
-            // this.add(
-            //     rdfFactory.quad(
-            //         registrationNamedNode,
-            //         rdfFactory.namedNode(TYPE_INDEX.forClass),
-            //         forClassNamedNode,
-            //     )
-            // );
-            // this.add(
-            //     rdfFactory.quad(
-            //         registrationNamedNode,
-            //         rdfFactory.namedNode(TYPE_INDEX.instance),
-            //         instanceNamedNode,
-            //     )
-            // );
         }
 
         public getRegistrationForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined {
@@ -88,8 +63,7 @@ export function TypeIndexMixin<
 }
 
 export function typeIndexFactory(semantizer: Semantizer) {
-    // const _DatasetImpl = semantizer.getDatasetImpl();
-    return semantizer.getMixinFactory(TypeIndexMixin); //, _DatasetImpl);
+    return semantizer.getMixinFactory(TypeIndexMixin);
 }
 
 export function createPublicTypeIndex(semantizer: Semantizer): TypeIndex {
