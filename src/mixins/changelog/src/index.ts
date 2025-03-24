@@ -9,6 +9,7 @@ export type ChangelogMixinConstructor = new (...args: any[]) => Changelog;
 export interface ChangelogOperations {
     getChangelogAddedQuads(): Quad[];
     getChangelogDeletedQuads(): Quad[];
+    hasBeenChanged(): boolean;
 }
 
 export function ChangelogMixin<
@@ -36,6 +37,10 @@ export function ChangelogMixin<
 
         public getChangelogAddedQuads(): Quad[] {
             return this[AddedQuadsSymbol];
+        }
+
+        public hasBeenChanged(): boolean {
+            return this[AddedQuadsSymbol].length > 0 || this[DeletedQuadsSymbol].length > 0;
         }
 
     }
