@@ -1,15 +1,6 @@
 import { indexFactory } from "./IndexMixin.js";
 
-// const namespaces = {
-//     idx: "https://ns.inria.fr/idx/terms#",
-//     sh: "https://www.w3.org/ns/shacl#"
-// }
-
-// const context = {
-//     closed: namespaces.sh + 'closed',
-//     hasShape: namespaces.idx + 'hasShape',
-//     hasSubIndex: namespaces.idx + 'hasSubIndex'
-// }
+export * from './namespaces.js';
 
 export {
     IndexMixin,
@@ -32,7 +23,7 @@ export {
     indexShapePropertyPatternFactory
 } from "./IndexShapePropertyMixin.js";
 
-export { 
+export { 
     Index,
     IndexEntry,
     IndexShape,

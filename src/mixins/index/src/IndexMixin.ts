@@ -30,11 +30,15 @@ export function IndexMixin<
                 transform(quad: Quad, encoding, callback) {
                     // TODO: move this into a Strategy?
                     if (quad.subject.termType === 'NamedNode' || quad.subject.termType === 'BlankNode') {
-                        let dataset = datasets.find(d => d.getOrigin()?.equals(quad.subject));
+                        let dataset = datasets.find(d => d.getBaseUri()?.equals(quad.subject));
                         
                         if (!dataset) {
                             dataset= semantizer.build();
-                            dataset.setOrigin(quad.subject);
+
+                            if (quad.subject.termType === 'NamedNode') {
+                                dataset.setBaseUri(quad.subject);
+                            }
+
                             datasets.push(dataset);
                         }
 
@@ -51,7 +55,7 @@ export function IndexMixin<
                             for (const q of d) {
                                 const object = q.object;
                                 if (object.termType === 'NamedNode' || object.termType === "BlankNode") {
-                                    const objectDataset = datasets.find(d => d.getOrigin()?.equals(object));
+                                    const objectDataset = datasets.find(d => d.getBaseUri()?.equals(object));
                                     if (objectDataset) {
                                         dataset.addAll(objectDataset);
                                         addLinkedObjects(objectDataset);
@@ -97,7 +101,7 @@ export function IndexMixin<
 
         public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void> {
             strategy.setSemantizer(this.getSemantizer());
-            await strategy.execute(this, callbackfn, limit);
+            await strategy.execute(this.getBaseUri(), callbackfn, limit);
         }
 
     }

@@ -1,9 +1,10 @@
-import { NamedNode } from "@semantizer/types";
+import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
 import { FinalIndexResult, Index, IndexEntry, IndexShape, IndexStrategyFinalIndexes } from "./types";
+import { indexFactory } from "./IndexMixin";
 
 class FinalIndexResultImpl implements FinalIndexResult {
-    
+
     private _index: Index;
     private _path: NamedNode;
 
@@ -23,13 +24,19 @@ class FinalIndexResultImpl implements FinalIndexResult {
 }
 
 export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalIndexes {
-    
-    public execute(rootIndex: Index, shape: IndexShape, maxFind?: number): Readable {
+
+    private _semantizer: Semantizer;
+
+    public constructor(semantizer: Semantizer) {
+        this._semantizer = semantizer;
+    }
+
+    public execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable {
         let foundFinalIndexCount: number = 0;
         const promises: Promise<void>[] = [];
 
         const resultStream = new Readable({ objectMode: true });
-        resultStream._read = () => {};
+        resultStream._read = () => { };
 
         const processSubIndex = async (entry: IndexEntry, entryStream: Readable) => {
             const subIndex = entry.getSubIndex();
@@ -41,14 +48,21 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
                     await subIndexPromise;
                     entryStream.resume();
                 }
-                catch(e) { console.error("Error while loading " + subIndex.getOrigin()?.value + e) }
+                catch (e) { console.error("Error while loading " + subIndex + e) }
             } else { console.error("No subIndexFound for potencial result source.") }
         }
 
-        const process = async (index: Index) => {
+        const makeIndexDataset = (indexUri: NamedNode | string): Index => {
+            const indexDataset = this._semantizer.build(indexFactory);
+            indexDataset.setBaseUri(indexUri);
+            return indexDataset;
+        }
+
+        const process = async (index: NamedNode | string) => {
             return new Promise<void>(async (resolve, reject) => {
                 if (maxFind && foundFinalIndexCount < maxFind - 1) {
-                    const entryStream = await index.loadEntryStream();
+                    const indexDataset = makeIndexDataset(index);
+                    const entryStream = await indexDataset.loadEntryStream();
 
                     entryStream.on('data', async (entry: IndexEntry) => {
                         if (maxFind && foundFinalIndexCount >= maxFind) {
@@ -56,14 +70,15 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
                             entryStream.destroy(); // handled by the 'close' event (see below)
                             return; // when we have enough results, we should stop the streaming process.
                         }
-                        
+
                         // TODO: maybe the comparison can be checked directly into the Transform stream (loadEntryStream method)?
                         const comparisonResult = entry.compareShape(shape);
 
                         if (comparisonResult.getResult() === 1) {
                             const subIndex = entry.getSubIndex();
                             if (subIndex) {
-                                const result = new FinalIndexResultImpl(subIndex, comparisonResult.getComparedPath());
+                                const subIndexDataset = makeIndexDataset(subIndex);
+                                const result = new FinalIndexResultImpl(subIndexDataset, comparisonResult.getComparedPath());
                                 resultStream.push(result)
                                 foundFinalIndexCount++;
                             }
@@ -94,5 +109,5 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
 
         return resultStream;
     }
-    
+
 }

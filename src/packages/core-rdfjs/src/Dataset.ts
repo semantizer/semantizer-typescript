@@ -27,11 +27,14 @@ export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemant
     public getBaseUri(): NamedNode {
         return this._baseUri;
     }
-    
-    public setBaseUri(baseUri: NamedNode): void {
-        this._baseUri = baseUri;
+
+    public setBaseUri(baseUri: NamedNode | string): void {
+        const base = typeof baseUri === 'string'
+            ? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(baseUri)
+            : baseUri;
+        this._baseUri = base;
     }
-    
+
     public getSemantizer(): Semantizer {
         return this._semantizer;
     }
@@ -42,7 +45,7 @@ export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemant
 
     // TODO: move to a Utility class
     public createNamedNode(from: NamedNode | BlankNode | string): NamedNode | BlankNode {
-        return typeof from === 'string'? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(from): from;
+        return typeof from === 'string' ? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(from) : from;
     }
 
     public getOrigin(): NamedNode | BlankNode | undefined {

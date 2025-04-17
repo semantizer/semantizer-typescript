@@ -10,10 +10,9 @@ export interface IndexOperations {
 export interface IndexEntryOperations {
     compareShape(shape: IndexShape): IndexShapeComparisonResult;
     hasSubIndex(): boolean;
-    getShape(): IndexShape | undefined;
-    getTarget(): DatasetSemantizer | undefined;
-    getTargetUri(): string | undefined;
-    getSubIndex(): Index | undefined;
+    getShape(): BlankNode | undefined;
+    getTarget(): NamedNode | undefined;
+    getSubIndex(): NamedNode | undefined;
 }
 
 export interface IndexShapeOperations {
@@ -53,11 +52,11 @@ export interface IndexShapeComparisonResult {
 export interface IndexStrategy {
     getSemantizer(): Semantizer;
     setSemantizer(semantizer: Semantizer): void;
-    execute(index: Index, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void>;
+    execute(index: NamedNode | string, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void>;
 }
 
 export interface IndexStrategyFinalIndexes {
-    execute(rootIndex: Index, shape: IndexShape, maxFind?: number): Readable;
+    execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
 }
 
 export interface FinalIndexResult {

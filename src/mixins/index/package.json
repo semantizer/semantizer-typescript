@@ -1,6 +1,6 @@
 {
   "name": "@semantizer/mixin-index",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "A Semantizer mixin to query indexes",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
@@ -18,7 +18,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@semantizer/types": "^1.0.0-beta.1",
+    "@semantizer/types": "beta",
     "typescript": "^5.5.2"
   }
 }

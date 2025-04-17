@@ -1,5 +1,6 @@
 import { BlankNode, DatasetSemantizerMixinConstructor, Literal, NamedNode, Semantizer } from "@semantizer/types";
 import { IndexShapeProperty, IndexShapePropertyBase } from "./types";
+import { SHACL } from "./namespaces.js";
 
 export type IndexShapePropertyBaseMixinConstructor = new (...args: any[]) => IndexShapePropertyBase;
 
@@ -18,7 +19,7 @@ export function IndexShapePropertyValueMixin<
         }
   
         public getPredicate(): NamedNode {
-            return this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('https://www.w3.org/ns/shacl#hasValue');
+            return this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(SHACL.HAS_VALUE);
         }
 
     }
@@ -40,7 +41,7 @@ export function IndexShapePropertyPatternMixin<
         }
   
         public getPredicate(): NamedNode {
-            return this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('https://www.w3.org/ns/shacl#pattern');
+            return this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(SHACL.PATTERN);
         }
 
     }
@@ -55,15 +56,17 @@ export function IndexShapePropertyMixin<
         
         public getValue(): BlankNode | Literal | NamedNode | undefined {
             const predicate = this.getPredicate();
-            const object = this.getLinkedObject(predicate);
-            return object ? object.getOrigin()! : undefined;
+            const object = this.getObjectLinked(this.getBaseUri(), predicate); 
+            // this.getLinkedObject(predicate);
+            return object; // ? object.getBaseUri()! : undefined;
         }
         
         // TODO: check return type (no blank node)
         public getPath(): NamedNode | undefined {
-            const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('https://www.w3.org/ns/shacl#path');
-            const object = this.getLinkedObject(predicate)
-            return object ? object.getOrigin()! as NamedNode : undefined;
+            // const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(SHACL.PATH);
+            // const object = this.getLinkedObject(predicate)
+            // return object ? object.getOrigin()! as NamedNode : undefined;
+            return this.getObjectUri(this.getBaseUri(), SHACL.PATH);
         }
 
         public hasSamePath(other: IndexShapeProperty): boolean {

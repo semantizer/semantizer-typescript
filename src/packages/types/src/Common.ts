@@ -10,7 +10,7 @@ export interface WithSemantizer {
 
 export interface WithBaseUri {
     getBaseUri(): NamedNode;
-    setBaseUri(baseUri: NamedNode): void;
+    setBaseUri(baseUri: NamedNode | string): void;
 }
 
 /**

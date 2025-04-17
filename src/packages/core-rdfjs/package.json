@@ -1,6 +1,6 @@
 {
   "name": "@semantizer/core-rdfjs",
-  "version": "1.0.0-beta.2.0.0",
+  "version": "1.0.0-beta.2.1.0",
   "description": "A RDFJS dataset that can be used by other Semantizer packages and mixins (adapter)",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -19,10 +19,10 @@
   "author": "Maxime Lecoq-Gaillard",
   "license": "MIT",
   "dependencies": {
-    "@semantizer/rdfjs-dataset-impl": "^1.0.0-beta.2.0.0"
+    "@semantizer/rdfjs-dataset-impl": "beta"
   },
   "devDependencies": {
-    "@semantizer/types": "^1.0.0-beta.2.1.0",
+    "@semantizer/types": "beta",
     "typescript": "^5.5.2"
   }
 }

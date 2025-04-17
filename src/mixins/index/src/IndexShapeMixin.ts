@@ -1,6 +1,7 @@
 import { BlankNode, DatasetSemantizerMixinConstructor, Literal, NamedNode, Semantizer } from "@semantizer/types";
 import { indexShapePropertyPatternFactory, indexShapePropertyValueFactory } from "./IndexShapePropertyMixin.js";
 import { IndexShape, IndexShapeComparisonResult, IndexShapeProperty } from "./types";
+import { RDF, SHACL } from "./namespaces.js";
 
 export function IndexShapeMixin<
     TBase extends DatasetSemantizerMixinConstructor
@@ -13,13 +14,13 @@ export function IndexShapeMixin<
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             this.add(
                 dataFactory.quad(
-                    this.getOrigin()!,
-                    dataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), 
-                    dataFactory.namedNode("https://www.w3.org/ns/shacl#NodeShape")
+                    this.getBaseUri()!,
+                    dataFactory.namedNode(RDF.TYPE),
+                    dataFactory.namedNode(SHACL.NODE_SHAPE)
                 )
             );
         }
-        
+
         public hasMultiCriteria(): boolean {
             return this.getFilterProperties().length > 1;
         }
@@ -27,18 +28,18 @@ export function IndexShapeMixin<
         public getRdfTypeProperty(): IndexShapeProperty {
             for (const p of this.getPropertiesAll()) {
                 const path = p.getPath();
-                if (path && path.value === 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+                if (path && path.value === RDF.TYPE) {
                     return p;
                 }
             }
             throw new Error("No Rdf type property was found.");
         }
-        
+
         public getFilterProperties(): IndexShapeProperty[] {
             const properties: IndexShapeProperty[] = [];
             for (const p of this.getPropertiesAll()) {
                 const path = p.getPath();
-                if (path && path.value !== 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type') {
+                if (path && path.value !== RDF.TYPE) {
                     properties.push(p);
                 }
             }
@@ -57,9 +58,9 @@ export function IndexShapeMixin<
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
 
             if (!this.getRdfTypeProperty().equals(other.getRdfTypeProperty())) {
-                return new IndexShapeComparisonResultImpl(-2, dataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'));
+                return new IndexShapeComparisonResultImpl(-2, dataFactory.namedNode(RDF.TYPE));
             }
-            
+
             for (const thisProperty of this.getFilterProperties()) {
                 for (const otherProperty of other.getFilterProperties()) {
                     const comparisonResult = thisProperty.compares(otherProperty);
@@ -71,39 +72,40 @@ export function IndexShapeMixin<
 
             return new IndexShapeComparisonResultImpl(-1, dataFactory.namedNode('')); //throw new Error("No filter property was found."); // return -1;
         }
-        
+
         // TODO: enhance
         public countProperties(): number {
             return this.getPropertiesAll().length;
         }
-        
+
         public forEachProperty(callbackfn: (value: IndexShapeProperty, index?: number | undefined, array?: IndexShapeProperty[] | undefined) => void): void {
             this.getPropertiesAll().forEach(p => callbackfn(p));
         }
 
         public addTargetRdfType(rdfType: NamedNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const path = dataFactory.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
-            const predicate = dataFactory.namedNode('https://www.w3.org/ns/shacl#hasValue');
+            const path = dataFactory.namedNode(RDF.TYPE);
+            const predicate = dataFactory.namedNode(SHACL.HAS_VALUE);
             _addProperty(this, path, predicate, rdfType);
         }
 
         public addValueProperty(path: NamedNode, value: NamedNode | Literal | BlankNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode('https://www.w3.org/ns/shacl#hasValue');
-            _addProperty(this, path, predicate, value);   
+            const predicate = dataFactory.namedNode(SHACL.HAS_VALUE);
+            _addProperty(this, path, predicate, value);
         }
 
         public addPatternProperty(path: NamedNode, value: NamedNode | Literal | BlankNode): void {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode('https://www.w3.org/ns/shacl#pattern');
-            _addProperty(this, path, predicate, value);   
+            const predicate = dataFactory.namedNode(SHACL.PATTERN);
+            _addProperty(this, path, predicate, value);
         }
 
         public getPropertiesAll(): IndexShapeProperty[] {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode('https://www.w3.org/ns/shacl#property');
-            const properties = this.getLinkedObjectAll(predicate);
+            const predicate = dataFactory.namedNode(SHACL.PROPERTY);
+            const properties = this.getObjectLinkedAll(this.getBaseUri(), predicate);
+            const results: IndexShapeProperty[] = [];
 
             // Warning here: this code creates the property which can be either instance of 
             // ShapePropertyValue or ShapePropertyPattern. To evaluate which one to create 
@@ -112,12 +114,21 @@ export function IndexShapeMixin<
             // property will be created instead of a Pattern property. At this step we can't 
             // know which one to create. There is no pb since this code is called each time we 
             // try to access to the properties of the shape.
-            return properties.map(p => {
-                if (p.some(q => q.predicate.equals(dataFactory.namedNode('https://www.w3.org/ns/shacl#pattern')))) {
-                    return this.getSemantizer().build(indexShapePropertyPatternFactory, p);
+            if (properties) {
+                for (const property of properties) {
+                    if (property.termType === 'NamedNode' || property.termType === 'BlankNode' || typeof property === 'string') {
+                        const dataset = this.getSubGraph(property, this.getDefaultGraphTerm());
+                        if (dataset) {
+                            if (dataset.some(q => q.predicate.equals(dataFactory.namedNode(SHACL.PATTERN)))) {
+                                results.push(this.getSemantizer().build(indexShapePropertyPatternFactory, dataset));
+                            }
+                            else results.push(this.getSemantizer().build(indexShapePropertyValueFactory, dataset));
+                        }
+                    } else throw new Error("Invalid property type.");
                 }
-                return this.getSemantizer().build(indexShapePropertyValueFactory, p);
-            });
+            }
+
+            return results;
         }
 
     }
@@ -135,7 +146,7 @@ const _addProperty = (shape: IndexShape, path: NamedNode, predicate: NamedNode, 
     shape.add(
         dataFactory.quad(
             property,
-            dataFactory.namedNode('https://www.w3.org/ns/shacl#path'),
+            dataFactory.namedNode(SHACL.PATH),
             path
         )
     );
@@ -150,8 +161,8 @@ const _addProperty = (shape: IndexShape, path: NamedNode, predicate: NamedNode, 
 
     shape.add(
         dataFactory.quad(
-            shape.getOrigin()!,
-            dataFactory.namedNode('https://www.w3.org/ns/shacl#property'), 
+            shape.getBaseUri()!,
+            dataFactory.namedNode(SHACL.PROPERTY),
             property
         )
     );
