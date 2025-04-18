@@ -1,6 +1,6 @@
-import { Semantizer } from "@semantizer/types";
+import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
-import { Index, IndexEntry, IndexShape } from "@semantizer/mixin-index";
+import { indexFactory, IndexEntry, IndexShape } from "@semantizer/mixin-index";
 import { ResultChecker, ResultCheckerStrategy } from "./types";
 
 export class ResultCheckerDefaultImpl extends Readable implements ResultChecker {
@@ -30,8 +30,10 @@ export class ResultCheckerDefaultImpl extends Readable implements ResultChecker 
         return this._targetShape;
     }
 
-    public async addIndex(index: Index): Promise<void> {
-        const entryStream = await index.loadEntryStream();
+    public async addIndex(index: NamedNode): Promise<void> {
+        const indexDataset = this.getSemantizer().build(indexFactory);
+        indexDataset.setBaseUri(index);
+        const entryStream = await indexDataset.loadEntryStream();
         await this._addEntryStream(entryStream);
     }
 

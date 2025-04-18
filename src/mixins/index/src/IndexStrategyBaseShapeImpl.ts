@@ -1,4 +1,4 @@
-import { DatasetSemantizer, NamedNode } from "@semantizer/types";
+import { DatasetSemantizer, NamedNode, Semantizer } from "@semantizer/types";
 import { Index, IndexShape } from "./types";
 import { IndexStrategyBaseImpl } from "./IndexStrategyBaseImpl.js";
 
@@ -15,8 +15,8 @@ export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyBaseImpl {
 
     private _shape: IndexShape
 
-    public constructor(shape: IndexShape) {
-        super();
+    public constructor(semantizer: Semantizer, shape: IndexShape) {
+        super(semantizer);
         this._shape = shape;
     }
 
@@ -24,6 +24,6 @@ export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyBaseImpl {
         return this._shape;
     }
     
-    public abstract execute(index: NamedNode | string, callbackfn: (target: DatasetSemantizer) => void, limit?: number | undefined): Promise<void>;
+    public abstract execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number | undefined): Promise<void>;
 
 }

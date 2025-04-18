@@ -4,7 +4,7 @@ import { Readable } from "stream";
 export interface IndexOperations {
     loadEntryStream(): Promise<Readable>;
     forEachEntry(callbackfn: (value: IndexEntry, index?: number, array?: IndexEntry[]) => Promise<void>): Promise<void>;
-    findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void>;
+    findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
 export interface IndexEntryOperations {
@@ -52,7 +52,7 @@ export interface IndexShapeComparisonResult {
 export interface IndexStrategy {
     getSemantizer(): Semantizer;
     setSemantizer(semantizer: Semantizer): void;
-    execute(index: NamedNode | string, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void>;
+    execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
 export interface IndexStrategyFinalIndexes {
@@ -60,7 +60,7 @@ export interface IndexStrategyFinalIndexes {
 }
 
 export interface FinalIndexResult {
-    getIndex(): Index;
+    getIndex(): NamedNode;
     getPath(): NamedNode;
 }
 

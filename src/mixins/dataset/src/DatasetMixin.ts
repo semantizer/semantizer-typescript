@@ -1,5 +1,5 @@
 import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerRdfjsMixinConstructor, DatasetQuadStreamOptions, Quad_Subject, Quad_Predicate, Quad_Graph } from '@semantizer/types';
-import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromTermOrStringOrNull, isUrlAbsolute } from './utils';
+import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromTermOrStringOrNull, isUrlAbsolute } from './utils.js';
 
 export function DatasetMixin<
     TBase extends DatasetSemantizerRdfjsMixinConstructor // PB: can be impl other than rdfjs
@@ -8,9 +8,9 @@ export function DatasetMixin<
     return class DatasetMixinImpl extends Base implements DatasetSemantizer {
 
         public transformAllSubjectAndObjectAbsoluteUrisToRelativeUris(baseUri?: string): void {
-            if (baseUri || (this.getOrigin() && this.getOrigin()!.value !== '')) {
+            if (baseUri || (this.getBaseUri() && this.getBaseUri()!.value !== '')) {
                 const quadsToDelete: Quad[] = [];
-                const base = baseUri ?? this.getOrigin()!.value;
+                const base = baseUri ?? this.getBaseUri()!.value;
                 const rdfFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
 
                 const transformUrl = (url: NamedNode): NamedNode => rdfFactory.namedNode(getRelativeUrl(url.value, base));
@@ -36,7 +36,7 @@ export function DatasetMixin<
         public getRdfTypeAll(namedGraph?: NamedNode): NamedNode[] {
             const results: NamedNode[] = [];
 
-            const subject = namedGraph ? namedGraph : this.getOrigin();
+            const subject = namedGraph ? namedGraph : this.getBaseUri();
             const predicate = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
             const graph = namedGraph ? namedGraph : this.getSemantizer().getConfiguration().getRdfDataModelFactory().defaultGraph();
 
@@ -175,7 +175,7 @@ export function DatasetMixin<
 
         // TODO: handle this != document, get the document first?
         public getLinkedObject(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer | undefined {
-            const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getOrigin() : thingOrDataset : undefined;
+            const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getBaseUri() : thingOrDataset : undefined;
             for (const quad of this.match(thing, predicate, undefined, graph)) {
                 const dataset = this.matchDatasetSemantizerWithLinkedObjects(quad.object);
                 dataset.setOrigin(quad.object as NamedNode | BlankNode);
@@ -189,7 +189,7 @@ export function DatasetMixin<
 
         public getLinkedObjectAll(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer[] {
             const things: DatasetSemantizer[] = [];
-            const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getOrigin() : thingOrDataset : undefined;
+            const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getBaseUri() : thingOrDataset : undefined;
             for (const quad of this.match(thing, predicate, undefined, graph)) {
                 const dataset = this.matchDatasetSemantizerWithLinkedObjects(quad.object);
                 dataset.setOrigin(quad.object as NamedNode | BlankNode);
@@ -256,8 +256,8 @@ export function DatasetMixin<
                 return resource.value;
             }
             if ('getOrigin' in resource) {
-                if (resource.getOrigin()) {
-                    return resource.getOrigin()!.value;
+                if (resource.getBaseUri()) {
+                    return resource.getBaseUri()!.value;
                 }
                 else throw new Error("Resource origin is undefined.");
             }
@@ -271,7 +271,7 @@ export function DatasetMixin<
          */
         public async load(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetLoadOptions): Promise<void> {
             resource = resource ? resource : this;
-            if (typeof resource !== 'string' && 'getOrigin' in resource && resource.getOrigin()?.termType === 'NamedNode') { // if the resource to load is a NamedNode (and not a BlankNode which are already loaded)
+            if (typeof resource !== 'string' && 'getOrigin' in resource && resource.getBaseUri()?.termType === 'NamedNode') { // if the resource to load is a NamedNode (and not a BlankNode which are already loaded)
                 const loader = options && options.loader ? options.loader : this.getSemantizer().getConfiguration().getLoader();
                 const resourceUri = this.getUriOfResource(resource);
                 const resourceNamedNode = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(resourceUri);
@@ -281,7 +281,7 @@ export function DatasetMixin<
                 console.log("HTTP loading done in ", loadingTime.toString(), "sec.");
                 console.log("Start loading in memory of " + resourceUri + "...");
                 for (const quad of loaded) {
-                    if (this.getOrigin() && this.getOrigin()?.value !== resourceUri) { // load in default graph
+                    if (this.getBaseUri() && this.getBaseUri()?.value !== resourceUri) { // load in default graph
                         quad.graph = resourceNamedNode;
                     }
                     this.add(quad);

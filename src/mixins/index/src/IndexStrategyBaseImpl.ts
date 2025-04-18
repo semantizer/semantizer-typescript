@@ -5,6 +5,10 @@ export abstract class IndexStrategyBaseImpl implements IndexStrategy {
 
     private _semantizer: Semantizer | undefined;
 
+    public constructor(semantizer: Semantizer) {
+        this._semantizer = semantizer;
+    }
+
     public setSemantizer(semantizer: Semantizer): void {
         this._semantizer = semantizer;
     }
@@ -15,6 +19,6 @@ export abstract class IndexStrategyBaseImpl implements IndexStrategy {
         return this._semantizer;
     }
     
-    public abstract execute(index: NamedNode | string, callbackfn: (target: DatasetSemantizer) => void, limit?: number | undefined): Promise<void>;
+    public abstract execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number | undefined): Promise<void>;
 
 }

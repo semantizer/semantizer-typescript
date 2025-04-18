@@ -1,18 +1,19 @@
 import { Duplex } from "stream";
 import { FinalIndexResult, Index, IndexEntry, IndexShape } from "./types";
 import { NamedNode } from "@semantizer/types";
+import { indexFactory } from "./IndexMixin";
 
 class FinalIndexResultImpl implements FinalIndexResult {
     
-    private _index: Index;
+    private _index: NamedNode;
     private _path: NamedNode;
 
-    public constructor(index: Index, path: NamedNode) {
+    public constructor(index: NamedNode, path: NamedNode) {
         this._index = index;
         this._path = path;
     }
 
-    public getIndex(): Index {
+    public getIndex(): NamedNode {
         return this._index;
     }
 
@@ -51,7 +52,9 @@ export class TargetIndexStream extends Duplex {
             if (!this._maxFind || (this._maxFind && this._indexCount < this._maxFind - 1)) {
                 const subIndex = entry.getSubIndex();
                 if (subIndex) {
-                    const subIndexEntryStream = await subIndex.loadEntryStream();
+                    const subIndexDataset = this._shape.getSemantizer().build(indexFactory);
+                    subIndexDataset.setBaseUri(subIndex);
+                    const subIndexEntryStream = await subIndexDataset.loadEntryStream();
                     subIndexEntryStream.on('data', async (entry: IndexEntry) => await this._processEntry(entry));
                     await new Promise<void>((resolve, reject) => {
                         subIndexEntryStream.on('end', () => resolve());

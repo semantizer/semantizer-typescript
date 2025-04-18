@@ -1,10 +1,10 @@
-import { Semantizer } from "@semantizer/types";
-import { Index, IndexEntry, IndexShape } from "@semantizer/mixin-index";
+import { NamedNode, Semantizer } from "@semantizer/types";
+import { IndexEntry, IndexShape } from "@semantizer/mixin-index";
 
 export interface ResultChecker {
     getSemantizer(): Semantizer;
     getTargetShape(): IndexShape;
-    addIndex(index: Index): Promise<void>;
+    addIndex(index: NamedNode): Promise<void>;
     pause(): this;
     resume(): this;
 }

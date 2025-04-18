@@ -46,8 +46,7 @@ export class ResultCheckerStrategyMultiple extends ResultCheckerStrategyBase {
 
     public check(entry: IndexEntry): boolean {
         let result = false;
-        const targetDataset = entry.getTarget();
-        const target = targetDataset?.getOrigin()?.value;
+        const target = entry.getTarget()?.value;
 
         if (target) {
             for (const shape of this._targetShapes) {

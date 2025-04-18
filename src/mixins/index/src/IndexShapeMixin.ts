@@ -103,8 +103,8 @@ export function IndexShapeMixin<
 
         public getPropertiesAll(): IndexShapeProperty[] {
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const predicate = dataFactory.namedNode(SHACL.PROPERTY);
-            const properties = this.getObjectLinkedAll(this.getBaseUri(), predicate);
+            // const predicate = dataFactory.namedNode(SHACL.PROPERTY);
+            const properties = this.getObjectLinkedAll(this.getBaseUri(), SHACL.PROPERTY);
             const results: IndexShapeProperty[] = [];
 
             // Warning here: this code creates the property which can be either instance of 

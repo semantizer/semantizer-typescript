@@ -1,4 +1,4 @@
-import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Quad, Semantizer } from "@semantizer/types";
+import { DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 import { indexEntryFactory } from "./IndexEntryMixin.js";
 import { Index, IndexEntry, IndexShape, IndexStrategy } from "./types";
@@ -17,7 +17,7 @@ export function IndexMixin<
             const quadStream = await this.loadQuadStream();
 
             const semantizer = this.getSemantizer();
-            const datasets: DatasetSemantizer[] = []; // stores the datasets of the parsed entry, shape or property
+            const datasets = new Map<string, DatasetSemantizer>(); //: DatasetSemantizer[] = []; // stores the datasets of the parsed entry, shape or property
 
             const indexEntryType = semantizer.getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#IndexEntry');
             const hasShapePredicate = semantizer.getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#hasShape');
@@ -30,16 +30,28 @@ export function IndexMixin<
                 transform(quad: Quad, encoding, callback) {
                     // TODO: move this into a Strategy?
                     if (quad.subject.termType === 'NamedNode' || quad.subject.termType === 'BlankNode') {
-                        let dataset = datasets.find(d => d.getBaseUri()?.equals(quad.subject));
-                        
+                        // We have to test the value as a string in order to test blank nodes.
+                        // let dataset = datasets.find(d => d.getBaseUri().value === quad.subject.value);
+                        let dataset = datasets.get(quad.subject.value);
+
                         if (!dataset) {
-                            dataset= semantizer.build();
+                            dataset = semantizer.build();
+
+                            // if (quad.subject.termType === 'NamedNode' || quad.subject.termType === 'BlankNode') {
+                            //     // Here 
+                            //     dataset.setBaseUri(quad.subject.value);
+                            // }
 
                             if (quad.subject.termType === 'NamedNode') {
                                 dataset.setBaseUri(quad.subject);
                             }
 
-                            datasets.push(dataset);
+                            else if (quad.subject.termType === 'BlankNode') {
+                                dataset.setBaseUri('');
+                            }
+
+                            // datasets.push(dataset);
+                            datasets.set(quad.subject.value, dataset);
                         }
 
                         dataset.add(quad);
@@ -51,11 +63,13 @@ export function IndexMixin<
 
                         // This loads the linked objects of the entry. This allows to include the shape and properties 
                         // into the streamed entry dataset (we need it to compare).
-                        const addLinkedObjects = (d: DatasetSemantizer) => {
-                            for (const q of d) {
-                                const object = q.object;
+                        const addLinkedObjects = (datasetToProcess: DatasetSemantizer) => {
+                            for (const quadFromDatasetToProcess of datasetToProcess) {
+                                const object = quadFromDatasetToProcess.object;
                                 if (object.termType === 'NamedNode' || object.termType === "BlankNode") {
-                                    const objectDataset = datasets.find(d => d.getBaseUri()?.equals(object));
+                                    // const objectDataset = datasets.find(d => d.getBaseUri()?.equals(object));
+                                    // const objectDataset = datasets.find(d => d.getBaseUri().value === object.value);
+                                    const objectDataset = datasets.get(object.value);
                                     if (objectDataset) {
                                         dataset.addAll(objectDataset);
                                         addLinkedObjects(objectDataset);
@@ -72,7 +86,7 @@ export function IndexMixin<
                             // (because these quads could be parsed later - but they should not). 
                             // If so, we need to check that we have a sh:hasValue for a shape of an entry having an hasTarget. 
                             // For an entry with a hasSubIndex, we don't need to check we have something for sh:hasValue.
-                            addLinkedObjects(dataset); 
+                            addLinkedObjects(dataset);
 
                             const entry = semantizer.build(indexEntryFactory, dataset);
                             this.push(entry);
@@ -81,7 +95,7 @@ export function IndexMixin<
                             // enhance the next calls to the find() method on this array.
                         }
                     }
-                  callback(); // not sure if this is necessary?
+                    callback(); // not sure if this is necessary?
                 }
             });
 
@@ -99,13 +113,13 @@ export function IndexMixin<
             });
         }
 
-        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void> {
+        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void> {
             strategy.setSemantizer(this.getSemantizer());
             await strategy.execute(this.getBaseUri(), callbackfn, limit);
         }
 
     }
-    
+
 }
 
 export function indexFactory(semantizer: Semantizer) {

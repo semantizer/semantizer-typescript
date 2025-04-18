@@ -1,19 +1,19 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
 import { FinalIndexResult, Index, IndexEntry, IndexShape, IndexStrategyFinalIndexes } from "./types";
-import { indexFactory } from "./IndexMixin";
+import { indexFactory } from "./IndexMixin.js";
 
 class FinalIndexResultImpl implements FinalIndexResult {
 
-    private _index: Index;
+    private _index: NamedNode;
     private _path: NamedNode;
 
-    public constructor(index: Index, path: NamedNode) {
+    public constructor(index: NamedNode, path: NamedNode) {
         this._index = index;
         this._path = path;
     }
 
-    public getIndex(): Index {
+    public getIndex(): NamedNode {
         return this._index;
     }
 
@@ -77,8 +77,8 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
                         if (comparisonResult.getResult() === 1) {
                             const subIndex = entry.getSubIndex();
                             if (subIndex) {
-                                const subIndexDataset = makeIndexDataset(subIndex);
-                                const result = new FinalIndexResultImpl(subIndexDataset, comparisonResult.getComparedPath());
+                                // const subIndexDataset = makeIndexDataset(subIndex);
+                                const result = new FinalIndexResultImpl(subIndex, comparisonResult.getComparedPath());
                                 resultStream.push(result)
                                 foundFinalIndexCount++;
                             }
