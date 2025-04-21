@@ -21,57 +21,57 @@ export function IndexShapeMixin<
             );
         }
 
-        public hasMultiCriteria(): boolean {
-            return this.getFilterProperties().length > 1;
-        }
+        // public hasMultiCriteria(): boolean {
+        //     return this.getFilterProperties().length > 1;
+        // }
 
-        public getRdfTypeProperty(): IndexShapeProperty {
-            for (const p of this.getPropertiesAll()) {
-                const path = p.getPath();
-                if (path && path.value === RDF.TYPE) {
-                    return p;
-                }
-            }
-            throw new Error("No Rdf type property was found.");
-        }
+        // public getRdfTypeProperty(): IndexShapeProperty {
+        //     for (const p of this.getPropertiesAll()) {
+        //         const path = p.getPath();
+        //         if (path && path.value === RDF.TYPE) {
+        //             return p;
+        //         }
+        //     }
+        //     throw new Error("No Rdf type property was found.");
+        // }
 
-        public getFilterProperties(): IndexShapeProperty[] {
-            const properties: IndexShapeProperty[] = [];
-            for (const p of this.getPropertiesAll()) {
-                const path = p.getPath();
-                if (path && path.value !== RDF.TYPE) {
-                    properties.push(p);
-                }
-            }
-            return properties;
-        }
+        // public getFilterProperties(): IndexShapeProperty[] {
+        //     const properties: IndexShapeProperty[] = [];
+        //     for (const p of this.getPropertiesAll()) {
+        //         const path = p.getPath();
+        //         if (path && path.value !== RDF.TYPE) {
+        //             properties.push(p);
+        //         }
+        //     }
+        //     return properties;
+        // }
 
-        /**
-         * 
-         * @param other 
-         * @returns -2 if the targeted RDF types are different, -1 if the targeted RDF types 
-         * are equals but the targeted values path are different, 0 if the targeted RDF types 
-         * are equals and the targeted values path are equals, and 1 if the targeted RDF types 
-         * are equals and the targeted values are equals.
-         */
-        public compares(other: IndexShape): IndexShapeComparisonResult {
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+        // /**
+        //  * 
+        //  * @param other 
+        //  * @returns -2 if the targeted RDF types are different, -1 if the targeted RDF types 
+        //  * are equals but the targeted values path are different, 0 if the targeted RDF types 
+        //  * are equals and the targeted values path are equals, and 1 if the targeted RDF types 
+        //  * are equals and the targeted values are equals.
+        //  */
+        // public compares(other: IndexShape): IndexShapeComparisonResult {
+        //     const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
 
-            if (!this.getRdfTypeProperty().equals(other.getRdfTypeProperty())) {
-                return new IndexShapeComparisonResultImpl(-2, dataFactory.namedNode(RDF.TYPE));
-            }
+        //     if (!this.getRdfTypeProperty().equals(other.getRdfTypeProperty())) {
+        //         return new IndexShapeComparisonResultImpl(-2, dataFactory.namedNode(RDF.TYPE));
+        //     }
 
-            for (const thisProperty of this.getFilterProperties()) {
-                for (const otherProperty of other.getFilterProperties()) {
-                    const comparisonResult = thisProperty.compares(otherProperty);
-                    if (comparisonResult === 0 || comparisonResult === 1) {
-                        return new IndexShapeComparisonResultImpl(comparisonResult, thisProperty.getPath()!);
-                    }
-                }
-            }
+        //     for (const thisProperty of this.getFilterProperties()) {
+        //         for (const otherProperty of other.getFilterProperties()) {
+        //             const comparisonResult = thisProperty.compares(otherProperty);
+        //             if (comparisonResult === 0 || comparisonResult === 1) {
+        //                 return new IndexShapeComparisonResultImpl(comparisonResult, thisProperty.getPath()!);
+        //             }
+        //         }
+        //     }
 
-            return new IndexShapeComparisonResultImpl(-1, dataFactory.namedNode('')); //throw new Error("No filter property was found."); // return -1;
-        }
+        //     return new IndexShapeComparisonResultImpl(-1, dataFactory.namedNode('')); //throw new Error("No filter property was found."); // return -1;
+        // }
 
         // TODO: enhance
         public countProperties(): number {
@@ -168,7 +168,7 @@ const _addProperty = (shape: IndexShape, path: NamedNode, predicate: NamedNode, 
     );
 }
 
-export class IndexShapeComparisonResultImpl implements IndexShapeComparisonResult {
+export class IndexShapeComparisonResultImpl implements IndexShapeComparisonResult<number> {
 
     private _result: number;
     private _path: NamedNode;

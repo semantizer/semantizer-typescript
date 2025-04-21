@@ -1,14 +1,21 @@
-import { DatasetSemantizer, BlankNode, NamedNode, Literal, Semantizer } from "@semantizer/types";
+import { DatasetSemantizer, BlankNode, NamedNode, Literal, Semantizer, Quad, Term } from "@semantizer/types";
 import { Readable } from "stream";
 
 export interface IndexOperations {
-    loadEntryStream(): Promise<Readable>;
-    forEachEntry(callbackfn: (value: IndexEntry, index?: number, array?: IndexEntry[]) => Promise<void>): Promise<void>;
+    loadEntryStream(strategy: EntryStreamTransformerStrategy<any>): Promise<Readable>;
+    // forEachEntry(callbackfn: (value: NamedNode, index?: number, array?: NamedNode[]) => Promise<void>): Promise<void>;
+    compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult>;
+    countEntryShapeProperties(entry: NamedNode | string): number;
+    getEntryShapePropertiesAll(entry: NamedNode | string): Term[] | undefined;
+    hasEntrySubIndex(entry: NamedNode | string): boolean;
+    getEntryTarget(entry: NamedNode | string): NamedNode | undefined;
+    getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined;
+    getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
     findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
 export interface IndexEntryOperations {
-    compareShape(shape: IndexShape): IndexShapeComparisonResult;
+    // compareShape(shape: IndexShape): IndexShapeComparisonResult;
     hasSubIndex(): boolean;
     getShape(): BlankNode | undefined;
     getTarget(): NamedNode | undefined;
@@ -17,10 +24,10 @@ export interface IndexEntryOperations {
 
 export interface IndexShapeOperations {
     // isClosed(): boolean;
-    hasMultiCriteria(): boolean;
-    compares(other: IndexShape): IndexShapeComparisonResult;
-    getRdfTypeProperty(): IndexShapeProperty;
-    getFilterProperties(): IndexShapeProperty[];
+    // hasMultiCriteria(): boolean;
+    // compares(other: IndexShape): IndexShapeComparisonResult;
+    // getRdfTypeProperty(): IndexShapeProperty;
+    // getFilterProperties(): IndexShapeProperty[];
     countProperties(): number;
     forEachProperty(callbackfn: (value: IndexShapeProperty, index?: number, array?: IndexShapeProperty[]) => void): void;
     getPropertiesAll(): IndexShapeProperty[];
@@ -44,8 +51,12 @@ export interface IndexShapePropertyOperations {
     getValue(): NamedNode | Literal | BlankNode | undefined;
 }
 
-export interface IndexShapeComparisonResult {
-    getResult(): number;
+export interface IndexShapeComparisonStrategy<ComparisonResult> {
+    execute(index: Index, entry: NamedNode | string, shape: IndexShape): IndexShapeComparisonResult<ComparisonResult>;
+}
+
+export interface IndexShapeComparisonResult<Result> {
+    getResult(): Result;
     getComparedPath(): NamedNode;
 }
 
@@ -57,6 +68,10 @@ export interface IndexStrategy {
 
 export interface IndexStrategyFinalIndexes {
     execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
+}
+
+export interface EntryStreamTransformerStrategy<Entry> {
+    transform(quad: Quad): Entry | undefined;
 }
 
 export interface FinalIndexResult {

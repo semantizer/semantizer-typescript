@@ -1,5 +1,5 @@
 import { Duplex } from "stream";
-import { FinalIndexResult, Index, IndexEntry, IndexShape } from "./types";
+import { FinalIndexResult, Index, IndexShape } from "./types";
 import { NamedNode } from "@semantizer/types";
 import { indexFactory } from "./IndexMixin";
 

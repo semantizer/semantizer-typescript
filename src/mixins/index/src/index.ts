@@ -7,10 +7,10 @@ export {
     indexFactory
 } from "./IndexMixin.js";
 
-export {
-    IndexEntryMixin,
-    indexEntryFactory
-} from "./IndexEntryMixin.js";
+// export {
+//     IndexEntryMixin,
+//     indexEntryFactory
+// } from "./IndexEntryMixin.js";
 
 export {
     IndexShapeMixin,
@@ -25,7 +25,7 @@ export {
 
 export { 
     Index,
-    IndexEntry,
+    // IndexEntry,
     IndexShape,
     IndexShapeComparisonResult,
     IndexShapeProperty,

@@ -366,6 +366,8 @@ export function DatasetMixin<
             throw new Error("Method not implemented.");
         }
 
+        // TODO: don't call getObjectUriAll but call match directly or even better use the datasetCore internal attributes 
+        // to be faster.
         public getObjectUri(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode | undefined {
             const results = this.getObjectUriAll(subject, predicate, graph);
             return results && results[0] ? results[0] : undefined;

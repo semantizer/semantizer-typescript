@@ -9,18 +9,18 @@ export function IndexEntryMixin<
 
     return class IndexEntryMixinImpl extends Base implements IndexEntry {
 
-        public compareShape(shape: IndexShape): IndexShapeComparisonResult {
-            const blankNodeShape = this.getShape();
+        // public compareShape(shape: IndexShape): IndexShapeComparisonResult {
+        //     const blankNodeShape = this.getShape();
 
-            if (!blankNodeShape) {
-                throw new Error("The entry does not have a shape.");
-            }
+        //     if (!blankNodeShape) {
+        //         throw new Error("The entry does not have a shape.");
+        //     }
 
-            const datasetShape = this.getSubGraph(blankNodeShape, this.getDefaultGraphTerm());
-            const thisShape = this.getSemantizer().build(indexShapeFactory, datasetShape);
+        //     const datasetShape = this.getSubGraph(blankNodeShape, this.getDefaultGraphTerm());
+        //     const thisShape = this.getSemantizer().build(indexShapeFactory, datasetShape);
 
-            return thisShape.compares(shape);
-        }
+        //     return thisShape.compares(shape);
+        // }
 
         // TODO: rewrite
         public hasSubIndex(): boolean {

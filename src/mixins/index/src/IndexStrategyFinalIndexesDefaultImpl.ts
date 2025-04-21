@@ -1,7 +1,9 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
-import { FinalIndexResult, Index, IndexEntry, IndexShape, IndexStrategyFinalIndexes } from "./types";
+import { FinalIndexResult, Index, IndexShape, IndexStrategyFinalIndexes } from "./types";
 import { indexFactory } from "./IndexMixin.js";
+import { EntryStreamTransformerStrategyDefaultImpl } from "./EntryStreamTransformerStrategyDefaultImpl";
+import { IndexShapeComparisonStrategyDefaultImpl } from "./IndexShapeComparisonStrategyDefaultImpl";
 
 class FinalIndexResultImpl implements FinalIndexResult {
 
@@ -26,6 +28,7 @@ class FinalIndexResultImpl implements FinalIndexResult {
 export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalIndexes {
 
     private _semantizer: Semantizer;
+    private _shapeComparisonStrategy = new IndexShapeComparisonStrategyDefaultImpl();
 
     public constructor(semantizer: Semantizer) {
         this._semantizer = semantizer;
@@ -38,8 +41,8 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
         const resultStream = new Readable({ objectMode: true });
         resultStream._read = () => { };
 
-        const processSubIndex = async (entry: IndexEntry, entryStream: Readable) => {
-            const subIndex = entry.getSubIndex();
+        const processSubIndex = async (index: Index, entry: NamedNode, entryStream: Readable) => {
+            const subIndex = index.getEntrySubIndex(entry); // entry.getSubIndex();
             if (subIndex) {
                 try {
                     entryStream.pause();
@@ -62,9 +65,9 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
             return new Promise<void>(async (resolve, reject) => {
                 if (maxFind && foundFinalIndexCount < maxFind - 1) {
                     const indexDataset = makeIndexDataset(index);
-                    const entryStream = await indexDataset.loadEntryStream();
+                    const entryStream = await indexDataset.loadEntryStream(new EntryStreamTransformerStrategyDefaultImpl());
 
-                    entryStream.on('data', async (entry: IndexEntry) => {
+                    entryStream.on('data', async (entry: NamedNode) => {
                         if (maxFind && foundFinalIndexCount >= maxFind) {
                             entryStream.pause(); // if the stream is not paused, the call to destroy() would have no effect
                             entryStream.destroy(); // handled by the 'close' event (see below)
@@ -72,10 +75,10 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
                         }
 
                         // TODO: maybe the comparison can be checked directly into the Transform stream (loadEntryStream method)?
-                        const comparisonResult = entry.compareShape(shape);
+                        const comparisonResult = indexDataset.compareEntryWithShape(entry, shape, this._shapeComparisonStrategy) // entry.compareShape(shape);
 
                         if (comparisonResult.getResult() === 1) {
-                            const subIndex = entry.getSubIndex();
+                            const subIndex = indexDataset.getEntrySubIndex(entry); // entry.getSubIndex();
                             if (subIndex) {
                                 // const subIndexDataset = makeIndexDataset(subIndex);
                                 const result = new FinalIndexResultImpl(subIndex, comparisonResult.getComparedPath());
@@ -84,9 +87,10 @@ export class IndexStrategyFinalIndexesDefaultImpl implements IndexStrategyFinalI
                             }
                         }
 
-                        else if (comparisonResult.getResult() === 0 && entry.hasSubIndex()) {
+                        // else if (comparisonResult.getResult() === 0 && entry.hasSubIndex()) {
+                        else if (comparisonResult.getResult() === 0 && indexDataset.hasEntrySubIndex(entry)) {
                             if (maxFind && foundFinalIndexCount < maxFind - 1) {
-                                await processSubIndex(entry, entryStream);
+                                await processSubIndex(indexDataset, entry, entryStream);
                             }
                         }
                     });
