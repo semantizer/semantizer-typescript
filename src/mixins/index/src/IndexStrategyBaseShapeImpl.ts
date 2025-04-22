@@ -1,5 +1,5 @@
 import { DatasetSemantizer, NamedNode, Semantizer } from "@semantizer/types";
-import { Index, IndexShape } from "./types";
+import { Index, IndexLoggingLevel, IndexShape } from "./types";
 import { IndexStrategyBaseImpl } from "./IndexStrategyBaseImpl.js";
 
 /**
@@ -15,8 +15,8 @@ export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyBaseImpl {
 
     private _shape: IndexShape
 
-    public constructor(semantizer: Semantizer, shape: IndexShape) {
-        super(semantizer);
+    public constructor(shape: IndexShape, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
+        super(enableLogging, loggingLevel);
         this._shape = shape;
     }
 

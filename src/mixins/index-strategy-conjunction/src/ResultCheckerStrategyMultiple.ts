@@ -30,13 +30,13 @@ export class ResultCheckerStrategyMultiple extends ResultCheckerStrategyBase {
 
         return targetShape.getFilterProperties().map(property => {
             const shape = this.getChecker().getSemantizer().build(indexShapeFactory);
-            shape.addTargetRdfType(typeProperty.getValue()! as NamedNode);
+            shape.addTargetRdfType(typeProperty.IndexStrategyLogEntry()! as NamedNode);
 
             if (property.isValueProperty()) {
-                shape.addValueProperty(property.getPath()!, property.getValue()!);
+                shape.addValueProperty(property.getPath()!, property.IndexStrategyLogEntry()!);
             }
             else if (property.isPatternProperty()) {
-                shape.addPatternProperty(property.getPath()!, property.getValue()!);
+                shape.addPatternProperty(property.getPath()!, property.IndexStrategyLogEntry()!);
             }
             else throw new Error("The property is neither a value property nor a pattern property");
 

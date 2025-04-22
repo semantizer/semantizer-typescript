@@ -1,8 +1,9 @@
 import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 // import { indexEntryFactory } from "./IndexEntryMixin.js";
-import { EntryStreamTransformerStrategy, Index, IndexShape, IndexShapeComparisonResult, IndexShapeComparisonStrategy, IndexStrategy } from "./types";
+import { EntryStreamTransformerStrategy, Index, IndexLoggingLevel, IndexShape, IndexShapeComparisonResult, IndexShapeComparisonStrategy, IndexStrategy, IndexStrategyLogEntry } from "./types";
 import { IDX, SHACL } from "./namespaces.js";
+import { indexEntryFactory } from "./IndexEntryMixin";
 // import { indexEntryFactory } from "./IndexEntryMixin";
 
 export function IndexMixin<
@@ -44,8 +45,13 @@ export function IndexMixin<
         //     });
         // }
 
-        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void> {
+        // TODO: transform { limit, newLogCallback, loggingLevel } to "options" parameter?
+        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number, newLogEntryCallback?: (entry: IndexStrategyLogEntry) => void, loggingLevel: IndexLoggingLevel = 'WARN'): Promise<void> {
             strategy.setSemantizer(this.getSemantizer());
+            if (newLogEntryCallback) {
+                strategy.enableLogging(loggingLevel);
+                strategy.registerNewLogEntryCallback(newLogEntryCallback);
+            }
             await strategy.execute(this.getBaseUri(), callbackfn, limit);
         }
 
@@ -70,7 +76,14 @@ export function IndexMixin<
         }
 
         public compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult> {
-            return strategy.execute(this, entry, shape);
+            const entryThing = this.getSubGraph(entry, this.getDefaultGraphTerm());
+
+            if (!entryThing) {
+                throw new Error(`Nothing to compare: the entry ${entry} does not exist.`);
+            }
+
+            const entryDataset = this.getSemantizer().build(indexEntryFactory, entryThing);
+            return strategy.execute(entryDataset, shape);
         }
 
         public countEntryShapeProperties(entry: NamedNode | string): number {

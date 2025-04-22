@@ -54,7 +54,7 @@ export function IndexShapePropertyMixin<
 
     return class IndexShapePropertyMixinImpl extends Base implements IndexShapeProperty {
         
-        public getValue(): BlankNode | Literal | NamedNode | undefined {
+        public getValue(): Literal | NamedNode | undefined {
             const predicate = this.getPredicate();
             const object = this.getObjectLinked(this.getBaseUri(), predicate); 
             // this.getLinkedObject(predicate);

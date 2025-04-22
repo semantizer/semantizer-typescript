@@ -1,9 +1,12 @@
 import { DatasetSemantizer, BlankNode, NamedNode, Literal, Semantizer, Quad, Term } from "@semantizer/types";
 import { Readable } from "stream";
 
+export type IndexLoggingLevel = 'WARN' | 'ERROR';
+
 export interface IndexOperations {
     loadEntryStream(strategy: EntryStreamTransformerStrategy<any>): Promise<Readable>;
     // forEachEntry(callbackfn: (value: NamedNode, index?: number, array?: NamedNode[]) => Promise<void>): Promise<void>;
+    
     compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult>;
     countEntryShapeProperties(entry: NamedNode | string): number;
     getEntryShapePropertiesAll(entry: NamedNode | string): Term[] | undefined;
@@ -11,14 +14,42 @@ export interface IndexOperations {
     getEntryTarget(entry: NamedNode | string): NamedNode | undefined;
     getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined;
     getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
-    findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
+
+    findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number, newLogEntryCallback?: (entry: IndexStrategyLogEntry) => void, loggingLevel?: IndexLoggingLevel): Promise<void>;
+}
+
+export interface IndexStrategyLoggingOperations {
+    enableLogging(level: IndexLoggingLevel): void;
+    disableLogging(): void;
+    setLoggingLevel(level: IndexLoggingLevel): void;
+    isLoggingEnabled(): boolean;
+    getLoggingLevel(): IndexLoggingLevel;
+    getLog(): IndexStrategyLog;
+}
+
+export interface IndexStrategyLog {
+    addEntry(level: IndexLoggingLevel, indexEntry: NamedNode, message: string): void;
+    hasErrors(): boolean;
+    hasWarnings(): boolean;
+    countErrors(): number;
+    countWarnings(): number;
+    getErrors(): Iterable<IndexStrategyLogEntry>;
+    getErrors(entry: NamedNode | string): Iterable<IndexStrategyLogEntry>;
+    getEntries(): Iterable<IndexStrategyLogEntry>;
+}
+
+export interface IndexStrategyLogEntry {
+    getLevel(): IndexLoggingLevel;
+    getIndexEntry(): NamedNode;
+    getMessage(): string;
 }
 
 export interface IndexEntryOperations {
     // compareShape(shape: IndexShape): IndexShapeComparisonResult;
+    compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult>;
     hasSubIndex(): boolean;
-    getShape(): BlankNode | undefined;
-    getTarget(): NamedNode | undefined;
+    getShape(): NamedNode | BlankNode | undefined;
+    getTarget(): NamedNode | BlankNode | undefined;
     getSubIndex(): NamedNode | undefined;
 }
 
@@ -48,11 +79,11 @@ export interface IndexShapePropertyOperations {
     equals(other: IndexShapeProperty): boolean;
     compares(other: IndexShapeProperty): number;
     getPath(): NamedNode | undefined;
-    getValue(): NamedNode | Literal | BlankNode | undefined;
+    getValue(): NamedNode | Literal | undefined;
 }
 
 export interface IndexShapeComparisonStrategy<ComparisonResult> {
-    execute(index: Index, entry: NamedNode | string, shape: IndexShape): IndexShapeComparisonResult<ComparisonResult>;
+    execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<ComparisonResult>;
 }
 
 export interface IndexShapeComparisonResult<Result> {
@@ -60,13 +91,13 @@ export interface IndexShapeComparisonResult<Result> {
     getComparedPath(): NamedNode;
 }
 
-export interface IndexStrategy {
+export interface IndexStrategy extends IndexStrategyLoggingOperations {
     getSemantizer(): Semantizer;
     setSemantizer(semantizer: Semantizer): void;
     execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
-export interface IndexStrategyFinalIndexes {
+export interface IndexStrategyFinalIndexes extends IndexStrategyLoggingOperations {
     execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
 }
 
