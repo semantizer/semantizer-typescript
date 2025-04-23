@@ -1,6 +1,6 @@
 import { BlankNode, DatasetSemantizerMixinConstructor, Literal, NamedNode, Semantizer } from "@semantizer/types";
 import { indexShapePropertyPatternFactory, indexShapePropertyValueFactory } from "./IndexShapePropertyMixin.js";
-import { IndexShape, IndexShapeComparisonResult, IndexShapeProperty } from "./types";
+import { IndexShape, IndexShapeComparisonStrategy, IndexShapeProperty } from "./types";
 import { RDF, SHACL } from "./namespaces.js";
 
 export function IndexShapeMixin<
@@ -73,6 +73,10 @@ export function IndexShapeMixin<
         //     return new IndexShapeComparisonResultImpl(-1, dataFactory.namedNode('')); //throw new Error("No filter property was found."); // return -1;
         // }
 
+        public compareTo<ComparisonResult>(other: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult {
+            return strategy.execute(this, other);
+        }
+
         // TODO: enhance
         public countProperties(): number {
             return this.getPropertiesAll().length;
@@ -101,35 +105,35 @@ export function IndexShapeMixin<
             _addProperty(this, path, predicate, value);
         }
 
-        public getPropertiesAll(): IndexShapeProperty[] {
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            // const predicate = dataFactory.namedNode(SHACL.PROPERTY);
-            const properties = this.getObjectLinkedAll(this.getBaseUri(), SHACL.PROPERTY);
-            const results: IndexShapeProperty[] = [];
+        // public getPropertiesAll(): IndexShapeProperty[] {
+        //     const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+        //     // const predicate = dataFactory.namedNode(SHACL.PROPERTY);
+        //     const properties = this.getObjectLinkedAll(this.getBaseUri(), SHACL.PROPERTY);
+        //     const results: IndexShapeProperty[] = [];
 
-            // Warning here: this code creates the property which can be either instance of 
-            // ShapePropertyValue or ShapePropertyPattern. To evaluate which one to create 
-            // we test if the property has a sh:pattern predicate. In the case of the meta-meta 
-            // index (root level), the sh:pattern will likely not be present and a Value 
-            // property will be created instead of a Pattern property. At this step we can't 
-            // know which one to create. There is no pb since this code is called each time we 
-            // try to access to the properties of the shape.
-            if (properties) {
-                for (const property of properties) {
-                    if (property.termType === 'NamedNode' || property.termType === 'BlankNode' || typeof property === 'string') {
-                        const dataset = this.getSubGraph(property, this.getDefaultGraphTerm());
-                        if (dataset) {
-                            if (dataset.some(q => q.predicate.equals(dataFactory.namedNode(SHACL.PATTERN)))) {
-                                results.push(this.getSemantizer().build(indexShapePropertyPatternFactory, dataset));
-                            }
-                            else results.push(this.getSemantizer().build(indexShapePropertyValueFactory, dataset));
-                        }
-                    } else throw new Error("Invalid property type.");
-                }
-            }
+        //     // Warning here: this code creates the property which can be either instance of 
+        //     // ShapePropertyValue or ShapePropertyPattern. To evaluate which one to create 
+        //     // we test if the property has a sh:pattern predicate. In the case of the meta-meta 
+        //     // index (root level), the sh:pattern will likely not be present and a Value 
+        //     // property will be created instead of a Pattern property. At this step we can't 
+        //     // know which one to create. There is no pb since this code is called each time we 
+        //     // try to access to the properties of the shape.
+        //     if (properties) {
+        //         for (const property of properties) {
+        //             if (property.termType === 'NamedNode' || property.termType === 'BlankNode' || typeof property === 'string') {
+        //                 const dataset = this.getSubGraph(property, this.getDefaultGraphTerm());
+        //                 if (dataset) {
+        //                     if (dataset.some(q => q.predicate.equals(dataFactory.namedNode(SHACL.PATTERN)))) {
+        //                         results.push(this.getSemantizer().build(indexShapePropertyPatternFactory, dataset));
+        //                     }
+        //                     else results.push(this.getSemantizer().build(indexShapePropertyValueFactory, dataset));
+        //                 }
+        //             } else throw new Error("Invalid property type.");
+        //         }
+        //     }
 
-            return results;
-        }
+        //     return results;
+        // }
 
     }
 
@@ -168,22 +172,22 @@ const _addProperty = (shape: IndexShape, path: NamedNode, predicate: NamedNode, 
     );
 }
 
-export class IndexShapeComparisonResultImpl implements IndexShapeComparisonResult<number> {
+// export class IndexShapeComparisonResultImpl implements IndexShapeComparisonResult<number> {
 
-    private _result: number;
-    private _path: NamedNode;
+//     private _result: number;
+//     private _path: NamedNode;
 
-    public constructor(result: number, path: NamedNode) {
-        this._result = result;
-        this._path = path;
-    }
+//     public constructor(result: number, path: NamedNode) {
+//         this._result = result;
+//         this._path = path;
+//     }
 
-    public getResult(): number {
-        return this._result;
-    }
+//     public getResult(): number {
+//         return this._result;
+//     }
 
-    public getComparedPath(): NamedNode {
-        return this._path;
-    }
+//     public getComparedPath(): NamedNode {
+//         return this._path;
+//     }
 
-}
+// }

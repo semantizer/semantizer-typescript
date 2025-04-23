@@ -1,9 +1,9 @@
-import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, Term } from "@semantizer/types";
+import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 // import { indexEntryFactory } from "./IndexEntryMixin.js";
-import { EntryStreamTransformerStrategy, Index, IndexLoggingLevel, IndexQueryingOptions, IndexShape, IndexShapeComparisonResult, IndexShapeComparisonStrategy, IndexStrategy, IndexStrategyLogEntry } from "./types";
-import { IDX, SHACL } from "./namespaces.js";
 import { indexEntryFactory } from "./IndexEntryMixin";
+import { IDX, SHACL } from "./namespaces.js";
+import { EntryStreamTransformerStrategy, Index, IndexQueryingOptions, IndexShape, IndexShapeComparisonStrategy, IndexStrategy } from "./types";
 // import { indexEntryFactory } from "./IndexEntryMixin";
 
 export function IndexMixin<
@@ -47,10 +47,6 @@ export function IndexMixin<
 
         public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void> {
             strategy.setSemantizer(this.getSemantizer());
-            if (options?.newLogEntryCallback) {
-                strategy.enableLogging(options?.loggingLevel);
-                strategy.registerEntryCallback(options?.newLogEntryCallback);
-            }
             await strategy.execute(this.getBaseUri(), callbackfn, options?.limit);
         }
 
@@ -74,7 +70,7 @@ export function IndexMixin<
             return this.getObjectLinked(entry, IDX.HAS_SHAPE);
         }
 
-        public compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult> {
+        public compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult {
             const entryThing = this.getSubGraph(entry, this.getDefaultGraphTerm());
 
             if (!entryThing) {
@@ -82,7 +78,7 @@ export function IndexMixin<
             }
 
             const entryDataset = this.getSemantizer().build(indexEntryFactory, entryThing);
-            return strategy.execute(entryDataset, shape);
+            return entryDataset.compareShape(shape, strategy);
         }
 
         public countEntryShapeProperties(entry: NamedNode | string): number {

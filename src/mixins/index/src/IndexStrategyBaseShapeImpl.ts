@@ -1,6 +1,6 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
-import { IndexStrategyWithLoggingDefaultImpl } from "./IndexStrategyWithLoggingDefaultImpl";
-import { IndexLoggingLevel, IndexShape, IndexStrategy } from "./types";
+import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl";
+import { IndexShape, IndexStrategy } from "./types";
 
 /**
  * 2024-10-03: The reason is that in the future
@@ -11,12 +11,12 @@ import { IndexLoggingLevel, IndexShape, IndexStrategy } from "./types";
  * engine, the strategy could take a complete SPARQL query and let the engine does all the work (use link traversal to discover 
  * sources).
  */
-export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyWithLoggingDefaultImpl implements IndexStrategy {
+export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyBaseDefaultImpl implements IndexStrategy {
 
     private _shape: IndexShape
 
-    public constructor(shape: IndexShape, semantizer?: Semantizer, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
-        super(semantizer, enableLogging, loggingLevel);
+    public constructor(shape: IndexShape, semantizer?: Semantizer) {
+        super(semantizer);
         this._shape = shape;
     }
 

@@ -1,4 +1,4 @@
-import { BlankNode, DatasetCore, NamedNode, Quad } from "@rdfjs/types";
+import { BlankNode, NamedNode, Quad, Term } from "@rdfjs/types";
 import { Semantizer } from "./Semantizer";
 
 export type Resource = NamedNode | BlankNode;
@@ -6,6 +6,7 @@ export type Resource = NamedNode | BlankNode;
 export interface WithSemantizer {
     getSemantizer(): Semantizer;
     setSemantizer(semantizer: Semantizer): void;
+    log(level: LoggingLevel, message: string, code?: number, subject?: Term): void;
     // toRdfjsDataset(): DatasetRdfjs;
 }
 
@@ -14,37 +15,28 @@ export interface WithBaseUri {
     setBaseUri(baseUri: NamedNode | string): void;
 }
 
-/**
- * @deprecated Please use the `WithBaseUri` interface instead. This will be removed.
-*/
-export interface WithOrigin {
-    /**
-     * @deprecated Please use the `getBaseUri()` method instead.
-     */
-    getOrigin(): NamedNode | BlankNode | undefined;
+export type LoggingLevel = 'WARN' | 'ERROR';
+export type LoggingEntryCallback = (logEntry: LoggingEntry) => void;
 
-    /**
-     * @deprecated Please use the `setBaseUri()` method instead.
-     */
-    setOrigin(uri: NamedNode | BlankNode): void;
-
-    /**
-     * @deprecated This will be removed.
-     */
-    getOriginDocument(): NamedNode | undefined;
-
-    /**
-     * @deprecated This will be removed.
-     */
-    getOriginThing(): NamedNode | BlankNode | undefined;
-
-    /**
-     * @deprecated This will be removed.
-     */
-    setOriginThing(term: NamedNode | BlankNode): void;
+export interface WithLogging {
+    log(level: LoggingLevel, message: string, code?: number, subject?: Term): void;
+    enableLogging(level?: LoggingLevel): void;
+    disableLogging(): void;
+    setLoggingLevel(level: LoggingLevel): void;
+    isLoggingEnabled(): boolean;
+    getLoggingLevel(): LoggingLevel;
+    registerEntryCallback(callback: LoggingEntryCallback): void;
+    unregisterEntryCallback(callback: LoggingEntryCallback): void;
 }
 
-export type QuadIterableSemantizer = Iterable<Quad> & WithSemantizer & WithOrigin & WithBaseUri;
+export interface LoggingEntry {
+    level: LoggingLevel;
+    subject?: Term;
+    code?: number;
+    message: string;
+}
+
+export type QuadIterableSemantizer = Iterable<Quad> & WithSemantizer & WithBaseUri;
 
 export interface Countable {
     count(): number;

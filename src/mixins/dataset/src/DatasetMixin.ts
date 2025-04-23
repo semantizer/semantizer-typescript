@@ -1,4 +1,4 @@
-import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerRdfjsMixinConstructor, DatasetQuadStreamOptions, Quad_Subject, Quad_Predicate, Quad_Graph } from '@semantizer/types';
+import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerRdfjsMixinConstructor, DatasetQuadStreamOptions, Quad_Subject, Quad_Predicate, Quad_Graph, LoggingLevel } from '@semantizer/types';
 import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromTermOrStringOrNull, isUrlAbsolute } from './utils.js';
 
 export function DatasetMixin<
@@ -6,6 +6,10 @@ export function DatasetMixin<
 >(Base: TBase) {
 
     return class DatasetMixinImpl extends Base implements DatasetSemantizer {
+
+        public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
+            this.getSemantizer().log(level, message, code, subject);
+        }
 
         public transformAllSubjectAndObjectAbsoluteUrisToRelativeUris(baseUri?: string): void {
             if (baseUri || (this.getBaseUri() && this.getBaseUri()!.value !== '')) {
@@ -89,7 +93,7 @@ export function DatasetMixin<
             if (matchedDataset.isEmpty()) {
                 return undefined
             } else {
-                matchedDataset.setOrigin(namedGraph);
+                matchedDataset.setBaseUri(namedGraph);
                 return matchedDataset;
             }
         }
@@ -97,10 +101,10 @@ export function DatasetMixin<
         public getDefaultGraph(): DatasetSemantizer {
             const defaultGraph = this.getSemantizer().getConfiguration().getRdfDataModelFactory().defaultGraph();
             const dataset = this.matchDatasetSemantizerWithLinkedObjects(undefined, undefined, undefined, defaultGraph);
-            if (!this.getOriginDocument()) {
+            if (!this.getBaseUri()) {
                 console.warn("Can't set the document origin of the default graph.");
             }
-            dataset.setOrigin(this.getOriginDocument()!);
+            dataset.setBaseUri(this.getBaseUri()!);
             return dataset;
         }
 
@@ -175,12 +179,11 @@ export function DatasetMixin<
 
         // TODO: handle this != document, get the document first?
         public getLinkedObject(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer | undefined {
-            const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getBaseUri() : thingOrDataset : undefined;
+            const thing = thingOrDataset ? 'getBaseUri' in thingOrDataset ? thingOrDataset.getBaseUri() : thingOrDataset : undefined;
             for (const quad of this.match(thing, predicate, undefined, graph)) {
                 const dataset = this.matchDatasetSemantizerWithLinkedObjects(quad.object);
-                dataset.setOrigin(quad.object as NamedNode | BlankNode);
-                if (thing) {
-                    dataset.setOriginThing(thing);
+                if (quad.object.termType === 'NamedNode') {
+                    dataset.setBaseUri(quad.object);
                 }
                 return dataset;
             }
@@ -189,12 +192,11 @@ export function DatasetMixin<
 
         public getLinkedObjectAll(predicate: Resource, thingOrDataset?: Resource | DatasetSemantizer, graph?: NamedNode | DefaultGraph): DatasetSemantizer[] {
             const things: DatasetSemantizer[] = [];
-            const thing = thingOrDataset ? 'getOrigin' in thingOrDataset ? thingOrDataset.getBaseUri() : thingOrDataset : undefined;
+            const thing = thingOrDataset ? 'getBaseUri' in thingOrDataset ? thingOrDataset.getBaseUri() : thingOrDataset : undefined;
             for (const quad of this.match(thing, predicate, undefined, graph)) {
                 const dataset = this.matchDatasetSemantizerWithLinkedObjects(quad.object);
-                dataset.setOrigin(quad.object as NamedNode | BlankNode);
-                if (thing) {
-                    dataset.setOriginThing(thing);
+                if (quad.object.termType === 'NamedNode') {
+                    dataset.setBaseUri(quad.object);
                 }
                 things.push(dataset);
             }
@@ -255,7 +257,7 @@ export function DatasetMixin<
             if ('termType' in resource && resource.termType === 'NamedNode') {
                 return resource.value;
             }
-            if ('getOrigin' in resource) {
+            if ('getBaseUri' in resource) {
                 if (resource.getBaseUri()) {
                     return resource.getBaseUri()!.value;
                 }
@@ -271,7 +273,7 @@ export function DatasetMixin<
          */
         public async load(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetLoadOptions): Promise<void> {
             resource = resource ? resource : this;
-            if (typeof resource !== 'string' && 'getOrigin' in resource && resource.getBaseUri()?.termType === 'NamedNode') { // if the resource to load is a NamedNode (and not a BlankNode which are already loaded)
+            if (typeof resource !== 'string' && 'getBaseUri' in resource && resource.getBaseUri()?.termType === 'NamedNode') { // if the resource to load is a NamedNode (and not a BlankNode which are already loaded)
                 const loader = options && options.loader ? options.loader : this.getSemantizer().getConfiguration().getLoader();
                 const resourceUri = this.getUriOfResource(resource);
                 const resourceNamedNode = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(resourceUri);

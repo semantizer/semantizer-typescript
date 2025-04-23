@@ -1,5 +1,5 @@
-import { BlankNode, DataFactory, NamedNode, Quad } from "@rdfjs/types";
-import { QuadIterableSemantizer } from "./Common";
+import { DataFactory, NamedNode, Quad } from "@rdfjs/types";
+import { QuadIterableSemantizer, WithLogging } from "./Common";
 import { DatasetBaseFactory, DatasetSemantizer } from "./Datasets";
 import { Fetch, Loader, LoaderQuadStream } from "./Loader";
 
@@ -18,7 +18,7 @@ export type MixinFactoryFunction<
     TMixin extends DatasetSemantizer
 > = (semantizer: Semantizer) => MixinFactory<TBase, TMixin>;
 
-export interface Semantizer {
+export interface Semantizer extends WithLogging {
     getConfiguration(): Configuration;
     setConfiguration(configuration: Configuration): void;
     

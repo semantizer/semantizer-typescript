@@ -27,7 +27,7 @@ export {
     Index,
     // IndexEntry,
     IndexShape,
-    IndexShapeComparisonResult,
+    // IndexShapeComparisonResult,
     IndexShapeProperty,
     IndexStrategy,
     IndexStrategyFinalIndexes,

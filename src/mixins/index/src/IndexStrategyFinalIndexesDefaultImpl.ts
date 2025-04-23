@@ -3,8 +3,8 @@ import { Readable } from "stream";
 import { EntryStreamTransformerStrategyDefaultImpl } from "./EntryStreamTransformerStrategyDefaultImpl";
 import { indexFactory } from "./IndexMixin.js";
 import { IndexShapeComparisonStrategyDefaultImpl } from "./IndexShapeComparisonStrategyDefaultImpl";
-import { IndexStrategyWithLoggingDefaultImpl } from "./IndexStrategyWithLoggingDefaultImpl";
-import { FinalIndexResult, Index, IndexEntry, IndexLoggingLevel, IndexShape, IndexStrategyFinalIndexes } from "./types";
+import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl";
+import { FinalIndexResult, Index, IndexEntry, IndexShape, IndexStrategyFinalIndexes } from "./types";
 
 class FinalIndexResultImpl implements FinalIndexResult {
 
@@ -26,12 +26,12 @@ class FinalIndexResultImpl implements FinalIndexResult {
 
 }
 
-export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyWithLoggingDefaultImpl implements IndexStrategyFinalIndexes {
+export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyBaseDefaultImpl implements IndexStrategyFinalIndexes {
 
-    private _shapeComparisonStrategy = new IndexShapeComparisonStrategyDefaultImpl(this.addLogEntry);
+    private _shapeComparisonStrategy = new IndexShapeComparisonStrategyDefaultImpl(this.log);
 
-    public constructor(semantizer?: Semantizer, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
-        super(semantizer, enableLogging, loggingLevel);
+    public constructor(semantizer?: Semantizer) {
+        super(semantizer);
     }
 
     public execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable {
@@ -77,17 +77,17 @@ export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyWithLoggi
 
                         const comparisonResult = entry.compareShape(shape, this._shapeComparisonStrategy); // indexDataset.compareEntryWithShape(entry, shape, this._shapeComparisonStrategy) // entry.compareShape(shape);
 
-                        if (comparisonResult.getResult() === 1) {
+                        if (comparisonResult.areTargetedRdfTypePathsAndTargetedPropertyPathsAndValuesEqual()) {
                             const subIndex = entry.getSubIndex();
                             if (subIndex) {
                                 // const subIndexDataset = makeIndexDataset(subIndex);
                                 const result = new FinalIndexResultImpl(subIndex, comparisonResult.getComparedPath());
-                                resultStream.push(result)
+                                resultStream.push(result);
                                 foundFinalIndexCount++;
                             }
                         }
 
-                        else if (comparisonResult.getResult() === 0 && entry.hasSubIndex()) {
+                        else if (comparisonResult.areTargetedRdfTypePathsAndTargetedPropertyPathsEqual() && entry.hasSubIndex()) {
                             if (maxFind && foundFinalIndexCount < maxFind - 1) {
                                 await processSubIndex(entry, entryStream);
                             }

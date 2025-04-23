@@ -1,7 +1,40 @@
-import { BlankNode, DatasetSemantizer, Literal, NamedNode } from "@semantizer/types";
-import { Index, IndexEntry, IndexStrategyLog, IndexShape, IndexShapeComparisonResult, IndexShapeComparisonStrategy, IndexLoggingLevel } from "./types";
-import { IndexShapeComparisonResultImpl } from "./IndexShapeMixin";
+import { BlankNode, DatasetSemantizer, Literal, LoggingLevel, NamedNode, Term } from "@semantizer/types";
+import { Index, IndexEntry, IndexShape, IndexShapeComparisonStrategy } from "./types";
 import { IDX, RDF, SHACL } from "./namespaces";
+
+class IndexShapeComparisonStrategyResult {
+
+    private _result: number;
+
+    public constructor(result: number) {
+        this._result = result;
+    }
+
+    public areTargetedRdfTypePathsDifferent(): boolean {
+        return this._result === -2;
+    }
+
+    public areTargetedRdfTypePathsEqual(): boolean {
+        return this._result >= -1;
+    }
+
+    public areTargetedRdfTypePathsEqualButTargetedPropertyPathsAreDifferent(): boolean {
+        return this._result === -1;
+    }
+
+    public areTargetedRdfTypePathsAndTargetedPropertyPathsEqual(): boolean {
+        return this._result === 0;
+    }
+
+    public areTargetedRdfTypePathsAndTargetedPropertyPathsAndValuesEqual(): boolean {
+        return this._result === 1;
+    }
+
+    public getComparedPath(): NamedNode {
+        throw new Error;
+    }
+
+}
 
 /**
  * @param other 
@@ -10,13 +43,13 @@ import { IDX, RDF, SHACL } from "./namespaces";
  * are equals and the targeted values path are equals, and 1 if the targeted RDF types 
  * are equals and the targeted values are equals.
  */
-export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeComparisonStrategy<number> {
+export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeComparisonStrategy<IndexShapeComparisonStrategyResult> {
 
     private _propertiesOfEntryShape: ShapeProperty[];
     private _propertiesOfShapeToCompare: ShapeProperty[];
-    private _addLogEntry: (level: IndexLoggingLevel, indexEntry: NamedNode, message: string) => void;
+    private _addLogEntry: (level: LoggingLevel, message: string, code?: number, subject?: Term) => void;
 
-    public constructor(addLogEntry: (level: IndexLoggingLevel, indexEntry: NamedNode, message: string) => void) {
+    public constructor(addLogEntry: (level: LoggingLevel, message: string, code?: number, subject?: Term) => void) {
         this._propertiesOfEntryShape = [];
         this._propertiesOfShapeToCompare = [];
         this._addLogEntry = addLogEntry;
@@ -28,8 +61,8 @@ export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeCompar
         this._propertiesOfShapeToCompare = this.getShapePropertiesAll(shape);
     }
 
-    protected addLogEntry(level: IndexLoggingLevel, indexEntry: NamedNode, message: string): void {
-        this._addLogEntry(level, indexEntry, message);
+    protected addLogEntry(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
+        this._addLogEntry(level, message, code, subject);
     }
 
     // public getRdfTypeProperty(): IndexShapeProperty {
@@ -57,16 +90,19 @@ export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeCompar
     //     return index.getObjectUri(property, SHACL.PATH)
     // }
 
-    public getEntryShape(entry: IndexEntry): DatasetSemantizer {
-        const entryShapeTerm = entry.getObjectLinked(entry.getBaseUri(), IDX.HAS_SHAPE);
-        if (!entryShapeTerm) {
-            this.addLogEntry('ERROR', entry.getBaseUri(), "Entry has no shape");
-            throw new Error("Entry has no shape");
-        }
-        const entryShape = entry.getSubGraph(entryShapeTerm, entry.getDefaultGraphTerm());
-        if (!entryShape) throw new Error("Entry has no shape");
-        return entryShape;
-    }
+    // public getEntryShape(entry: IndexEntry): DatasetSemantizer {
+    //     const entryShapeTerm = entry.getShape();
+    //     if (!entryShapeTerm) {
+    //         this.addLogEntry('ERROR', entry.getBaseUri(), "No triple having the entry as subject and the idx:hasShape as predicate was found.");
+    //         throw new Error("Entry has no shape");
+    //     }
+    //     const entryShape = entry.getSubGraph(entryShapeTerm, entry.getDefaultGraphTerm());
+    //     if (!entryShape) { 
+    //         this.addLogEntry('ERROR', entry.getBaseUri(), `The entry shape ${entryShapeTerm} was not found.`);
+    //         throw new Error("Entry has no shape");
+    //     }
+    //     return entryShape;
+    // }
 
     public getShapePropertiesAll(shape: DatasetSemantizer): ShapeProperty[] {
         const results: ShapeProperty[] = [];
@@ -111,9 +147,11 @@ export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeCompar
         }
     }
 
-    public execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<number> {
+    // public execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<number> {
+    public execute(shapeA: IndexShape, shapeB: IndexShape): IndexShapeComparisonStrategyResult {
         this.init(entry, shape);
         this.mustTargetSameClass();
+        return new IndexShapeComparisonStrategyResult();
     }
 }
 

@@ -1,6 +1,7 @@
-import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
+import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
 import { IDX } from "./namespaces.js";
-import { IndexEntry, IndexShape, IndexShapeComparisonResult, IndexShapeComparisonStrategy } from "./types";
+import { IndexEntry, IndexShape, IndexShapeComparisonStrategy } from "./types";
+import { indexShapeFactory } from "./IndexShapeMixin.js";
 
 /**
  * This mixin is used internally by the `IndexMixin:loadEntryStream()` method
@@ -13,8 +14,10 @@ export function IndexEntryMixin<
 
     return class IndexEntryMixinImpl extends Base implements IndexEntry {
 
-        public compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult> {
-            return strategy.execute(this, shape);
+        public compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult {
+            const thisShape = this.getShapeDataset();
+            return thisShape.compareTo(shape, strategy);
+            // return strategy.execute(this, shape);
         }
 
         public hasSubIndex(): boolean {
@@ -31,6 +34,22 @@ export function IndexEntryMixin<
 
         public getShape(): NamedNode | BlankNode | undefined {
             return this.getObjectLinked(this.getBaseUri(), IDX.HAS_SHAPE);
+        }
+
+        public getShapeDataset(): IndexShape {
+            const entryShapeTerm = this.getShape();
+            if (!entryShapeTerm) {
+                this.log('ERROR', "No triple having the entry as subject and the idx:hasShape as predicate was found.", 0, this.getBaseUri());
+                throw new Error("Entry has no shape");
+            }
+            
+            const entryShapeDataset = this.getSubGraph(entryShapeTerm, this.getDefaultGraphTerm());
+            if (!entryShapeDataset) {
+                this.log('ERROR', `The entry shape ${entryShapeTerm} was not found.`, 0, this.getBaseUri());
+                throw new Error("Entry has no shape");
+            }
+
+            return this.getSemantizer().build(indexShapeFactory, entryShapeDataset);
         }
 
     }

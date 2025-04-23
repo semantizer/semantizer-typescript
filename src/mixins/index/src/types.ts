@@ -1,19 +1,13 @@
-import { DatasetSemantizer, BlankNode, NamedNode, Literal, Semantizer, Quad, Term, WithSemantizer } from "@semantizer/types";
+import { DatasetSemantizer, BlankNode, NamedNode, Literal, Quad, Term, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
-
-export type IndexLoggingLevel = 'WARN' | 'ERROR';
 
 export interface IndexQueryingOptions {
     limit?: number;
-    newLogEntryCallback?: (entry: IndexStrategyLogEntry) => void;
-    loggingLevel?: IndexLoggingLevel;
 }
 
 export interface IndexOperations {
     loadEntryStream(strategy: EntryStreamTransformerStrategy<any>): Promise<Readable>;
-    // forEachEntry(callbackfn: (value: NamedNode, index?: number, array?: NamedNode[]) => Promise<void>): Promise<void>;
-    
-    compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult>;
+    compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
     countEntryShapeProperties(entry: NamedNode | string): number;
     getEntryShapePropertiesAll(entry: NamedNode | string): Term[] | undefined;
     hasEntrySubIndex(entry: NamedNode | string): boolean;
@@ -24,26 +18,10 @@ export interface IndexOperations {
     findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
 }
 
-export type IndexStrategyLogEntryCallback = (logEntry: IndexStrategyLogEntry) => void;
-
-export interface IndexStrategyLoggingOperations {
-    enableLogging(level?: IndexLoggingLevel): void;
-    disableLogging(): void;
-    setLoggingLevel(level: IndexLoggingLevel): void;
-    isLoggingEnabled(): boolean;
-    getLoggingLevel(): IndexLoggingLevel;
-    registerEntryCallback(callback: IndexStrategyLogEntryCallback): void;
-}
-
-export interface IndexStrategyLogEntry {
-    level: IndexLoggingLevel;
-    indexEntry: NamedNode;
-    message: string;
-}
-
 export interface IndexEntryOperations {
     // compareShape(shape: IndexShape): IndexShapeComparisonResult;
-    compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult>;
+    // compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult>;
+    compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
     hasSubIndex(): boolean;
     getShape(): NamedNode | BlankNode | undefined;
     getTarget(): NamedNode | BlankNode | undefined;
@@ -56,9 +34,10 @@ export interface IndexShapeOperations {
     // compares(other: IndexShape): IndexShapeComparisonResult;
     // getRdfTypeProperty(): IndexShapeProperty;
     // getFilterProperties(): IndexShapeProperty[];
+    compareTo<ComparisonResult>(other: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
     countProperties(): number;
     forEachProperty(callbackfn: (value: IndexShapeProperty, index?: number, array?: IndexShapeProperty[]) => void): void;
-    getPropertiesAll(): IndexShapeProperty[];
+    getPropertiesAll(): ShapeProperty[]; // IndexShapeProperty[];
     addTargetRdfType(rdfType: NamedNode): void;
     addValueProperty(path: NamedNode, value: NamedNode | Literal | BlankNode): void;
     addPatternProperty(path: NamedNode, value: NamedNode | Literal | BlankNode): void;
@@ -80,19 +59,20 @@ export interface IndexShapePropertyOperations {
 }
 
 export interface IndexShapeComparisonStrategy<ComparisonResult> {
-    execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<ComparisonResult>;
+    // execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<ComparisonResult>;
+    execute(shapeA: IndexShape, shapeB: IndexShape): ComparisonResult;
 }
 
-export interface IndexShapeComparisonResult<Result> {
-    getResult(): Result;
-    getComparedPath(): NamedNode;
-}
+// export interface IndexShapeComparisonResult<Result> {
+//     getResult(): Result;
+//     getComparedPath(): NamedNode;
+// }
 
-export interface IndexStrategy extends WithSemantizer, IndexStrategyLoggingOperations {
+export interface IndexStrategy extends WithSemantizer {
     execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
-export interface IndexStrategyFinalIndexes extends WithSemantizer, IndexStrategyLoggingOperations {
+export interface IndexStrategyFinalIndexes extends WithSemantizer {
     execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
 }
 

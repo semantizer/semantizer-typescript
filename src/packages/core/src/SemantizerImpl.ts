@@ -1,4 +1,4 @@
-import { Configuration, Constructor, Semantizer, DatasetSemantizer, MixinFactory, MixinFactoryFunction, DatasetImplConstructor, QuadIterableSemantizer, Fetch, NamedNode } from "@semantizer/types";
+import { Configuration, Constructor, Semantizer, DatasetSemantizer, MixinFactory, MixinFactoryFunction, DatasetImplConstructor, QuadIterableSemantizer, Fetch, NamedNode, LoggingLevel, LoggingEntryCallback, Term } from "@semantizer/types";
 import { MixinFactoryImpl } from "./MixinFactoryImpl.js";
 
 type T = new (...args: any[]) => DatasetSemantizer;
@@ -6,9 +6,15 @@ type T = new (...args: any[]) => DatasetSemantizer;
 export class SemantizerImpl implements Semantizer {
 
     private _configuration: Configuration;
+    private _loggingEnabled: boolean;
+    private _loggingLevel: LoggingLevel;
+    private _logEntryCallbacks: Set<LoggingEntryCallback>;
 
-    public constructor(configuration: Configuration) {
+    public constructor(configuration: Configuration, enableLogging: boolean = false, loggingLevel: LoggingLevel = 'WARN') {
         this._configuration = configuration;
+        this._loggingEnabled = enableLogging;
+        this._loggingLevel = loggingLevel;
+        this._logEntryCallbacks = new Set();
     }
     
     public getConfiguration(): Configuration {
@@ -37,6 +43,44 @@ export class SemantizerImpl implements Semantizer {
     public build<TBase extends Constructor, TMixin extends DatasetSemantizer>(mixinFactoryFunction: MixinFactoryFunction<TBase, TMixin>, fromDataset?: QuadIterableSemantizer): TMixin;
     public build<TBase extends Constructor, TMixin extends DatasetSemantizer>(mixinFactoryFunctionOrDataset?: MixinFactoryFunction<TBase, TMixin> | QuadIterableSemantizer, fromDataset?: QuadIterableSemantizer): DatasetSemantizer | TMixin {
         return mixinFactoryFunctionOrDataset && typeof mixinFactoryFunctionOrDataset === 'function' ? mixinFactoryFunctionOrDataset(this).build(fromDataset) : this.getConfiguration().getDatasetBaseFactory().build(this, mixinFactoryFunctionOrDataset ?? fromDataset);
+    }
+
+    public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
+        if (this._logEntryCallbacks.size > 0) {
+            const loggingEntry = { level, subject, code, message };
+            for (const callback of this._logEntryCallbacks) {
+                callback(loggingEntry);
+            }
+        }
+    }
+
+    public enableLogging(level: LoggingLevel = 'WARN'): void {
+        this._loggingEnabled = true;
+        this.setLoggingLevel(level);
+    }
+
+    public setLoggingLevel(level: LoggingLevel): void {
+        this._loggingLevel = level;
+    }
+    
+    public disableLogging(): void {
+        this._loggingEnabled = false;
+    }
+    
+    public isLoggingEnabled(): boolean {
+        return this._loggingEnabled;
+    }
+    
+    public getLoggingLevel(): LoggingLevel {
+        return this._loggingLevel;
+    }
+    
+    public registerEntryCallback(callback: LoggingEntryCallback): void {
+        this._logEntryCallbacks.add(callback);
+    }
+
+    public unregisterEntryCallback(callback: LoggingEntryCallback): void {
+        this._logEntryCallbacks.delete(callback);
     }
 
 }
