@@ -39,6 +39,10 @@ export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemant
         return this._semantizer;
     }
 
+    public setSemantizer(semantizer: Semantizer): void {
+        this._semantizer = semantizer;
+    }
+
     protected _create(quads?: Iterable<Quad>): DatasetCoreRdfjsImpl {
         return new DatasetCoreRdfjsImpl(this._semantizer, this._originDocument, quads);
     }

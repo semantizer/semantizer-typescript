@@ -1,7 +1,13 @@
-import { DatasetSemantizer, BlankNode, NamedNode, Literal, Semantizer, Quad, Term } from "@semantizer/types";
+import { DatasetSemantizer, BlankNode, NamedNode, Literal, Semantizer, Quad, Term, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
 
 export type IndexLoggingLevel = 'WARN' | 'ERROR';
+
+export interface IndexQueryingOptions {
+    limit?: number;
+    newLogEntryCallback?: (entry: IndexStrategyLogEntry) => void;
+    loggingLevel?: IndexLoggingLevel;
+}
 
 export interface IndexOperations {
     loadEntryStream(strategy: EntryStreamTransformerStrategy<any>): Promise<Readable>;
@@ -15,16 +21,16 @@ export interface IndexOperations {
     getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined;
     getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
 
-    findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number, newLogEntryCallback?: (entry: IndexStrategyLogEntry) => void, loggingLevel?: IndexLoggingLevel): Promise<void>;
+    findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
 }
 
 export interface IndexStrategyLoggingOperations {
-    enableLogging(level: IndexLoggingLevel): void;
+    enableLogging(level?: IndexLoggingLevel): void;
     disableLogging(): void;
     setLoggingLevel(level: IndexLoggingLevel): void;
     isLoggingEnabled(): boolean;
     getLoggingLevel(): IndexLoggingLevel;
-    getLog(): IndexStrategyLog;
+    registerEntryCallback(callback: (logEntry: IndexStrategyLogEntry) => void): void;
 }
 
 export interface IndexStrategyLog {
@@ -91,13 +97,11 @@ export interface IndexShapeComparisonResult<Result> {
     getComparedPath(): NamedNode;
 }
 
-export interface IndexStrategy extends IndexStrategyLoggingOperations {
-    getSemantizer(): Semantizer;
-    setSemantizer(semantizer: Semantizer): void;
+export interface IndexStrategy extends WithSemantizer, IndexStrategyLoggingOperations {
     execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
-export interface IndexStrategyFinalIndexes extends IndexStrategyLoggingOperations {
+export interface IndexStrategyFinalIndexes extends WithSemantizer, IndexStrategyLoggingOperations {
     execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
 }
 

@@ -1,7 +1,7 @@
 import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 // import { indexEntryFactory } from "./IndexEntryMixin.js";
-import { EntryStreamTransformerStrategy, Index, IndexLoggingLevel, IndexShape, IndexShapeComparisonResult, IndexShapeComparisonStrategy, IndexStrategy, IndexStrategyLogEntry } from "./types";
+import { EntryStreamTransformerStrategy, Index, IndexLoggingLevel, IndexQueryingOptions, IndexShape, IndexShapeComparisonResult, IndexShapeComparisonStrategy, IndexStrategy, IndexStrategyLogEntry } from "./types";
 import { IDX, SHACL } from "./namespaces.js";
 import { indexEntryFactory } from "./IndexEntryMixin";
 // import { indexEntryFactory } from "./IndexEntryMixin";
@@ -45,14 +45,13 @@ export function IndexMixin<
         //     });
         // }
 
-        // TODO: transform { limit, newLogCallback, loggingLevel } to "options" parameter?
-        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, limit?: number, newLogEntryCallback?: (entry: IndexStrategyLogEntry) => void, loggingLevel: IndexLoggingLevel = 'WARN'): Promise<void> {
+        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void> {
             strategy.setSemantizer(this.getSemantizer());
-            if (newLogEntryCallback) {
-                strategy.enableLogging(loggingLevel);
-                strategy.registerNewLogEntryCallback(newLogEntryCallback);
+            if (options?.newLogEntryCallback) {
+                strategy.enableLogging(options?.loggingLevel);
+                strategy.registerEntryCallback(options?.newLogEntryCallback);
             }
-            await strategy.execute(this.getBaseUri(), callbackfn, limit);
+            await strategy.execute(this.getBaseUri(), callbackfn, options?.limit);
         }
 
         // public createEntry()

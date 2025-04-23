@@ -28,12 +28,10 @@ class FinalIndexResultImpl implements FinalIndexResult {
 
 export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyWithLoggingDefaultImpl implements IndexStrategyFinalIndexes {
 
-    private _semantizer: Semantizer;
     private _shapeComparisonStrategy = new IndexShapeComparisonStrategyDefaultImpl(this.addLogEntry);
 
-    public constructor(semantizer: Semantizer, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
+    public constructor(enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
         super(enableLogging, loggingLevel);
-        this._semantizer = semantizer;
     }
 
     public execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable {
@@ -58,7 +56,7 @@ export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyWithLoggi
         }
 
         const makeIndexDataset = (indexUri: NamedNode | string): Index => {
-            const indexDataset = this._semantizer.build(indexFactory);
+            const indexDataset = this.getSemantizer().build(indexFactory);
             indexDataset.setBaseUri(indexUri);
             return indexDataset;
         }
@@ -67,7 +65,7 @@ export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyWithLoggi
             return new Promise<void>(async (resolve, reject) => {
                 if (maxFind && foundFinalIndexCount < maxFind - 1) {
                     const indexDataset = makeIndexDataset(index);
-                    const transformer = new EntryStreamTransformerStrategyDefaultImpl(this._semantizer);
+                    const transformer = new EntryStreamTransformerStrategyDefaultImpl(this.getSemantizer());
                     const entryStream = await indexDataset.loadEntryStream(transformer);
 
                     entryStream.on('data', async (entry: IndexEntry) => {

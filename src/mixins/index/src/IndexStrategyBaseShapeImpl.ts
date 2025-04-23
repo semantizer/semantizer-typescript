@@ -1,6 +1,7 @@
 import { DatasetSemantizer, NamedNode, Semantizer } from "@semantizer/types";
-import { Index, IndexLoggingLevel, IndexShape } from "./types";
+import { Index, IndexLoggingLevel, IndexShape, IndexStrategy } from "./types";
 import { IndexStrategyBaseImpl } from "./IndexStrategyBaseImpl.js";
+import { IndexStrategyWithLoggingDefaultImpl } from "./IndexStrategyWithLoggingDefaultImpl";
 
 /**
  * 2024-10-03: The reason is that in the future
@@ -11,7 +12,7 @@ import { IndexStrategyBaseImpl } from "./IndexStrategyBaseImpl.js";
  * engine, the strategy could take a complete SPARQL query and let the engine does all the work (use link traversal to discover 
  * sources).
  */
-export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyBaseImpl {
+export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyWithLoggingDefaultImpl implements IndexStrategy {
 
     private _shape: IndexShape
 

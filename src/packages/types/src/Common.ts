@@ -5,6 +5,7 @@ export type Resource = NamedNode | BlankNode;
 
 export interface WithSemantizer {
     getSemantizer(): Semantizer;
+    setSemantizer(semantizer: Semantizer): void;
     // toRdfjsDataset(): DatasetRdfjs;
 }
 
