@@ -1,18 +1,18 @@
 import { NamedNode, Semantizer, WithSemantizer } from "@semantizer/types";
-import { IndexLoggingLevel, IndexStrategyLog, IndexStrategyLogEntry, IndexStrategyLoggingOperations } from "./types";
-import { IndexStrategyLogDefaultImpl } from "./IndexStrategyLogDefaultImpl";
+import { IndexLoggingLevel, IndexStrategyLogEntryCallback, IndexStrategyLoggingOperations } from "./types";
 
 export class IndexStrategyWithLoggingDefaultImpl implements WithSemantizer, IndexStrategyLoggingOperations {
 
-    private _log: IndexStrategyLog;
     private _loggingEnabled: boolean;
     private _loggingLevel: IndexLoggingLevel;
     private _semantizer: Semantizer | undefined;
+    private _logEntryCallbacks: Set<IndexStrategyLogEntryCallback>;
 
-    public constructor(enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
-        this._log = new IndexStrategyLogDefaultImpl();
+    public constructor(semantizer?: Semantizer, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
         this._loggingEnabled = enableLogging;
         this._loggingLevel = loggingLevel;
+        this._semantizer = semantizer;
+        this._logEntryCallbacks = new Set();
     }
     
     public getSemantizer(): Semantizer {
@@ -26,8 +26,11 @@ export class IndexStrategyWithLoggingDefaultImpl implements WithSemantizer, Inde
     }
 
     protected addLogEntry(level: IndexLoggingLevel, indexEntry: NamedNode, message: string): void {
-        if (this.isLoggingEnabled()) {
-            this._log.addEntry(level, indexEntry, message);
+        if (this._logEntryCallbacks.size > 0) {
+            const logEntry = { level, indexEntry, message };
+            for (const callback of this._logEntryCallbacks) {
+                callback(logEntry);
+            }
         }
     }
 
@@ -52,8 +55,8 @@ export class IndexStrategyWithLoggingDefaultImpl implements WithSemantizer, Inde
         return this._loggingLevel;
     }
     
-    public registerEntryCallback(callback: (logEntry: IndexStrategyLogEntry) => void): void {
-
+    public registerEntryCallback(callback: IndexStrategyLogEntryCallback): void {
+        this._logEntryCallbacks.add(callback);
     }
     
 }

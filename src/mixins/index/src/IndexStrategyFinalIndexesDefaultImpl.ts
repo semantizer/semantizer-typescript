@@ -1,10 +1,10 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
-import { FinalIndexResult, Index, IndexEntry, IndexStrategyLog, IndexLoggingLevel, IndexShape, IndexStrategyFinalIndexes } from "./types";
-import { indexFactory } from "./IndexMixin.js";
 import { EntryStreamTransformerStrategyDefaultImpl } from "./EntryStreamTransformerStrategyDefaultImpl";
+import { indexFactory } from "./IndexMixin.js";
 import { IndexShapeComparisonStrategyDefaultImpl } from "./IndexShapeComparisonStrategyDefaultImpl";
 import { IndexStrategyWithLoggingDefaultImpl } from "./IndexStrategyWithLoggingDefaultImpl";
+import { FinalIndexResult, Index, IndexEntry, IndexLoggingLevel, IndexShape, IndexStrategyFinalIndexes } from "./types";
 
 class FinalIndexResultImpl implements FinalIndexResult {
 
@@ -30,8 +30,8 @@ export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyWithLoggi
 
     private _shapeComparisonStrategy = new IndexShapeComparisonStrategyDefaultImpl(this.addLogEntry);
 
-    public constructor(enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
-        super(enableLogging, loggingLevel);
+    public constructor(semantizer?: Semantizer, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
+        super(semantizer, enableLogging, loggingLevel);
     }
 
     public execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable {

@@ -1,7 +1,6 @@
-import { DatasetSemantizer, NamedNode, Semantizer } from "@semantizer/types";
-import { Index, IndexLoggingLevel, IndexShape, IndexStrategy } from "./types";
-import { IndexStrategyBaseImpl } from "./IndexStrategyBaseImpl.js";
+import { NamedNode, Semantizer } from "@semantizer/types";
 import { IndexStrategyWithLoggingDefaultImpl } from "./IndexStrategyWithLoggingDefaultImpl";
+import { IndexLoggingLevel, IndexShape, IndexStrategy } from "./types";
 
 /**
  * 2024-10-03: The reason is that in the future
@@ -16,8 +15,8 @@ export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyWithLoggin
 
     private _shape: IndexShape
 
-    public constructor(shape: IndexShape, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
-        super(enableLogging, loggingLevel);
+    public constructor(shape: IndexShape, semantizer?: Semantizer, enableLogging: boolean = false, loggingLevel: IndexLoggingLevel = 'WARN') {
+        super(semantizer, enableLogging, loggingLevel);
         this._shape = shape;
     }
 

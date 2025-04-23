@@ -34,8 +34,6 @@ export {
     FinalIndexResult
 } from "./types.js";
 
-export { IndexStrategyBaseImpl } from "./IndexStrategyBaseImpl.js";
-
 export { IndexStrategyBaseShapeImpl } from "./IndexStrategyBaseShapeImpl.js";
 
 export { IndexStrategyFinalIndexesDefaultImpl } from "./IndexStrategyFinalIndexesDefaultImpl.js";

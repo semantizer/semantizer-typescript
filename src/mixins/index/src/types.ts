@@ -24,30 +24,21 @@ export interface IndexOperations {
     findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
 }
 
+export type IndexStrategyLogEntryCallback = (logEntry: IndexStrategyLogEntry) => void;
+
 export interface IndexStrategyLoggingOperations {
     enableLogging(level?: IndexLoggingLevel): void;
     disableLogging(): void;
     setLoggingLevel(level: IndexLoggingLevel): void;
     isLoggingEnabled(): boolean;
     getLoggingLevel(): IndexLoggingLevel;
-    registerEntryCallback(callback: (logEntry: IndexStrategyLogEntry) => void): void;
-}
-
-export interface IndexStrategyLog {
-    addEntry(level: IndexLoggingLevel, indexEntry: NamedNode, message: string): void;
-    hasErrors(): boolean;
-    hasWarnings(): boolean;
-    countErrors(): number;
-    countWarnings(): number;
-    getErrors(): Iterable<IndexStrategyLogEntry>;
-    getErrors(entry: NamedNode | string): Iterable<IndexStrategyLogEntry>;
-    getEntries(): Iterable<IndexStrategyLogEntry>;
+    registerEntryCallback(callback: IndexStrategyLogEntryCallback): void;
 }
 
 export interface IndexStrategyLogEntry {
-    getLevel(): IndexLoggingLevel;
-    getIndexEntry(): NamedNode;
-    getMessage(): string;
+    level: IndexLoggingLevel;
+    indexEntry: NamedNode;
+    message: string;
 }
 
 export interface IndexEntryOperations {
