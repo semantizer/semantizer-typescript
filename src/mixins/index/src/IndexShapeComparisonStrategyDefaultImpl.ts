@@ -1,11 +1,110 @@
-import { BlankNode, DatasetSemantizer, Literal, LoggingLevel, NamedNode, Term } from "@semantizer/types";
-import { Index, IndexEntry, IndexShape, IndexShapeComparisonStrategy } from "./types";
-import { IDX, RDF, SHACL } from "./namespaces";
+import { LoggingLevel, NamedNode, Term } from "@semantizer/types";
+import { RDF } from "./namespaces";
+import { IndexShape, IndexShapeComparisonStrategy, IndexShapeProperty } from "./types";
+
+export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeComparisonStrategy<IndexShapeComparisonStrategyResult> {
+
+    private _propertiesOfEntryShape: IndexShapeProperty[];
+    private _propertiesOfShapeToCompare: IndexShapeProperty[];
+    private _addLogEntry: (level: LoggingLevel, message: string, code?: number, subject?: Term) => void;
+
+    public constructor(addLogEntry: (level: LoggingLevel, message: string, code?: number, subject?: Term) => void) {
+        this._propertiesOfEntryShape = [];
+        this._propertiesOfShapeToCompare = [];
+        this._addLogEntry = addLogEntry;
+    }
+
+    private init(entryShape: IndexShape, shapeToCompare: IndexShape): void {
+        this._propertiesOfEntryShape = entryShape.getPropertiesAll();
+        this._propertiesOfShapeToCompare = shapeToCompare.getPropertiesAll();
+    }
+
+    protected addLogEntry(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
+        this._addLogEntry(level, message, code, subject);
+    }
+
+    public getPropertyHavingPathEqualToRdfType(properties: IndexShapeProperty[]): IndexShapeProperty {
+        const property = properties.find((p: IndexShapeProperty) => p.getPath().value === RDF.TYPE);
+        if (!property) throw new Error("Shape does not have a target path.");
+        return property;
+    }
+
+    public getPropertiesHavingPathDifferentThanRdfType(properties: IndexShapeProperty[]): IndexShapeProperty[] {
+        return properties.filter((p: IndexShapeProperty) => p.getPath().value !== RDF.TYPE);
+    }
+
+    public doTargetSameRdfClass(): boolean {
+        const targetOfEntryShape = this.getPropertyHavingPathEqualToRdfType(this._propertiesOfEntryShape);
+        const targetOfShapeToCompare = this.getPropertyHavingPathEqualToRdfType(this._propertiesOfShapeToCompare);
+        return targetOfEntryShape.hasSameValue(targetOfShapeToCompare);
+    }
+
+    /**
+     * @param shapeToCompareProperty 
+     * @returns -1 if paths are different or if both paths and values are different, 0 if paths are the same 
+     * but `this` property has no value, and 1 if both paths and values are equals.
+     */
+    public compares(entryShapeProperty: IndexShapeProperty, shapeToCompareProperty: IndexShapeProperty): number {
+        if (!entryShapeProperty.hasSamePath(shapeToCompareProperty)) {
+            return -1;
+        }
+
+        if (entryShapeProperty.getValue()) {
+            return entryShapeProperty.hasSameValue(shapeToCompareProperty) ? 1 : -1;
+        }
+
+        return 0;
+    }
+
+    public doTargetSameValuesPathAndValues(): number {
+        let result: number = -1;
+
+        const entryShapeProperties = this.getPropertiesHavingPathDifferentThanRdfType(this._propertiesOfEntryShape);
+        const shapeToCompareProperties = this.getPropertiesHavingPathDifferentThanRdfType(this._propertiesOfShapeToCompare);
+
+        if (shapeToCompareProperties.length > 0) {
+            for (const entryShapeProperty of entryShapeProperties) {
+                for (const shapeToCompareProperty of shapeToCompareProperties) {
+
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // protected mustTargetSameClass(): void {
+    //     if (!this.doTargetSameClass) {
+    //         throw new Error("The entry does not target the same class.");
+    //     }
+    // }
+
+    // public execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<number> {
+    public execute(shapeA: IndexShape, shapeB: IndexShape): IndexShapeComparisonStrategyResult {
+        this.init(shapeA, shapeB);
+        
+        let result: number = -2;
+        
+        if (this.doTargetSameRdfClass()) {
+            result = this.doTargetSameValuesPathAndValues();
+        }
+        
+        return new IndexShapeComparisonStrategyResult(result);
+    }
+
+}
+
 
 class IndexShapeComparisonStrategyResult {
 
     private _result: number;
 
+    /**
+     * @param result Pass -2 if the targeted RDF types are different, -1 if the targeted RDF types 
+     * are equals but the targeted values path are different, 0 if the targeted RDF types 
+     * are equals and the targeted values path are equals, and 1 if the targeted RDF types 
+     * are equals and the targeted values are equals.
+     */
     public constructor(result: number) {
         this._result = result;
     }
@@ -36,231 +135,60 @@ class IndexShapeComparisonStrategyResult {
 
 }
 
-/**
- * @param other 
- * @returns -2 if the targeted RDF types are different, -1 if the targeted RDF types 
- * are equals but the targeted values path are different, 0 if the targeted RDF types 
- * are equals and the targeted values path are equals, and 1 if the targeted RDF types 
- * are equals and the targeted values are equals.
- */
-export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeComparisonStrategy<IndexShapeComparisonStrategyResult> {
+//     /**
+//          * 
+//          * @param other 
+//          * @returns -2 if the targeted RDF types are different, -1 if the targeted RDF types 
+//          * are equals but the targeted values path are different, 0 if the targeted RDF types 
+//          * are equals and the targeted values path are equals, and 1 if the targeted RDF types 
+//          * are equals and the targeted values are equals.
+//          */
+//     public compares(other: IndexShape): IndexShapeComparisonResult < number > {
+//     const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
 
-    private _propertiesOfEntryShape: ShapeProperty[];
-    private _propertiesOfShapeToCompare: ShapeProperty[];
-    private _addLogEntry: (level: LoggingLevel, message: string, code?: number, subject?: Term) => void;
+//     if(!this.getRdfTypeProperty().equals(other.getRdfTypeProperty())) {
+//     return new IndexShapeComparisonResultImpl(-2, dataFactory.namedNode(RDF.TYPE));
+// }
 
-    public constructor(addLogEntry: (level: LoggingLevel, message: string, code?: number, subject?: Term) => void) {
-        this._propertiesOfEntryShape = [];
-        this._propertiesOfShapeToCompare = [];
-        this._addLogEntry = addLogEntry;
-    }
+// for (const thisProperty of this.getFilterProperties()) {
+//     for (const otherProperty of other.getFilterProperties()) {
+//         const comparisonResult = thisProperty.compares(otherProperty);
+//         if (comparisonResult === 0 || comparisonResult === 1) {
+//             return new IndexShapeComparisonResultImpl(comparisonResult, thisProperty.getPath()!);
+//         }
+//     }
+// }
 
-    private init(entry: IndexEntry, shape: IndexShape): void {
-        const entryShape = this.getEntryShape(entry);
-        this._propertiesOfEntryShape = this.getShapePropertiesAll(entryShape);
-        this._propertiesOfShapeToCompare = this.getShapePropertiesAll(shape);
-    }
+// return new IndexShapeComparisonResultImpl(-1, dataFactory.namedNode('')); //throw new Error("No filter property was found."); // return -1;
+//     }
 
-    protected addLogEntry(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
-        this._addLogEntry(level, message, code, subject);
-    }
+//     public getPropertiesAll(): IndexShapeProperty[] {
+//     const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+//     // const predicate = dataFactory.namedNode(SHACL.PROPERTY);
+//     const properties = this.getObjectLinkedAll(this.getBaseUri(), SHACL.PROPERTY);
+//     const results: IndexShapeProperty[] = [];
 
-    // public getRdfTypeProperty(): IndexShapeProperty {
-    //     for (const p of this.getPropertiesAll()) {
-    //         const path = p.getPath();
-    //         if (path && path.value === RDF.TYPE) {
-    //             return p;
-    //         }
-    //     }
-    //     throw new Error("No Rdf type property was found.");
-    // }
+//     // Warning here: this code creates the property which can be either instance of 
+//     // ShapePropertyValue or ShapePropertyPattern. To evaluate which one to create 
+//     // we test if the property has a sh:pattern predicate. In the case of the meta-meta 
+//     // index (root level), the sh:pattern will likely not be present and a Value 
+//     // property will be created instead of a Pattern property. At this step we can't 
+//     // know which one to create. There is no pb since this code is called each time we 
+//     // try to access to the properties of the shape.
+//     if (properties) {
+//         for (const property of properties) {
+//             if (property.termType === 'NamedNode' || property.termType === 'BlankNode' || typeof property === 'string') {
+//                 const dataset = this.getSubGraph(property, this.getDefaultGraphTerm());
+//                 if (dataset) {
+//                     if (dataset.some(q => q.predicate.equals(dataFactory.namedNode(SHACL.PATTERN)))) {
+//                         results.push(this.getSemantizer().build(indexShapePropertyPatternFactory, dataset));
+//                     }
+//                     else results.push(this.getSemantizer().build(indexShapePropertyValueFactory, dataset));
+//                 }
+//             } else throw new Error("Invalid property type.");
+//         }
+//     }
 
-    // public getFilterProperties(): IndexShapeProperty[] {
-    //     const properties: IndexShapeProperty[] = [];
-    //     for (const p of this.getPropertiesAll()) {
-    //         const path = p.getPath();
-    //         if (path && path.value !== RDF.TYPE) {
-    //             properties.push(p);
-    //         }
-    //     }
-    //     return properties;
-    // }
+//     return results;
+// }
 
-    // public getEntryRdfTypePropertyValue(index: Index, entry: NamedNode | string): NamedNode | undefined {
-    //     return index.getObjectUri(property, SHACL.PATH)
-    // }
-
-    // public getEntryShape(entry: IndexEntry): DatasetSemantizer {
-    //     const entryShapeTerm = entry.getShape();
-    //     if (!entryShapeTerm) {
-    //         this.addLogEntry('ERROR', entry.getBaseUri(), "No triple having the entry as subject and the idx:hasShape as predicate was found.");
-    //         throw new Error("Entry has no shape");
-    //     }
-    //     const entryShape = entry.getSubGraph(entryShapeTerm, entry.getDefaultGraphTerm());
-    //     if (!entryShape) { 
-    //         this.addLogEntry('ERROR', entry.getBaseUri(), `The entry shape ${entryShapeTerm} was not found.`);
-    //         throw new Error("Entry has no shape");
-    //     }
-    //     return entryShape;
-    // }
-
-    public getShapePropertiesAll(shape: DatasetSemantizer): ShapeProperty[] {
-        const results: ShapeProperty[] = [];
-        const properties = shape.getObjectLinkedAll(shape.getBaseUri(), SHACL.PROPERTY);
-        if (properties) {
-            for (const property of properties) {
-                if (['NamedNode', 'BlankNode'].includes(property.termType)) {
-                    const propertyDataset = shape.getSubGraph(property as NamedNode | BlankNode, shape.getDefaultGraphTerm());
-                    if (propertyDataset) {
-                        for (const quad of propertyDataset) {
-                            if (quad.predicate.termType === 'NamedNode' && ['NamedNode', 'BlankNode', 'Literal'].includes(quad.object.termType)) {
-                                results.push(
-                                    new ShapeProperty(
-                                        quad.predicate,
-                                        quad.object as NamedNode | Literal
-                                    )
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return results;
-    }
-
-    public getTargetShapeProperty(properties: ShapeProperty[]): ShapeProperty {
-        const target = properties.find((p: ShapeProperty) => p.getPath().value === RDF.TYPE);
-        if (!target) throw new Error("Shape does not have a target path.");
-        return target;
-    }
-
-    public doTargetSameClass(): boolean {
-        const targetOfEntryShape = this.getTargetShapeProperty(this._propertiesOfEntryShape);
-        const targetOfShapeToCompare = this.getTargetShapeProperty(this._propertiesOfShapeToCompare);
-        return targetOfEntryShape.hasSameValue(targetOfShapeToCompare);
-    }
-
-    protected mustTargetSameClass(): void {
-        if (!this.doTargetSameClass) {
-            throw new Error("The entry does not target the same class.");
-        }
-    }
-
-    // public execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<number> {
-    public execute(shapeA: IndexShape, shapeB: IndexShape): IndexShapeComparisonStrategyResult {
-        this.init(entry, shape);
-        this.mustTargetSameClass();
-        return new IndexShapeComparisonStrategyResult();
-    }
-}
-
-    /**
-         * 
-         * @param other 
-         * @returns -2 if the targeted RDF types are different, -1 if the targeted RDF types 
-         * are equals but the targeted values path are different, 0 if the targeted RDF types 
-         * are equals and the targeted values path are equals, and 1 if the targeted RDF types 
-         * are equals and the targeted values are equals.
-         */
-    public compares(other: IndexShape): IndexShapeComparisonResult < number > {
-    const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-
-    if(!this.getRdfTypeProperty().equals(other.getRdfTypeProperty())) {
-    return new IndexShapeComparisonResultImpl(-2, dataFactory.namedNode(RDF.TYPE));
-}
-
-for (const thisProperty of this.getFilterProperties()) {
-    for (const otherProperty of other.getFilterProperties()) {
-        const comparisonResult = thisProperty.compares(otherProperty);
-        if (comparisonResult === 0 || comparisonResult === 1) {
-            return new IndexShapeComparisonResultImpl(comparisonResult, thisProperty.getPath()!);
-        }
-    }
-}
-
-return new IndexShapeComparisonResultImpl(-1, dataFactory.namedNode('')); //throw new Error("No filter property was found."); // return -1;
-    }
-
-    public getPropertiesAll(): IndexShapeProperty[] {
-    const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-    // const predicate = dataFactory.namedNode(SHACL.PROPERTY);
-    const properties = this.getObjectLinkedAll(this.getBaseUri(), SHACL.PROPERTY);
-    const results: IndexShapeProperty[] = [];
-
-    // Warning here: this code creates the property which can be either instance of 
-    // ShapePropertyValue or ShapePropertyPattern. To evaluate which one to create 
-    // we test if the property has a sh:pattern predicate. In the case of the meta-meta 
-    // index (root level), the sh:pattern will likely not be present and a Value 
-    // property will be created instead of a Pattern property. At this step we can't 
-    // know which one to create. There is no pb since this code is called each time we 
-    // try to access to the properties of the shape.
-    if (properties) {
-        for (const property of properties) {
-            if (property.termType === 'NamedNode' || property.termType === 'BlankNode' || typeof property === 'string') {
-                const dataset = this.getSubGraph(property, this.getDefaultGraphTerm());
-                if (dataset) {
-                    if (dataset.some(q => q.predicate.equals(dataFactory.namedNode(SHACL.PATTERN)))) {
-                        results.push(this.getSemantizer().build(indexShapePropertyPatternFactory, dataset));
-                    }
-                    else results.push(this.getSemantizer().build(indexShapePropertyValueFactory, dataset));
-                }
-            } else throw new Error("Invalid property type.");
-        }
-    }
-
-    return results;
-}
-
-}
-
-class ShapeProperty {
-
-    private _path: NamedNode;
-    private _value: Literal | NamedNode | undefined;
-
-    public constructor(path: NamedNode, value: Literal | NamedNode | undefined) {
-        this._path = path;
-        this._value = value;
-    }
-
-    public getValue(): Literal | NamedNode | undefined {
-        return this._value;
-    }
-
-    public getPath(): NamedNode {
-        return this._path;
-    }
-
-    public hasSamePath(other: ShapeProperty): boolean {
-        return this.getPath()?.equals(other.getPath()) ?? false;
-    }
-
-    public hasSameValue(other: ShapeProperty): boolean {
-        if (!this.getValue())
-            throw new Error("This property to compare has no value.");
-        return this.getValue()!.equals(other.getValue()); // this.getValue must be checked before
-    }
-
-    public equals(other: ShapeProperty): boolean {
-        return this.hasSamePath(other) && this.hasSameValue(other);
-    }
-
-    /**
-     * @param other 
-     * @returns -1 if paths are different or if both paths and values are different, 0 if paths are the same 
-     * but `this` property has no value, and 1 if both paths and values are equals.
-     */
-    public compares(other: ShapeProperty): number {
-        if (!this.hasSamePath(other)) {
-            return -1
-        }
-
-        if (this.getValue()) {
-            return this.hasSameValue(other) ? 1 : -1;
-        }
-
-        return 0;
-    }
-
-}

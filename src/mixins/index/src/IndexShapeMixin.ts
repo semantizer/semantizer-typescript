@@ -2,6 +2,7 @@ import { BlankNode, DatasetSemantizerMixinConstructor, Literal, NamedNode, Seman
 import { indexShapePropertyPatternFactory, indexShapePropertyValueFactory } from "./IndexShapePropertyMixin.js";
 import { IndexShape, IndexShapeComparisonStrategy, IndexShapeProperty } from "./types";
 import { RDF, SHACL } from "./namespaces.js";
+import { IndexShapePropertyDefaultImpl } from "./IndexShapePropertyDefaultImpl.js";
 
 export function IndexShapeMixin<
     TBase extends DatasetSemantizerMixinConstructor
@@ -11,39 +12,11 @@ export function IndexShapeMixin<
 
         public constructor(...args: any[]) {
             super(...args);
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            this.add(
-                dataFactory.quad(
-                    this.getBaseUri()!,
-                    dataFactory.namedNode(RDF.TYPE),
-                    dataFactory.namedNode(SHACL.NODE_SHAPE)
-                )
-            );
+            this.addObjectUri(this.getBaseUri(), RDF.TYPE, SHACL.NODE_SHAPE);
         }
 
         // public hasMultiCriteria(): boolean {
         //     return this.getFilterProperties().length > 1;
-        // }
-
-        // public getRdfTypeProperty(): IndexShapeProperty {
-        //     for (const p of this.getPropertiesAll()) {
-        //         const path = p.getPath();
-        //         if (path && path.value === RDF.TYPE) {
-        //             return p;
-        //         }
-        //     }
-        //     throw new Error("No Rdf type property was found.");
-        // }
-
-        // public getFilterProperties(): IndexShapeProperty[] {
-        //     const properties: IndexShapeProperty[] = [];
-        //     for (const p of this.getPropertiesAll()) {
-        //         const path = p.getPath();
-        //         if (path && path.value !== RDF.TYPE) {
-        //             properties.push(p);
-        //         }
-        //     }
-        //     return properties;
         // }
 
         // /**
@@ -77,7 +50,7 @@ export function IndexShapeMixin<
             return strategy.execute(this, other);
         }
 
-        // TODO: enhance
+        // TODO: ENHANCE
         public countProperties(): number {
             return this.getPropertiesAll().length;
         }
@@ -103,6 +76,31 @@ export function IndexShapeMixin<
             const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
             const predicate = dataFactory.namedNode(SHACL.PATTERN);
             _addProperty(this, path, predicate, value);
+        }
+
+        public getPropertiesAll(): IndexShapeProperty[] {
+            const results: IndexShapePropertyDefaultImpl[] = [];
+            const properties = this.getObjectLinkedAll(this.getBaseUri(), SHACL.PROPERTY);
+            if (properties) {
+                for (const property of properties) {
+                    if (['NamedNode', 'BlankNode'].includes(property.termType)) {
+                        const propertyDataset = this.getSubGraph(property as NamedNode | BlankNode, this.getDefaultGraphTerm());
+                        if (propertyDataset) {
+                            for (const quad of propertyDataset) {
+                                if (quad.predicate.termType === 'NamedNode' && ['NamedNode', 'BlankNode', 'Literal'].includes(quad.object.termType)) {
+                                    results.push(
+                                        new IndexShapePropertyDefaultImpl(
+                                            quad.predicate,
+                                            quad.object as NamedNode | Literal
+                                        )
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return results;
         }
 
         // public getPropertiesAll(): IndexShapeProperty[] {

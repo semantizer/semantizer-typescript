@@ -19,11 +19,10 @@ export interface IndexOperations {
 }
 
 export interface IndexEntryOperations {
-    // compareShape(shape: IndexShape): IndexShapeComparisonResult;
-    // compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): IndexShapeComparisonResult<ComparisonResult>;
     compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
     hasSubIndex(): boolean;
     getShape(): NamedNode | BlankNode | undefined;
+    // getShapeDataset(): IndexShape;
     getTarget(): NamedNode | BlankNode | undefined;
     getSubIndex(): NamedNode | undefined;
 }
@@ -31,42 +30,33 @@ export interface IndexEntryOperations {
 export interface IndexShapeOperations {
     // isClosed(): boolean;
     // hasMultiCriteria(): boolean;
-    // compares(other: IndexShape): IndexShapeComparisonResult;
-    // getRdfTypeProperty(): IndexShapeProperty;
-    // getFilterProperties(): IndexShapeProperty[];
     compareTo<ComparisonResult>(other: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
     countProperties(): number;
     forEachProperty(callbackfn: (value: IndexShapeProperty, index?: number, array?: IndexShapeProperty[]) => void): void;
-    getPropertiesAll(): ShapeProperty[]; // IndexShapeProperty[];
+    getPropertiesAll(): IndexShapeProperty[]; // IndexShapeProperty[];
     addTargetRdfType(rdfType: NamedNode): void;
     addValueProperty(path: NamedNode, value: NamedNode | Literal | BlankNode): void;
     addPatternProperty(path: NamedNode, value: NamedNode | Literal | BlankNode): void;
 }
 
-export interface IndexShapePropertyBaseOperations {
-    getPredicate(): NamedNode;
-    isPatternProperty(): boolean;
-    isValueProperty(): boolean;
-}
+// export interface IndexShapePropertyBaseOperations {
+//     getPredicate(): NamedNode;
+//     isPatternProperty(): boolean;
+//     isValueProperty(): boolean;
+// }
 
 export interface IndexShapePropertyOperations {
+    getValue(): Literal | NamedNode | undefined;
+    getPath(): NamedNode;
     hasSamePath(other: IndexShapeProperty): boolean;
     hasSameValue(other: IndexShapeProperty): boolean;
     equals(other: IndexShapeProperty): boolean;
-    compares(other: IndexShapeProperty): number;
-    getPath(): NamedNode | undefined;
-    getValue(): NamedNode | Literal | undefined;
+    // compares(other: IndexShapeProperty): number
 }
 
 export interface IndexShapeComparisonStrategy<ComparisonResult> {
-    // execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<ComparisonResult>;
     execute(shapeA: IndexShape, shapeB: IndexShape): ComparisonResult;
 }
-
-// export interface IndexShapeComparisonResult<Result> {
-//     getResult(): Result;
-//     getComparedPath(): NamedNode;
-// }
 
 export interface IndexStrategy extends WithSemantizer {
     execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
@@ -85,8 +75,8 @@ export interface FinalIndexResult {
     getPath(): NamedNode;
 }
 
-export type IndexShapePropertyBase = DatasetSemantizer & IndexShapePropertyBaseOperations;
-export type IndexShapeProperty = IndexShapePropertyBase & IndexShapePropertyOperations;
+// export type IndexShapePropertyBase = DatasetSemantizer & IndexShapePropertyBaseOperations;
+export type IndexShapeProperty = /*IndexShapePropertyBase*/ IndexShapePropertyOperations;
 export type IndexShape = DatasetSemantizer & IndexShapeOperations;
 export type IndexEntry = DatasetSemantizer & IndexEntryOperations;
 export type Index = DatasetSemantizer & IndexOperations;
