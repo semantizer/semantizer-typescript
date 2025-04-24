@@ -15,9 +15,8 @@ export function IndexEntryMixin<
     return class IndexEntryMixinImpl extends Base implements IndexEntry {
 
         public compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult {
-            const thisShape = this.getShapeDataset();
+            const thisShape = this.makeInternalShapeDataset();
             return thisShape.compareTo(shape, strategy);
-            // return strategy.execute(this, shape);
         }
 
         public hasSubIndex(): boolean {
@@ -36,7 +35,9 @@ export function IndexEntryMixin<
             return this.getObjectLinked(this.getBaseUri(), IDX.HAS_SHAPE);
         }
 
-        public getShapeDataset(): IndexShape {
+        // TODO: replace subject _:b2 by namedNode('') === baseUri
+        // this way we can use getBaseUri in requests.
+        public makeInternalShapeDataset(): IndexShape {
             const entryShapeTerm = this.getShape();
             if (!entryShapeTerm) {
                 this.log('ERROR', "No triple having the entry as subject and the idx:hasShape as predicate was found.", 0, this.getBaseUri());

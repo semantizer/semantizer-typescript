@@ -1,5 +1,5 @@
 import RdfjsDatasetImpl from "@semantizer/rdfjs-dataset-impl";
-import { BlankNode, NamedNode, Quad, Semantizer, WithBaseUri, WithSemantizer } from '@semantizer/types';
+import { BlankNode, LoggingLevel, NamedNode, Quad, Semantizer, Term, WithBaseUri, WithSemantizer } from '@semantizer/types';
 
 export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemantizer, WithBaseUri {
 
@@ -17,6 +17,10 @@ export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemant
         } else {
             this._baseUri = namedNode('');
         }
+    }
+    
+    public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
+        this.getSemantizer().log(level, message, code, subject);
     }
 
     public getBaseUri(): NamedNode {

@@ -17,15 +17,15 @@ export {
     indexShapeFactory
 } from "./IndexShapeMixin.js";
 
-export {
-    IndexShapePropertyMixin,
-    indexShapePropertyValueFactory,
-    indexShapePropertyPatternFactory
-} from "./IndexShapePropertyMixin.js";
+// export {
+//     IndexShapePropertyMixin,
+//     indexShapePropertyValueFactory,
+//     indexShapePropertyPatternFactory
+// } from "./IndexShapePropertyMixin.js";
 
 export { 
     Index,
-    // IndexEntry,
+    IndexEntry,
     IndexShape,
     // IndexShapeComparisonResult,
     IndexShapeProperty,
@@ -34,8 +34,10 @@ export {
     FinalIndexResult
 } from "./types.js";
 
+export * from './IndexShapeComparisonStrategyDefaultImpl.js';
 export { IndexStrategyBaseShapeImpl } from "./IndexStrategyBaseShapeImpl.js";
 
 export { IndexStrategyFinalIndexesDefaultImpl } from "./IndexStrategyFinalIndexesDefaultImpl.js";
+export * from './EntryStreamTransformerStrategyDefaultImpl.js';
 
 export default indexFactory;

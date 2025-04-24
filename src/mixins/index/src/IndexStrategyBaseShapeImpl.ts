@@ -1,5 +1,5 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
-import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl";
+import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl.js";
 import { IndexShape, IndexStrategy } from "./types";
 
 /**

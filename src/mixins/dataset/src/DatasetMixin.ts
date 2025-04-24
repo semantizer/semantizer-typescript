@@ -7,10 +7,6 @@ export function DatasetMixin<
 
     return class DatasetMixinImpl extends Base implements DatasetSemantizer {
 
-        public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
-            this.getSemantizer().log(level, message, code, subject);
-        }
-
         public transformAllSubjectAndObjectAbsoluteUrisToRelativeUris(baseUri?: string): void {
             if (baseUri || (this.getBaseUri() && this.getBaseUri()!.value !== '')) {
                 const quadsToDelete: Quad[] = [];

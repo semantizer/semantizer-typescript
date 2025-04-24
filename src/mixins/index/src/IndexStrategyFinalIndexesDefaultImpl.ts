@@ -1,9 +1,9 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
-import { EntryStreamTransformerStrategyDefaultImpl } from "./EntryStreamTransformerStrategyDefaultImpl";
+import { EntryStreamTransformerStrategyDefaultImpl } from "./EntryStreamTransformerStrategyDefaultImpl.js";
 import { indexFactory } from "./IndexMixin.js";
-import { IndexShapeComparisonStrategyDefaultImpl } from "./IndexShapeComparisonStrategyDefaultImpl";
-import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl";
+import { IndexShapeComparisonStrategyDefaultImpl } from "./IndexShapeComparisonStrategyDefaultImpl.js";
+import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl.js";
 import { FinalIndexResult, Index, IndexEntry, IndexShape, IndexStrategyFinalIndexes } from "./types";
 
 class FinalIndexResultImpl implements FinalIndexResult {
@@ -75,12 +75,11 @@ export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyBaseDefau
                             return; // when we have enough results, we should stop the streaming process.
                         }
 
-                        const comparisonResult = entry.compareShape(shape, this._shapeComparisonStrategy); // indexDataset.compareEntryWithShape(entry, shape, this._shapeComparisonStrategy) // entry.compareShape(shape);
+                        const comparisonResult = entry.compareShape(shape, this._shapeComparisonStrategy);
 
                         if (comparisonResult.areTargetedRdfTypePathsAndTargetedPropertyPathsAndValuesEqual()) {
                             const subIndex = entry.getSubIndex();
                             if (subIndex) {
-                                // const subIndexDataset = makeIndexDataset(subIndex);
                                 const result = new FinalIndexResultImpl(subIndex, comparisonResult.getComparedPath());
                                 resultStream.push(result);
                                 foundFinalIndexCount++;

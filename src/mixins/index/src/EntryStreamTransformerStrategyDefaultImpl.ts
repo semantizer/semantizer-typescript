@@ -1,6 +1,6 @@
 import { DatasetSemantizer, Quad, Semantizer } from "@semantizer/types";
-import { indexEntryFactory } from "./IndexEntryMixin";
-import { IDX } from "./namespaces";
+import { indexEntryFactory } from "./IndexEntryMixin.js";
+import { IDX, RDF, SHACL } from "./namespaces.js";
 import { EntryStreamTransformerStrategy, IndexEntry } from "./types";
 
 /**
@@ -39,11 +39,11 @@ export class EntryStreamTransformerStrategyDefaultImpl implements EntryStreamTra
 
             dataset.add(quad);
 
-            const { namedNode } = this._semantizer.getConfiguration().getRdfDataModelFactory();
-            const isEntry = dataset.isDefaultGraphRdfTypeOf(namedNode(IDX.INDEX_ENTRY));
-            const hasShape = isEntry && dataset.some(q => q.predicate.equals(namedNode(IDX.HAS_SHAPE)));
-            const hasSubIndex = hasShape && dataset.some(q => q.predicate.equals(namedNode(IDX.HAS_SUB_INDEX)));
-            const hasTarget = hasShape && !hasSubIndex && dataset.some(q => q.predicate.equals(namedNode(IDX.HAS_TARGET)));
+            const rdf = this._semantizer.getConfiguration().getRdfDataModelFactory();
+            const isEntry = dataset.isDefaultGraphRdfTypeOf(rdf.namedNode(IDX.INDEX_ENTRY));
+            const hasShape = isEntry && dataset.some(q => q.predicate.equals(rdf.namedNode(IDX.HAS_SHAPE)));
+            const hasSubIndex = hasShape && dataset.some(q => q.predicate.equals(rdf.namedNode(IDX.HAS_SUB_INDEX)));
+            const hasTarget = hasShape && !hasSubIndex && dataset.some(q => q.predicate.equals(rdf.namedNode(IDX.HAS_TARGET)));
 
             // This loads the linked objects of the entry. This allows to include the shape and properties 
             // into the streamed entry dataset (we need it to compare).

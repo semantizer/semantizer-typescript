@@ -1,6 +1,6 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
-import { indexFactory, IndexEntry, IndexShape } from "@semantizer/mixin-index";
+import { indexFactory, IndexEntry, IndexShape, EntryStreamTransformerStrategyDefaultImpl } from "@semantizer/mixin-index";
 import { ResultChecker, ResultCheckerStrategy } from "./types";
 
 export class ResultCheckerDefaultImpl extends Readable implements ResultChecker {
@@ -33,7 +33,8 @@ export class ResultCheckerDefaultImpl extends Readable implements ResultChecker 
     public async addIndex(index: NamedNode): Promise<void> {
         const indexDataset = this.getSemantizer().build(indexFactory);
         indexDataset.setBaseUri(index);
-        const entryStream = await indexDataset.loadEntryStream();
+        const entryStreamStrategy = new EntryStreamTransformerStrategyDefaultImpl(this.getSemantizer());
+        const entryStream = await indexDataset.loadEntryStream(entryStreamStrategy);
         await this._addEntryStream(entryStream);
     }
 
@@ -66,21 +67,4 @@ export class ResultCheckerDefaultImpl extends Readable implements ResultChecker 
         return;
     }
 
-}
-
-export abstract class ResultCheckerStrategyBase implements ResultCheckerStrategy {
-
-    private _checker: ResultChecker | undefined;
-
-    public setChecker(checker: ResultChecker): void {
-        this._checker = checker;
-    }
-
-    public getChecker(): ResultChecker {
-        if (!this._checker)
-            throw new Error("No checker has been assigned to the strategy.");
-        return this._checker;
-    }
-
-    abstract check(entry: IndexEntry): boolean;
 }

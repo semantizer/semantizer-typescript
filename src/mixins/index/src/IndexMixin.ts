@@ -1,7 +1,7 @@
 import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 // import { indexEntryFactory } from "./IndexEntryMixin.js";
-import { indexEntryFactory } from "./IndexEntryMixin";
+import { indexEntryFactory } from "./IndexEntryMixin.js";
 import { IDX, SHACL } from "./namespaces.js";
 import { EntryStreamTransformerStrategy, Index, IndexQueryingOptions, IndexShape, IndexShapeComparisonStrategy, IndexStrategy } from "./types";
 // import { indexEntryFactory } from "./IndexEntryMixin";
