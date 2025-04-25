@@ -39,15 +39,62 @@ export function IndexEntryMixin<
         // this way we can use getBaseUri in requests.
         public makeInternalShapeDataset(): IndexShape {
             const entryShapeTerm = this.getShape();
+
             if (!entryShapeTerm) {
                 this.log('ERROR', "No triple having the entry as subject and the idx:hasShape as predicate was found.", 0, this.getBaseUri());
                 throw new Error("Entry has no shape");
             }
             
-            const entryShapeDataset = this.getSubGraph(entryShapeTerm, this.getDefaultGraphTerm());
+            let entryShapeDataset = this.getSubGraph(entryShapeTerm, this.getDefaultGraphTerm());
+
             if (!entryShapeDataset) {
                 this.log('ERROR', `The entry shape ${entryShapeTerm} was not found.`, 0, this.getBaseUri());
                 throw new Error("Entry has no shape");
+            }
+
+            const addLinkedObjects = (datasetToProcess: DatasetSemantizer) => {
+                for (const quadFromDatasetToProcess of datasetToProcess) {
+                    const object = quadFromDatasetToProcess.object;
+                    if (object.termType === 'NamedNode' || object.termType === 'BlankNode') {
+                        const objectDataset = this.getSubGraph(object, this.getDefaultGraphTerm());
+                        if (objectDataset && entryShapeDataset) {
+                            entryShapeDataset.addAll(objectDataset);
+                            addLinkedObjects(objectDataset);
+                        }
+                    }
+                }
+            }
+
+            addLinkedObjects(entryShapeDataset);
+
+            if (entryShapeTerm.termType === 'BlankNode') {
+                const rebasedDataset = this.getSemantizer().build();
+                const rdf = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+                for (const quadToRebase of entryShapeDataset) {
+                    if (quadToRebase.subject.equals(entryShapeTerm)) {
+                        rebasedDataset.add(
+                            rdf.quad(
+                                rdf.namedNode(''),
+                                quadToRebase.predicate,
+                                quadToRebase.object,
+                                quadToRebase.graph
+                            )
+                        );
+                    }
+                    else if (quadToRebase.object.equals(entryShapeTerm)) {
+                        rebasedDataset.add(
+                            rdf.quad(
+                                quadToRebase.subject,
+                                quadToRebase.predicate,
+                                rdf.namedNode(''),
+                                quadToRebase.graph
+                            )
+                        );
+                    }
+                    else rebasedDataset.add(quadToRebase);
+                }
+
+                entryShapeDataset = rebasedDataset;
             }
 
             return this.getSemantizer().build(indexShapeFactory, entryShapeDataset);

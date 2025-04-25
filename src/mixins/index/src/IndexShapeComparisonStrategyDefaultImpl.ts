@@ -1,5 +1,5 @@
 import { LoggingLevel, NamedNode, Term } from "@semantizer/types";
-import { RDF } from "./namespaces.js";
+import { RDF, SHACL } from "./namespaces.js";
 import { IndexShape, IndexShapeComparisonStrategy, IndexShapeProperty } from "./types";
 
 export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeComparisonStrategy<IndexShapeComparisonStrategyResult> {
@@ -24,19 +24,33 @@ export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeCompar
     }
 
     public getPropertyHavingPathEqualToRdfType(properties: IndexShapeProperty[]): IndexShapeProperty {
-        const property = properties.find((p: IndexShapeProperty) => p.getPath().value === RDF.TYPE);
+        const property = properties.find((p: IndexShapeProperty) => p.getPath().value === SHACL.PATH && p.getValue()?.value === RDF.TYPE);
         if (!property) throw new Error("Shape does not have a target path.");
         return property;
     }
 
-    public getPropertiesHavingPathDifferentThanRdfType(properties: IndexShapeProperty[]): IndexShapeProperty[] {
-        return properties.filter((p: IndexShapeProperty) => p.getPath().value !== RDF.TYPE);
+    public getPropertiesWithWithSchaclPathDifferentThanRdfType(properties: IndexShapeProperty[]): IndexShapeProperty[] {
+        return properties.filter((p: IndexShapeProperty) => p.getPath().value === SHACL.PATH && p.getValue()?.value !== RDF.TYPE);
     }
+
+    public getPropertyForSchaclPath(properties: IndexShapeProperty[], shaclPathValue: string): IndexShapeProperty[] {
+        return properties.filter((p: IndexShapeProperty) => p.getPath().value === SHACL.PATH && p.getValue()?.value == shaclPathValue);
+    }
+
 
     public doTargetSameRdfClass(): boolean {
         const targetOfEntryShape = this.getPropertyHavingPathEqualToRdfType(this._propertiesOfEntryShape);
         const targetOfShapeToCompare = this.getPropertyHavingPathEqualToRdfType(this._propertiesOfShapeToCompare);
         return targetOfEntryShape.hasSameValue(targetOfShapeToCompare);
+    }
+
+    public doesEntryMatchWithShapeToCompareProperty(shapeProperty: IndexShapeProperty): number {
+        let result = -1;
+        const entryShapeProperties = this.getPropertiesWithWithSchaclPathDifferentThanRdfType(this._propertiesOfEntryShape);
+        for (const entryShapeProperty of entryShapeProperties) {
+
+        }
+        return result;
     }
 
     /**
@@ -59,16 +73,21 @@ export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeCompar
     public doTargetSameValuesPathAndValues(): number {
         let result: number = -1;
 
-        const entryShapeProperties = this.getPropertiesHavingPathDifferentThanRdfType(this._propertiesOfEntryShape);
-        const shapeToCompareProperties = this.getPropertiesHavingPathDifferentThanRdfType(this._propertiesOfShapeToCompare);
+        const entryShapeProperties = this.getPropertiesWithWithSchaclPathDifferentThanRdfType(this._propertiesOfEntryShape);
+        const shapeToCompareProperties = this.getPropertiesWithWithSchaclPathDifferentThanRdfType(this._propertiesOfShapeToCompare);
 
         if (shapeToCompareProperties.length > 0) {
             for (const shapeToCompareProperty of shapeToCompareProperties) {
-                result = 0;
-                const entryShapeProperty = entryShapeProperties.find(p => p.hasSamePath(shapeToCompareProperty));
-                if (entryShapeProperty && shapeToCompareProperty.hasSameValue(entryShapeProperty)) {
-                    result = 1;
-                    break;
+                const entryShapeSameShaclPathValueProperty = entryShapeProperties.find(p => p.hasSameValue(shapeToCompareProperty));
+                if (entryShapeSameShaclPathValueProperty) {
+                    const entryShapeValueProperty = entryShapeProperties.find(p => p.getPath().value === SHACL.HAS_VALUE);
+                    if (shapeToCompareProperty.hasSameValue(entryShapeSameShaclPathValueProperty)) {
+                        result = 0;
+                    }
+                    if (entryShapeValueProperty && entryShapeValueProperty.hasSameValue()) {
+                        result = 1;
+                        break;
+                    }
                 }
             }
         }
@@ -85,13 +104,13 @@ export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeCompar
     // public execute(entry: IndexEntry, shape: IndexShape): IndexShapeComparisonResult<number> {
     public execute(entryShape: IndexShape, shapeToCompare: IndexShape): IndexShapeComparisonStrategyResult {
         this.init(entryShape, shapeToCompare);
-        
+
         let result: number = -2;
-        
+
         if (this.doTargetSameRdfClass()) {
             result = this.doTargetSameValuesPathAndValues();
         }
-        
+
         return new IndexShapeComparisonStrategyResult(result);
     }
 
