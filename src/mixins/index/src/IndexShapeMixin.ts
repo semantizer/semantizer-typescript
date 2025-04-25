@@ -17,8 +17,8 @@ export function IndexShapeMixin<
             this.addObjectUri(this.getBaseUri(), RDF.TYPE, SHACL.NODE_SHAPE);
         }
 
-        public compareTo<ComparisonResult>(other: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult {
-            return strategy.execute(this, other);
+        public doesMatch(other: IndexShape, strategy: IndexShapeComparisonStrategy): boolean {
+            return strategy.doesMatch(this, other);
         }
 
         // TODO: ENHANCE

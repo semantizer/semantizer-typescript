@@ -37,7 +37,7 @@ export class TargetIndexStream extends Duplex {
     }
 
     private async _processEntry(entry: IndexEntry): Promise<void> {
-        const comparisonResult = entry.compareShape(this._shape);
+        const comparisonResult = entry.doesMatchShape(this._shape);
         
         if (comparisonResult.getResult() === 1) {
             const subIndex = entry.getSubIndex();

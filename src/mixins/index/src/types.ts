@@ -7,7 +7,7 @@ export interface IndexQueryingOptions {
 
 export interface IndexOperations {
     loadEntryStream(strategy: EntryStreamTransformerStrategy<any>): Promise<Readable>;
-    compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
+    doesEntryMatchShape(entry: NamedNode | string, shapeToMatch: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
     countEntryShapeProperties(entry: NamedNode | string): number;
     getEntryShapePropertiesAll(entry: NamedNode | string): Term[] | undefined;
     hasEntrySubIndex(entry: NamedNode | string): boolean;
@@ -19,7 +19,7 @@ export interface IndexOperations {
 }
 
 export interface IndexEntryOperations {
-    compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
+    doesMatchShape(shapeToMatch: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
     hasSubIndex(): boolean;
     getShape(): NamedNode | BlankNode | undefined;
     // getShapeDataset(): IndexShape;
@@ -30,7 +30,7 @@ export interface IndexEntryOperations {
 export interface IndexShapeOperations {
     // isClosed(): boolean;
     // hasMultiCriteria(): boolean;
-    compareTo<ComparisonResult>(other: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult;
+    doesMatch(other: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
     countProperties(): number;
     forEachProperty(callbackfn: (value: IndexShapeProperty, index?: number, array?: IndexShapeProperty[]) => void): void;
     getPropertiesAll(): IndexShapeProperty[]; // IndexShapeProperty[];
@@ -54,8 +54,8 @@ export interface IndexShapePropertyOperations {
     // compares(other: IndexShapeProperty): number
 }
 
-export interface IndexShapeComparisonStrategy<ComparisonResult> {
-    execute(shapeA: IndexShape, shapeB: IndexShape): ComparisonResult;
+export interface IndexShapeComparisonStrategy {
+    doesMatch(referenceShape: IndexShape, shapeToMatchWith: IndexShape): boolean;
 }
 
 export interface IndexStrategy extends WithSemantizer {

@@ -1,10 +1,10 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
 import { Readable } from "stream";
-import { EntryStreamTransformerStrategyDefaultImpl } from "./EntryStreamTransformerStrategyDefaultImpl.js";
-import { indexFactory } from "./IndexMixin.js";
-import { IndexShapeComparisonStrategyDefaultImpl } from "./IndexShapeComparisonStrategyDefaultImpl.js";
+import { EntryStreamTransformerStrategyDefaultImpl } from "../entry/EntryStreamTransformerStrategyDefaultImpl.js";
+import { indexFactory } from "../../IndexMixin.js";
+import { IndexShapeComparisonStrategyDefaultImpl } from "../../IndexShapeComparisonStrategyDefaultImpl.js";
 import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl.js";
-import { FinalIndexResult, Index, IndexEntry, IndexShape, IndexStrategyFinalIndexes } from "./types";
+import { FinalIndexResult, Index, IndexEntry, IndexShape, IndexStrategyFinalIndexes } from "../../types.js";
 
 class FinalIndexResultImpl implements FinalIndexResult {
 
@@ -75,7 +75,7 @@ export class IndexStrategyFinalIndexesDefaultImpl extends IndexStrategyBaseDefau
                             return; // when we have enough results, we should stop the streaming process.
                         }
 
-                        const comparisonResult = entry.compareShape(shape, this._shapeComparisonStrategy);
+                        const comparisonResult = entry.doesMatchShape(shape, this._shapeComparisonStrategy);
 
                         if (comparisonResult.areTargetedRdfTypePathsAndTargetedPropertyPathsAndValuesEqual()) {
                             const subIndex = entry.getSubIndex();

@@ -1,6 +1,6 @@
 import { NamedNode, Semantizer } from "@semantizer/types";
 import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl.js";
-import { IndexShape, IndexStrategy } from "./types";
+import { IndexShape, IndexStrategy } from "../../types.js";
 
 /**
  * 2024-10-03: The reason is that in the future

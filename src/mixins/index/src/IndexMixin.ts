@@ -70,7 +70,7 @@ export function IndexMixin<
             return this.getObjectLinked(entry, IDX.HAS_SHAPE);
         }
 
-        public compareEntryWithShape<ComparisonResult>(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult {
+        public doesEntryMatchShape(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy): boolean {
             const entryThing = this.getSubGraph(entry, this.getDefaultGraphTerm());
 
             if (!entryThing) {
@@ -78,7 +78,7 @@ export function IndexMixin<
             }
 
             const entryDataset = this.getSemantizer().build(indexEntryFactory, entryThing);
-            return entryDataset.compareShape(shape, strategy);
+            return entryDataset.doesMatchShape(shape, strategy);
         }
 
         public countEntryShapeProperties(entry: NamedNode | string): number {

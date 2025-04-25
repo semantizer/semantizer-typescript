@@ -14,9 +14,9 @@ export function IndexEntryMixin<
 
     return class IndexEntryMixinImpl extends Base implements IndexEntry {
 
-        public compareShape<ComparisonResult>(shape: IndexShape, strategy: IndexShapeComparisonStrategy<ComparisonResult>): ComparisonResult {
+        public doesMatchShape(shape: IndexShape, strategy: IndexShapeComparisonStrategy): boolean {
             const thisShape = this.makeInternalShapeDataset();
-            return thisShape.compareTo(shape, strategy);
+            return thisShape.doesMatch(shape, strategy);
         }
 
         public hasSubIndex(): boolean {

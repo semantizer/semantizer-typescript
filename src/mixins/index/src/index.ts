@@ -35,9 +35,10 @@ export {
 } from "./types.js";
 
 export * from './IndexShapeComparisonStrategyDefaultImpl.js';
-export { IndexStrategyBaseShapeImpl } from "./IndexStrategyBaseShapeImpl.js";
+export * from './strategy/shape/MatchShaclPropertyPredicateAndObject.js';
+export { IndexStrategyBaseShapeImpl } from "./strategy/index/IndexStrategyBaseShapeImpl.js";
 
-export { IndexStrategyFinalIndexesDefaultImpl } from "./IndexStrategyFinalIndexesDefaultImpl.js";
-export * from './EntryStreamTransformerStrategyDefaultImpl.js';
+export { IndexStrategyFinalIndexesDefaultImpl } from "./strategy/index/IndexStrategyFinalIndexesDefaultImpl.js";
+export * from './strategy/entry/EntryStreamTransformerStrategyDefaultImpl.js';
 
 export default indexFactory;
