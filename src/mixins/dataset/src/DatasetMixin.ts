@@ -118,7 +118,7 @@ export function DatasetMixin<
 
         public getSubGraph(subject: BlankNode | NamedNode | string, parentGraph: NamedNode | DefaultGraph): DatasetSemantizer | undefined {
             const termSubject = typeof subject === 'string' ? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(subject) : subject;
-            const datasetRdfjs = this.match(termSubject, undefined, undefined, parentGraph);
+            const datasetRdfjs = this.matchDatasetSemantizerWithLinkedObjects(termSubject, undefined, undefined, parentGraph);
             const dataset = this.getSemantizer().build();
             return dataset.addAll(datasetRdfjs);
         }

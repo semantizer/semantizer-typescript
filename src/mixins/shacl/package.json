@@ -1,7 +1,7 @@
 {
-  "name": "@semantizer/mixin-dataset",
-  "version": "1.0.0-beta.2.0.1",
-  "description": "A Semantizer mixin adding extra methods to RDFJS dataset base interface",
+  "name": "@semantizer/mixin-shacl",
+  "version": "1.0.0-beta.1",
+  "description": "A Semantizer mixin to express SHACL shapes",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
   "type": "module",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/mixins/dataset"
+    "directory": "src/mixins/shacl"
   },
   "scripts": {
     "build": "tsc -p .",

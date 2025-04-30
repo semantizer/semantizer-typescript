@@ -2,6 +2,14 @@ import { LoggingLevel, NamedNode, Term } from "@semantizer/types";
 import { RDF, SHACL } from "./namespaces.js";
 import { IndexShape, IndexShapeComparisonStrategy, IndexShapeProperty } from "./types";
 
+
+// TODO:
+// - add a shacl mixin with a ShapeMixin;
+// - the client passes the shape (maybe targetting directly the entry) and we transform it to an entry shape to parse the index entry;
+// - use SHACL validator to find results;
+// - transform the client shape to make a shape to find final indexes (make a straetgy).
+
+
 export class IndexShapeComparisonStrategyDefaultImpl implements IndexShapeComparisonStrategy<IndexShapeComparisonStrategyResult> {
 
     private _propertiesOfEntryShape: IndexShapeProperty[];

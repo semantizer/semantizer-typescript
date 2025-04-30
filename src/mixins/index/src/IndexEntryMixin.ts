@@ -15,7 +15,7 @@ export function IndexEntryMixin<
     return class IndexEntryMixinImpl extends Base implements IndexEntry {
 
         public doesMatchShape(shape: IndexShape, strategy: IndexShapeComparisonStrategy): boolean {
-            const thisShape = this.makeInternalShapeDataset();
+            const thisShape = this.getShapeDataset();
             return thisShape.doesMatch(shape, strategy);
         }
 
@@ -37,7 +37,7 @@ export function IndexEntryMixin<
 
         // TODO: replace subject _:b2 by namedNode('') === baseUri
         // this way we can use getBaseUri in requests.
-        public makeInternalShapeDataset(): IndexShape {
+        public getShapeDataset(): IndexShape {
             const entryShapeTerm = this.getShape();
 
             if (!entryShapeTerm) {

@@ -22,6 +22,7 @@ export interface IndexEntryOperations {
     doesMatchShape(shapeToMatch: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
     hasSubIndex(): boolean;
     getShape(): NamedNode | BlankNode | undefined;
+    getShapeDataset(): IndexShape;
     // getShapeDataset(): IndexShape;
     getTarget(): NamedNode | BlankNode | undefined;
     getSubIndex(): NamedNode | undefined;
