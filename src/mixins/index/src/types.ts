@@ -1,4 +1,4 @@
-import { DatasetSemantizer, BlankNode, NamedNode, Literal, Quad, Term, WithSemantizer } from "@semantizer/types";
+import { DatasetSemantizer, BlankNode, NamedNode, Literal, Quad, Term, WithSemantizer, Dataset } from "@semantizer/types";
 import { Readable } from "stream";
 
 export interface IndexQueryingOptions {
@@ -15,7 +15,8 @@ export interface IndexOperations {
     getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined;
     getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
 
-    findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
+    query(strategy: IndexQueryingStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
+    // findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
 }
 
 export interface IndexEntryOperations {
@@ -55,26 +56,26 @@ export interface IndexShapePropertyOperations {
     // compares(other: IndexShapeProperty): number
 }
 
-export interface IndexShapeComparisonStrategy {
-    doesMatch(referenceShape: IndexShape, shapeToMatchWith: IndexShape): boolean;
+// export interface IndexShapeComparisonStrategy {
+//     doesMatch(referenceShape: IndexShape, shapeToMatchWith: IndexShape): boolean;
+// }
+
+export interface IndexQueryingStrategy extends WithSemantizer {
+    query(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
-export interface IndexStrategy extends WithSemantizer {
-    execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
-}
-
-export interface IndexStrategyFinalIndexes extends WithSemantizer {
-    execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
-}
+// export interface IndexStrategyFinalIndexes extends WithSemantizer {
+//     execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
+// }
 
 export interface EntryStreamTransformerStrategy<Entry> {
     transform(quad: Quad): Entry | undefined;
 }
 
-export interface FinalIndexResult {
-    getIndex(): NamedNode;
-    getPath(): NamedNode;
-}
+// export interface FinalIndexResult {
+//     getIndex(): NamedNode;
+//     getPath(): NamedNode;
+// }
 
 // export type IndexShapePropertyBase = DatasetSemantizer & IndexShapePropertyBaseOperations;
 export type IndexShapeProperty = /*IndexShapePropertyBase*/ IndexShapePropertyOperations;

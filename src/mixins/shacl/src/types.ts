@@ -1,4 +1,4 @@
-import { BlankNode, DatasetSemantizer, NamedNode, Quad_Graph, Quad_Object, Quad_Subject } from "@semantizer/types";
+import { BlankNode, Dataset, DatasetSemantizer, NamedNode, Quad_Graph, Quad_Object, Quad_Subject } from "@semantizer/types";
 
 export interface ShapeOperations {
 
@@ -19,6 +19,14 @@ export interface ShapeOperations {
     setMaxCount(property: NamedNode | BlankNode | string, minCount: number, graph?: Quad_Graph | string): void;
     addQualifiedValueShape(property: NamedNode | BlankNode | string, shape: NamedNode | BlankNode, graph?: Quad_Graph | string): void;
     setQualifiedMinCount(property: NamedNode | BlankNode | string, qualifiedMinCount: number, graph?: Quad_Graph | string): void;
+}
+
+export interface ShaclValidator {
+    validate(shapeGraph: Dataset, dataGraph: Dataset): ShaclValidationResult[];
+}
+
+export interface ShaclValidationResult {
+
 }
 
 export type Shape = DatasetSemantizer & ShapeOperations;

@@ -1,7 +1,7 @@
 import { DatasetSemantizer, Quad, Semantizer } from "@semantizer/types";
-import { indexEntryFactory } from "../../IndexEntryMixin.js";
-import { IDX, RDF, SHACL } from "../../namespaces.js";
-import { EntryStreamTransformerStrategy, IndexEntry } from "../../types.js";
+import { IndexEntry, indexEntryFactory, IDX } from "@semantizer/mixin-index";
+// import { , RDF, SHACL } from "../../namespaces.js";
+import { EntryStreamTransformerStrategy } from "./types.js";
 
 /**
  * This transformer transforms streamed quads into an IndexEntry object once it has a shape and a sub index or target.

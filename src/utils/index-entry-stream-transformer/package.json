@@ -1,0 +1,28 @@
+{
+  "name": "@semantizer/utils-index-strategy-final",
+  "version": "1.0.0-beta.1",
+  "description": "A Semantizer util to stream Index entries.",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./lib/index.js",
+  "type": "module",
+  "types": "./lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/utils/index-strategy-final"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@semantizer/mixin-index": "beta"
+  },
+  "devDependencies": {
+    "@semantizer/types": "beta",
+    "typescript": "^5.5.2"
+  }
+}
