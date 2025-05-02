@@ -1,0 +1,71 @@
+{
+    "@base": "http://localhost:8000/",
+    "@context": {
+        "idx": "https://ns.inria.fr/idx/terms#",
+        "sh": "http://www.w3.org/ns/shacl#",
+        "ex": "http://example.org#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "sh:path": {
+            "@type": "@id"
+        },
+        "idx:hasSubIndex": {
+            "@type": "@id"
+        },
+        "idx:hasShape": {
+            "@type": "@id"
+        }
+    },
+    "@graph": [
+        {
+            "@id": "skills",
+            "@type": "idx:Index"
+        },
+        {
+            "@id": "skills#target",
+            "sh:path": "rdf:type",
+            "sh:hasValue": {
+                "@id": "ex:User"
+            }
+        },
+        {
+            "@id": "skills#logistics",
+            "@type": "idx:IndexEntry",
+            "idx:hasShape": {
+                "@type": "sh:NodeShape",
+                "sh:closed": "false",
+                "sh:property": [
+                    {
+                        "@id": "skills#target"
+                    },
+                    {
+                        "sh:path": "ex:skills",
+                        "sh:hasValue": {
+                            "@id": "ex:skill-logistics"
+                        }
+                    }
+                ]
+            },
+            "idx:hasSubIndex": "skills_logistics"
+        },
+        {
+            "@id": "skills#engineer",
+            "@type": "idx:IndexEntry",
+            "idx:hasShape": {
+                "@type": "sh:NodeShape",
+                "sh:closed": "false",
+                "sh:property": [
+                    {
+                        "@id": "skills#target"
+                    },
+                    {
+                        "sh:path": "ex:skills",
+                        "sh:hasValue": {
+                            "@id": "ex:skill-engineer"
+                        }
+                    }
+                ]
+            },
+            "idx:hasSubIndex": "skills_engineer"
+        }
+    ]
+}

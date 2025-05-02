@@ -1,6 +1,5 @@
-import { NamedNode, Semantizer } from "@semantizer/types";
+import { Dataset, Semantizer } from "@semantizer/types";
 import { IndexStrategyBaseDefaultImpl } from "./IndexStrategyBaseDefaultImpl.js";
-import { IndexShape, IndexStrategy } from "../../types.js";
 
 /**
  * 2024-10-03: The reason is that in the future
@@ -11,19 +10,17 @@ import { IndexShape, IndexStrategy } from "../../types.js";
  * engine, the strategy could take a complete SPARQL query and let the engine does all the work (use link traversal to discover 
  * sources).
  */
-export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyBaseDefaultImpl implements IndexStrategy {
+export abstract class IndexStrategyBaseShapeImpl extends IndexStrategyBaseDefaultImpl {
 
-    private _shape: IndexShape
+    private _shape: Dataset
 
-    public constructor(shape: IndexShape, semantizer?: Semantizer) {
+    public constructor(shape: Dataset, semantizer?: Semantizer) {
         super(semantizer);
         this._shape = shape;
     }
 
-    public getShape(): IndexShape {
+    public getShape(): Dataset {
         return this._shape;
     }
     
-    public abstract execute(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number | undefined): Promise<void>;
-
 }

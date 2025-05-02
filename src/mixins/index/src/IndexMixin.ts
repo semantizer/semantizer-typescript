@@ -3,7 +3,7 @@ import { Readable, Transform } from "stream";
 // import { indexEntryFactory } from "./IndexEntryMixin.js";
 import { indexEntryFactory } from "./IndexEntryMixin.js";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformerStrategy, Index, IndexQueryingOptions, IndexShape, IndexShapeComparisonStrategy, IndexStrategy } from "./types";
+import { EntryStreamTransformerStrategy, Index, IndexQueryingOptions, IndexQueryingStrategy, IndexShape, IndexShapeComparisonStrategy, IndexStrategy } from "./types";
 // import { indexEntryFactory } from "./IndexEntryMixin";
 
 export function IndexMixin<
@@ -11,7 +11,7 @@ export function IndexMixin<
 >(Base: TBase) {
 
     return class IndexMixinImpl extends Base implements Index {
-
+        
         /**
          * Transforms the quad stream of this dataset into an IndexEntry stream.
          * @returns A Readable stream of IndexEntry with their linked objects (shape and properties).
@@ -45,9 +45,8 @@ export function IndexMixin<
         //     });
         // }
 
-        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void> {
-            strategy.setSemantizer(this.getSemantizer());
-            await strategy.execute(this.getBaseUri(), callbackfn, options?.limit);
+        public query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Promise<Readable> {
+            return strategy.query(this, options);
         }
 
         // public createEntry()

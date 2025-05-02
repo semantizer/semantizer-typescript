@@ -1,5 +1,5 @@
 {
-  "name": "@semantizer/utils-index-strategy-final",
+  "name": "@semantizer/utils-index-entry-stream-transformer",
   "version": "1.0.0-beta.1",
   "description": "A Semantizer util to stream Index entries.",
   "author": "Maxime Lecoq-Gaillard",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/utils/index-strategy-final"
+    "directory": "src/utils/index-entry-stream-transformer"
   },
   "scripts": {
     "build": "tsc -p .",

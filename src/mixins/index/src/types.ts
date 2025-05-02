@@ -15,7 +15,8 @@ export interface IndexOperations {
     getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined;
     getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
 
-    query(strategy: IndexQueryingStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
+    query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Promise<Readable>;
+    // onResult: (result: NamedNode) => void
     // findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
 }
 
@@ -61,14 +62,19 @@ export interface IndexShapePropertyOperations {
 // }
 
 export interface IndexQueryingStrategy extends WithSemantizer {
-    query(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
+    query(index: Index, options?: IndexQueryingOptions): Promise<Readable>;
+    // query(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 
 // export interface IndexStrategyFinalIndexes extends WithSemantizer {
 //     execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
 // }
 
-export interface EntryStreamTransformerStrategy<Entry> {
+// export interface EntryStreamTransformerStrategy<Entry> {
+//     transform(quad: Quad): Entry | undefined;
+// }
+
+export interface EntryStreamTransformer<Entry> {
     transform(quad: Quad): Entry | undefined;
 }
 

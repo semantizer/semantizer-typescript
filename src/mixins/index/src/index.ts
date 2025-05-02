@@ -5,12 +5,13 @@ export * from './namespaces.js';
 export * from "./IndexMixin.js";
 export * from "./IndexEntryMixin.js";
 export * from "./IndexShapeMixin.js";
+export * from "./IndexStrategyBaseDefaultImpl.js";
+export * from "./IndexStrategyBaseShapeImpl.js";
+export * from './EntryStreamTransformerDefaultImpl.js';
 
 // export * from './IndexShapeComparisonStrategyDefaultImpl.js';
 // export * from './strategy/shape/MatchShaclPropertyPredicateAndObject.js';
-// export { IndexStrategyBaseShapeImpl } from "./strategy/index/IndexStrategyBaseShapeImpl.js";
 
 // export { IndexStrategyFinalIndexesDefaultImpl } from "./strategy/index/IndexStrategyFinalIndexesDefaultImpl.js";
-// export * from './strategy/entry/EntryStreamTransformerStrategyDefaultImpl.js';
 
 export default indexFactory;

@@ -1,5 +1,5 @@
 import { Quad } from "@semantizer/types";
 
-export interface EntryStreamTransformerStrategy<Entry> {
+export interface EntryStreamTransformer<Entry> {
     transform(quad: Quad): Entry | undefined;
 }
