@@ -1,11 +1,13 @@
 import { QueryEngine } from "@comunica/query-sparql";
-import { EntryStreamTransformer, Index, IndexEntry } from "@semantizer/mixin-index";
+import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions } from "@semantizer/mixin-index";
 import { Dataset, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
 import { IndexQueryingStrategyShaclUsingFinalIndex } from "@semantizer/utils-index-strategy-final-shape";
+import { Readable } from "stream";
 
 export class IndexStrategySparqlComunica extends IndexQueryingStrategyShaclUsingFinalIndex {
 
     private _sparqlQuery: string;
+    private _finalIndexes: NamedNode[];
 
     /**
      * Here a shape param is expected to be able to find the final indexes. It could be removed when 
@@ -18,10 +20,22 @@ export class IndexStrategySparqlComunica extends IndexQueryingStrategyShaclUsing
     public constructor(sparqlQuery: string, finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>, semantizer?: Semantizer) {
         super(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
         this._sparqlQuery = sparqlQuery;
+        this._finalIndexes = [];
+    }
+
+    protected init(options?: IndexQueryingOptions): void {
+        if (this.isInitialized()) {
+            this._finalIndexes = [];
+        }
+        super.init(options);
     }
 
     public getSparqlQuery(): string {
         return this._sparqlQuery;
+    }
+
+    public getFinalIndexes(): NamedNode[] {
+        return this._finalIndexes;
     }
 
     protected async process(index: Index): Promise<void> {
@@ -45,6 +59,25 @@ export class IndexStrategySparqlComunica extends IndexQueryingStrategyShaclUsing
             this.log('ERROR', "No final index found.");
             this.pushResult(null);
         });
+    }
+
+    public query(index: Index, options?: IndexQueryingOptions): Readable {
+        super.init(options);
+        const finalIndexStream = this.getFinalIndexesStream(index);
+        finalIndexStream.on('data', (result: NamedNode) => {
+            this._finalIndexes.push(result);
+        });
+        finalIndexStream.on('end', () => {
+            if (this.getFinalIndexes().length > 0) {
+                this.process(index);
+            }
+            else {
+                this.log('WARN', "No final index found.");
+                this.pushResult(null);
+            }
+        });
+
+        return this.getResultStream();
     }
 
 }
