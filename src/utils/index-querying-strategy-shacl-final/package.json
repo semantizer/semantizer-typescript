@@ -1,5 +1,5 @@
 {
-  "name": "@semantizer/utils-index-strategy-final-shape",
+  "name": "@semantizer/utils-index-querying-strategy-shacl-final",
   "version": "1.0.0-beta.1",
   "description": "A Semantizer util to stream final indexes using SHACL shape comparison.",
   "author": "Maxime Lecoq-Gaillard",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/utils/index-strategy-final-shape"
+    "directory": "src/utils/index-querying-strategy-shacl-final"
   },
   "scripts": {
     "build": "tsc -p .",
@@ -19,8 +19,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@semantizer/mixin-index": "beta",
-    "@semantizer/mixin-shacl": "beta"
+    "@semantizer/mixin-index": "beta"
   },
   "devDependencies": {
     "@semantizer/types": "beta",

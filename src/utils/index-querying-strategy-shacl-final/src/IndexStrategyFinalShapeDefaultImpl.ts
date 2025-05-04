@@ -1,5 +1,5 @@
 import { EntryStreamTransformer, Index, IndexEntry, indexFactory, IndexQueryingStrategyBaseShapeImpl } from "@semantizer/mixin-index";
-import { Dataset, Semantizer, ShaclValidator } from "@semantizer/types";
+import { Dataset, ShaclValidator } from "@semantizer/types";
 import { Readable } from "stream";
 
 export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyBaseShapeImpl<Entry> {
@@ -7,8 +7,8 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
     private _promises: Promise<void>[];
     private _subIndexShape: Dataset;
 
-    public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>, semantizer?: Semantizer) {
-        super(finalIndexShape, shaclValidator, entryStreamTransformer, semantizer);
+    public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+        super(finalIndexShape, shaclValidator, entryStreamTransformer);
         this._promises = [];
         this._subIndexShape = subIndexShape;
     }

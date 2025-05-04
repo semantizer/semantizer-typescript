@@ -1,6 +1,6 @@
 import { EntryStreamTransformer, EntryStreamTransformerDefaultImpl, Index, IndexEntry } from "@semantizer/mixin-index";
-import { Dataset, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
-import { IndexQueryingStrategyShaclUsingFinalIndex } from "@semantizer/utils-index-strategy-final-shape";
+import { Dataset, NamedNode, ShaclValidator } from "@semantizer/types";
+import { IndexQueryingStrategyShaclUsingFinalIndex } from "@semantizer/utils-index-querying-strategy-shacl-final";
 import { Readable } from "stream";
 
 // TODO: add a bypass shape mode on target indexes to avoid to recompare
@@ -9,17 +9,31 @@ import { Readable } from "stream";
 export class IndexQueryingStrategyShaclDefaultImpl extends IndexQueryingStrategyShaclUsingFinalIndex {
 
     private _entryStreams: Readable[];
+    private _results: string[];
 
-    public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>, semantizer?: Semantizer) {
-        super(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
+    public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>) {
+        super(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer);
         this._entryStreams = [];
+        this._results = [];
     }
 
     private async addIndex(index: Index): Promise<void> {
         const entryStreamStrategy = new EntryStreamTransformerDefaultImpl(this.getSemantizer());
         const entryStream = await index.loadEntryStream(entryStreamStrategy);
         this._entryStreams.push(entryStream);
-        entryStream.on('data', (entry: IndexEntry) => this.pushResult(entry.getBaseUri()));
+        entryStream.on('data', (entry: IndexEntry) => this.pushEntry(entry));
+    }
+
+    protected isTargetUnique(target: NamedNode): boolean {
+        return this._results.find((result) => target.value === result) === undefined;
+    }
+
+    protected pushEntry(entry: IndexEntry): void {
+        const target = entry.getTarget();
+        if (target && target.termType === 'NamedNode' && this.isTargetUnique(target)) {
+            this.pushResult(target);
+        }
+        else this.log('ERROR', "Target entry does not have a valid target");
     }
 
     protected pushResult(result: NamedNode | null): void {
@@ -29,37 +43,5 @@ export class IndexQueryingStrategyShaclDefaultImpl extends IndexQueryingStrategy
     public async process(index: Index): Promise<void> {
         this.addIndex(index);
     }
-
-    // public query(index: Index, options?: IndexQueryingOptions): Readable {
-    //     this.init(options);
-    //     this.
-    //     let resultCount = 0;
-    //     const limitCount: number = limit ? limit : 30;
-    //     const finalIndexesStrategy = new IndexStrategyFinalIndexesDefaultImpl(this.getSemantizer());
-    //     const finalIndexStream = finalIndexesStrategy.execute(rootIndex, this.getShape(), limit);
-    //     const resultChecker = this.makeResultChecker();
-
-    //     resultChecker.on('data', (entry: IndexEntry) => {
-    //         if (resultCount >= limitCount) {
-    //             resultChecker.pause();
-    //             resultCount = 0;
-    //         } else {
-    //             const target = entry.getTarget();
-    //             if (target && target.termType === 'NamedNode') {
-    //                 callbackfn(target);
-    //                 resultCount++;
-    //             }
-    //         }
-    //     });
-
-    //     finalIndexStream.on('data', (result: FinalIndexResult) => resultChecker.addIndex(result.getIndex()));
-    //     finalIndexStream.on('error', (error) => console.warn(error));
-
-    //     return new Promise<void>((resolve, reject) => {
-    //         resultChecker.on('end', () => { resolve() });
-    //         resultChecker.on('error', (error) => reject(error));
-    //     })
-
-    // }
 
 }

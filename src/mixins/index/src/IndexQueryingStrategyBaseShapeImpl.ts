@@ -17,8 +17,8 @@ export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = Index
     private _shape: Dataset;
     private _shaclValidator: ShaclValidator;
 
-    public constructor(shape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>, semantizer?: Semantizer) {
-        super(entryStreamTransformer, semantizer);
+    public constructor(shape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+        super(entryStreamTransformer);
         this._shape = shape;
         this._shaclValidator = shaclValidator;
     }

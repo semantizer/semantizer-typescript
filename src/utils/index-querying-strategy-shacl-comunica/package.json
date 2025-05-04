@@ -1,5 +1,5 @@
 {
-  "name": "@semantizer/utils-index-strategy-sparql-comunica",
+  "name": "@semantizer/utils-index-querying-strategy-shacl-comunica",
   "version": "1.0.0-beta.1",
   "description": "A Semantizer util to query indexes with Comunica using a SPARQL query",
   "author": "Maxime Lecoq-Gaillard",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/utils/index-strategy-sparql-comunica"
+    "directory": "src/utils/index-querying-strategy-shacl-comunica"
   },
   "scripts": {
     "build": "tsc -p .",
@@ -21,7 +21,7 @@
   "dependencies": {
     "@comunica/query-sparql": "^3.2.3",
     "@semantizer/mixin-index": "beta",
-    "@semantizer/utils-index-strategy-final-shape": "beta"
+    "@semantizer/utils-index-querying-strategy-shacl-final": "beta"
   },
   "devDependencies": {
     "@comunica/types": "^3.2.1",

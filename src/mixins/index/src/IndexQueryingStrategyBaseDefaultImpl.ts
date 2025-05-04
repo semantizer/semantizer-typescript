@@ -12,8 +12,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     private _hasLimit: boolean;
     private _isInitialized: boolean;
 
-    public constructor(entryStreamTransformer: EntryStreamTransformer<Entry>, semantizer?: Semantizer) {
-        this._semantizer = semantizer;
+    public constructor(entryStreamTransformer: EntryStreamTransformer<Entry>) {
         this._entryStreamTransformer = entryStreamTransformer;
         this._resultStream = this.makeResultStream();
         this._resultCount = 0;

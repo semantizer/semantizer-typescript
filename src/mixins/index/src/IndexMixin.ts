@@ -46,6 +46,7 @@ export function IndexMixin<
         // }
 
         public query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable {
+            strategy.setSemantizer(this.getSemantizer());
             return strategy.query(this, options);
         }
 

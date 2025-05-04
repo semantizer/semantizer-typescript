@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@semantizer/mixin-index": "beta",
-    "@semantizer/utils-index-strategy-final-shape": "beta"
+    "@semantizer/utils-index-querying-strategy-shacl-final": "beta"
   },
   "devDependencies": {
     "@semantizer/types": "beta",
