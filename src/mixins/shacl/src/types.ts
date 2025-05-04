@@ -21,17 +21,4 @@ export interface ShapeOperations {
     setQualifiedMinCount(property: NamedNode | BlankNode | string, qualifiedMinCount: number, graph?: Quad_Graph | string): void;
 }
 
-export interface ShaclValidator {
-    validate(shapeGraph: Dataset, dataGraph: Dataset): Promise<ShaclValidationReport>;
-}
-
-export interface ShaclValidationReport {
-    doConforms(): boolean;
-    getResults(): ShaclValidationResult[];
-}
-
-export interface ShaclValidationResult {
-
-}
-
 export type Shape = DatasetSemantizer & ShapeOperations;

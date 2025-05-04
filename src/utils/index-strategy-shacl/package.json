@@ -1,7 +1,7 @@
 {
-  "name": "@semantizer/mixin-index-strategy-conjunction",
-  "version": "1.0.0-beta.2",
-  "description": "A Semantizer mixin to query indexes with a conjunction strategy",
+  "name": "@semantizer/utils-index-strategy-shacl",
+  "version": "1.0.0-beta.1",
+  "description": "A Semantizer util to query indexes using SHACL comparison.",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
   "type": "module",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/mixins/index-strategy-conjunction"
+    "directory": "src/utils/index-strategy-shacl"
   },
   "scripts": {
     "build": "tsc -p .",
@@ -19,7 +19,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@semantizer/mixin-index": "beta"
+    "@semantizer/mixin-index": "beta",
+    "@semantizer/mixin-shacl": "beta",
+    "@semantizer/utils-index-strategy-final-shape": "beta"
   },
   "devDependencies": {
     "@semantizer/types": "beta",

@@ -19,5 +19,6 @@ export * from "./lib/Common.js";
 export * from "./lib/Semantizer.js";
 export * from "./lib/Loader.js";
 export * from "./lib/Datasets.js";
+export * from "./lib/Shacl.js";
 
 

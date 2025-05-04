@@ -21,7 +21,6 @@
   "dependencies": {
     "@comunica/query-sparql": "^3.2.3",
     "@semantizer/mixin-index": "beta",
-    "@semantizer/mixin-shacl": "beta",
     "@semantizer/utils-index-strategy-final-shape": "beta"
   },
   "devDependencies": {

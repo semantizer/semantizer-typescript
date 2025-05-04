@@ -1,14 +1,26 @@
-import { FinalIndexResult, IndexEntry, IndexShapeProperty, IndexStrategyBaseShapeImpl, IndexStrategyFinalIndexesDefaultImpl, RDF } from "@semantizer/mixin-index";
-import { NamedNode } from "@semantizer/types";
+import { Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, EntryStreamTransformer, IndexShapeProperty, IndexStrategyBaseShapeImpl, RDF } from "@semantizer/mixin-index";
+import { Dataset, NamedNode, Semantizer } from "@semantizer/types";
+import { ShaclValidator } from "@semantizer/mixin-shacl";
 import { ResultCheckerDefaultImpl } from "./ResultCheckerDefaultImpl.js";
 // import { ResultCheckerStrategyMultiple } from "./ResultCheckerStrategyMultiple.js";
 import { ResultCheckerStrategySingle } from "./ResultCheckerStrategySingle.js";
 import { ResultCheckerStrategy } from "./types.js";
+import { Readable } from "stream";
+import { IndexStrategyFinalShapeDefaultImpl } from "@semantizer/utils-index-strategy-final-shape";
 
 // TODO: add a bypass shape mode on target indexes to avoid to recompare
 // the shape as all the index's entries are supposed to target a valid 
 // shape.
-export class IndexStrategyConjunctionDefaultImpl extends IndexStrategyBaseShapeImpl {
+export class IndexStrategyConjunctionDefaultImpl extends IndexStrategyBaseShapeImpl implements IndexQueryingStrategy {
+
+    private _resultStream: Readable;
+    private _finalIndexStrategy: IndexQueryingStrategy;
+
+    public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>, semantizer?: Semantizer) {
+        super(finalIndexShape, semantizer);
+        this._resultStream = this.makeResultStream();
+        this._finalIndexStrategy = new IndexStrategyFinalShapeDefaultImpl(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
+    }
 
     protected hasShapeMultiCriteria(): boolean {
         const properties = this.getShape().getPropertiesAll().filter((p: IndexShapeProperty) => p.getPath().value !== RDF.TYPE);
@@ -25,7 +37,7 @@ export class IndexStrategyConjunctionDefaultImpl extends IndexStrategyBaseShapeI
         return new ResultCheckerDefaultImpl(this.getSemantizer(), this.getShape(), strategy);
     }
 
-    public async execute(rootIndex: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void> {
+    public query(index: Index, options?: IndexQueryingOptions): Readable {
         let resultCount = 0;
         const limitCount: number = limit ? limit : 30;
         const finalIndexesStrategy = new IndexStrategyFinalIndexesDefaultImpl(this.getSemantizer());

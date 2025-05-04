@@ -1,14 +1,12 @@
 import { QueryEngine } from "@comunica/query-sparql";
-import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, IndexStrategyBaseShapeImpl } from "@semantizer/mixin-index";
-import { ShaclValidator } from "@semantizer/mixin-shacl";
-import { Dataset, NamedNode, Semantizer } from "@semantizer/types";
+import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, IndexQueryingStrategyBaseShapeImpl } from "@semantizer/mixin-index";
+import { Dataset, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
 import { IndexStrategyFinalShapeDefaultImpl } from "@semantizer/utils-index-strategy-final-shape";
 import { Readable } from "stream";
 
-export class IndexStrategySparqlComunica extends IndexStrategyBaseShapeImpl implements IndexQueryingStrategy {
+export class IndexStrategySparqlComunica extends IndexQueryingStrategyBaseShapeImpl {
 
     private _sparqlQuery: string;
-    // private _subIndexShape: Dataset;
     private _resultStream: Readable;
     private _finalIndexStrategy: IndexQueryingStrategy;
 
@@ -23,7 +21,6 @@ export class IndexStrategySparqlComunica extends IndexStrategyBaseShapeImpl impl
     public constructor(sparqlQuery: string, finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>, semantizer?: Semantizer) {
         super(finalIndexShape, semantizer);
         this._sparqlQuery = sparqlQuery;
-        // this._subIndexShape = subIndexShape;
         this._resultStream = this.makeResultStream();
         this._finalIndexStrategy = new IndexStrategyFinalShapeDefaultImpl(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
     }
