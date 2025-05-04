@@ -1,4 +1,4 @@
-import { BlankNode, DatasetSemantizer, Literal, NamedNode, Quad, Term, WithSemantizer } from "@semantizer/types";
+import { BlankNode, DatasetSemantizer, Literal, NamedNode, Quad, ShaclValidator, Term, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
 
 export interface IndexQueryingOptions {
@@ -7,7 +7,7 @@ export interface IndexQueryingOptions {
 
 export interface IndexOperations {
     loadEntryStream(strategy: EntryStreamTransformer<any>): Promise<Readable>;
-    doesEntryMatchShape(entry: NamedNode | string, shapeToMatch: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
+    doesEntryMatchShape(entry: NamedNode | string, shapeToMatch: IndexShape, shaclValidator: ShaclValidator): boolean;
     countEntryShapeProperties(entry: NamedNode | string): number;
     getEntryShapePropertiesAll(entry: NamedNode | string): Term[] | undefined;
     hasEntrySubIndex(entry: NamedNode | string): boolean;
@@ -16,16 +16,13 @@ export interface IndexOperations {
     getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
 
     query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable;
-    // onResult: (result: NamedNode) => void
-    // findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
 }
 
 export interface IndexEntryOperations {
-    doesMatchShape(shapeToMatch: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
+    doesMatchShape(shapeToMatch: IndexShape, shaclValidator: ShaclValidator): boolean;
     hasSubIndex(): boolean;
     getShape(): NamedNode | BlankNode | undefined;
     getShapeDataset(): IndexShape;
-    // getShapeDataset(): IndexShape;
     getTarget(): NamedNode | BlankNode | undefined;
     getSubIndex(): NamedNode | undefined;
 }
@@ -33,7 +30,7 @@ export interface IndexEntryOperations {
 export interface IndexShapeOperations {
     // isClosed(): boolean;
     // hasMultiCriteria(): boolean;
-    doesMatch(other: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
+    doesMatch(other: IndexShape, shaclValidator: ShaclValidator): boolean;
     countProperties(): number;
     forEachProperty(callbackfn: (value: IndexShapeProperty, index?: number, array?: IndexShapeProperty[]) => void): void;
     getPropertiesAll(): IndexShapeProperty[]; // IndexShapeProperty[];
@@ -57,33 +54,14 @@ export interface IndexShapePropertyOperations {
     // compares(other: IndexShapeProperty): number
 }
 
-// export interface IndexShapeComparisonStrategy {
-//     doesMatch(referenceShape: IndexShape, shapeToMatchWith: IndexShape): boolean;
-// }
-
 export interface IndexQueryingStrategy extends WithSemantizer {
     query(index: Index, options?: IndexQueryingOptions): Readable;
-    // query(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
-
-// export interface IndexStrategyFinalIndexes extends WithSemantizer {
-//     execute(rootIndex: NamedNode | string, shape: IndexShape, maxFind?: number): Readable;
-// }
-
-// export interface EntryStreamTransformerStrategy<Entry> {
-//     transform(quad: Quad): Entry | undefined;
-// }
 
 export interface EntryStreamTransformer<Entry> {
     transform(quad: Quad): Entry | undefined;
 }
 
-// export interface FinalIndexResult {
-//     getIndex(): NamedNode;
-//     getPath(): NamedNode;
-// }
-
-// export type IndexShapePropertyBase = DatasetSemantizer & IndexShapePropertyBaseOperations;
 export type IndexShapeProperty = /*IndexShapePropertyBase*/ IndexShapePropertyOperations;
 export type IndexShape = DatasetSemantizer & IndexShapeOperations;
 export type IndexEntry = DatasetSemantizer & IndexEntryOperations;

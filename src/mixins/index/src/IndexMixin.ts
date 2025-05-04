@@ -1,10 +1,7 @@
-import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, Term } from "@semantizer/types";
+import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
-// import { indexEntryFactory } from "./IndexEntryMixin.js";
-import { indexEntryFactory } from "./IndexEntryMixin.js";
 import { IDX, SHACL } from "./namespaces.js";
 import { EntryStreamTransformer, Index, IndexQueryingOptions, IndexQueryingStrategy, IndexShape } from "./types";
-// import { indexEntryFactory } from "./IndexEntryMixin";
 
 export function IndexMixin<
     TBase extends DatasetSemantizerMixinConstructor
@@ -70,15 +67,8 @@ export function IndexMixin<
             return this.getObjectLinked(entry, IDX.HAS_SHAPE);
         }
 
-        public doesEntryMatchShape(entry: NamedNode | string, shape: IndexShape, strategy: IndexShapeComparisonStrategy): boolean {
-            const entryThing = this.getSubGraph(entry, this.getDefaultGraphTerm());
-
-            if (!entryThing) {
-                throw new Error(`Nothing to compare: the entry ${entry} does not exist.`);
-            }
-
-            const entryDataset = this.getSemantizer().build(indexEntryFactory, entryThing);
-            return entryDataset.doesMatchShape(shape, strategy);
+        public doesEntryMatchShape(entry: NamedNode | string, shape: IndexShape, shaclValidator: ShaclValidator): boolean {
+            throw new Error("Not implemented");
         }
 
         public countEntryShapeProperties(entry: NamedNode | string): number {

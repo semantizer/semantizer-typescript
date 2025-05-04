@@ -1,8 +1,6 @@
-import { BlankNode, DatasetSemantizerMixinConstructor, Literal, NamedNode, Semantizer } from "@semantizer/types";
-// import { indexShapePropertyPatternFactory, indexShapePropertyValueFactory } from "./IndexShapePropertyMixin.js";
-import { IndexShape, IndexShapeComparisonStrategy, IndexShapeProperty } from "./types";
+import { BlankNode, DatasetSemantizerMixinConstructor, Literal, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
 import { RDF, SHACL } from "./namespaces.js";
-import { IndexShapePropertyDefaultImpl } from "./IndexShapePropertyDefaultImpl.js";
+import { IndexShape, IndexShapeProperty } from "./types";
 
 export function IndexShapeMixin<
     TBase extends DatasetSemantizerMixinConstructor
@@ -17,8 +15,8 @@ export function IndexShapeMixin<
             this.addObjectUri(this.getBaseUri(), RDF.TYPE, SHACL.NODE_SHAPE);
         }
 
-        public doesMatch(other: IndexShape, strategy: IndexShapeComparisonStrategy): boolean {
-            return strategy.doesMatch(this, other);
+        public doesMatch(other: IndexShape, shaclValidator: ShaclValidator): boolean {
+            throw new Error("Not implemented.");
         }
 
         // TODO: ENHANCE
@@ -51,28 +49,7 @@ export function IndexShapeMixin<
         }
 
         public getPropertiesAll(): IndexShapeProperty[] {
-            const results: IndexShapePropertyDefaultImpl[] = [];
-            const properties = this.getObjectLinkedAll(this.getBaseUri(), SHACL.PROPERTY);
-            if (properties) {
-                for (const property of properties) {
-                    if (['NamedNode', 'BlankNode'].includes(property.termType)) {
-                        const propertyDataset = this.getSubGraph(property as NamedNode | BlankNode, this.getDefaultGraphTerm());
-                        if (propertyDataset) {
-                            for (const quad of propertyDataset) {
-                                if (quad.predicate.termType === 'NamedNode' && ['NamedNode', 'BlankNode', 'Literal'].includes(quad.object.termType)) {
-                                    results.push(
-                                        new IndexShapePropertyDefaultImpl(
-                                            quad.predicate,
-                                            quad.object as NamedNode | Literal
-                                        )
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return results;
+            throw new Error("Not implemented.");
         }
 
     }

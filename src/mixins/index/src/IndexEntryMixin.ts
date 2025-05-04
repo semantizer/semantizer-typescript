@@ -1,6 +1,6 @@
-import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from "@semantizer/types";
+import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
 import { IDX } from "./namespaces.js";
-import { IndexEntry, IndexShape, IndexShapeComparisonStrategy } from "./types";
+import { IndexEntry, IndexShape } from "./types";
 import { indexShapeFactory } from "./IndexShapeMixin.js";
 
 /**
@@ -14,9 +14,8 @@ export function IndexEntryMixin<
 
     return class IndexEntryMixinImpl extends Base implements IndexEntry {
 
-        public doesMatchShape(shape: IndexShape, strategy: IndexShapeComparisonStrategy): boolean {
-            const thisShape = this.getShapeDataset();
-            return thisShape.doesMatch(shape, strategy);
+        public doesMatchShape(shape: IndexShape, shaclValidator: ShaclValidator): boolean {
+            throw new Error("Not implemented.");
         }
 
         public hasSubIndex(): boolean {

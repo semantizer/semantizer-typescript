@@ -9,9 +9,4 @@ export * from "./IndexQueryingStrategyBaseDefaultImpl.js";
 export * from "./IndexQueryingStrategyBaseShapeImpl.js";
 export * from './EntryStreamTransformerDefaultImpl.js';
 
-// export * from './IndexShapeComparisonStrategyDefaultImpl.js';
-// export * from './strategy/shape/MatchShaclPropertyPredicateAndObject.js';
-
-// export { IndexStrategyFinalIndexesDefaultImpl } from "./strategy/index/IndexStrategyFinalIndexesDefaultImpl.js";
-
 export default indexFactory;
