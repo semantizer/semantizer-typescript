@@ -14,7 +14,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
     private _resultStream: Readable;
     private _isInitialized: boolean;
 
-    private _subIndexShape;
+    private _subIndexShape: Dataset;
 
     public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>, semantizer?: Semantizer) {
         super(finalIndexShape, semantizer);
@@ -91,15 +91,15 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         return this.hasLimit() && (this.getFoundFinalIndexCount() >= this._options!.limit!);
     }
 
-    private doEntryHasFinalIndex(entry: Entry): boolean {
-        const entryShape = entry.getShapeDataset();
-        const validationReport = this._shaclValidator.validate(this.getShape(), entryShape);
+    private async doEntryHasFinalIndex(entry: Dataset): Promise<boolean> {
+        // const entryShape = entryShapeDataset.getShapeDataset();
+        const validationReport = await this._shaclValidator.validate(this.getShape(), entry);
         return validationReport.doConforms();
     }
 
-    private doEntryHasSubIndexToExplore(entry: Entry): boolean {
-        const entryShape = entry.getShapeDataset();
-        const validationReport = this._shaclValidator.validate(this._subIndexShape, entryShape);
+    private async doEntryHasSubIndexToExplore(entry: Dataset): Promise<boolean> {
+        // const entryShape = entryShapeDataset.getShapeDataset();
+        const validationReport = await this._shaclValidator.validate(this._subIndexShape, entry);
         return validationReport.doConforms();
     }
 
@@ -115,7 +115,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
                     }
 
                     // We found a final index
-                    if (this.doEntryHasFinalIndex(entry)) {
+                    if (await this.doEntryHasFinalIndex(entry)) {
                         const subIndex = entry.getSubIndex();
                         if (subIndex) {
                             this.pushResult(subIndex);
@@ -123,7 +123,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
                     }
 
                     // We found a sub index to explore
-                    else if (this.doEntryHasSubIndexToExplore(entry)) {
+                    else if (await this.doEntryHasSubIndexToExplore(entry)) {
                         if (this.canContinue()) {
                             await this.processSubIndex(entry, entryStream);
                         }
@@ -169,9 +169,9 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         Promise.all(this.getPromises()).then(() => this.pushResult(null));
     }
 
-    public async query(index: Index, options?: IndexQueryingOptions): Promise<Readable> {
+    public query(index: Index, options?: IndexQueryingOptions): Readable {
         this.init(options);
-        this.process(index).then(this.endResultStream);
+        this.process(index).then(() => this.endResultStream());
         return this.getResultStream();
     }
 

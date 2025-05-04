@@ -17,25 +17,25 @@
     },
     "@graph": [
         {
-            "@id": "skills",
+            "@id": "skills.jsonld",
             "@type": "idx:Index"
         },
         {
-            "@id": "skills#target",
+            "@id": "skills.jsonld#target",
             "sh:path": "rdf:type",
             "sh:hasValue": {
                 "@id": "ex:User"
             }
         },
         {
-            "@id": "skills#logistics",
+            "@id": "skills.jsonld#logistics",
             "@type": "idx:IndexEntry",
             "idx:hasShape": {
                 "@type": "sh:NodeShape",
                 "sh:closed": "false",
                 "sh:property": [
                     {
-                        "@id": "skills#target"
+                        "@id": "skills.jsonld#target"
                     },
                     {
                         "sh:path": "ex:skills",
@@ -45,17 +45,17 @@
                     }
                 ]
             },
-            "idx:hasSubIndex": "skills_logistics"
+            "idx:hasSubIndex": "skills_logistics.jsonld"
         },
         {
-            "@id": "skills#engineer",
+            "@id": "skills.jsonld#engineer",
             "@type": "idx:IndexEntry",
             "idx:hasShape": {
                 "@type": "sh:NodeShape",
                 "sh:closed": "false",
                 "sh:property": [
                     {
-                        "@id": "skills#target"
+                        "@id": "skills.jsonld#target"
                     },
                     {
                         "sh:path": "ex:skills",
@@ -65,7 +65,7 @@
                     }
                 ]
             },
-            "idx:hasSubIndex": "skills_engineer"
+            "idx:hasSubIndex": "skills_engineer.jsonld"
         }
     ]
 }

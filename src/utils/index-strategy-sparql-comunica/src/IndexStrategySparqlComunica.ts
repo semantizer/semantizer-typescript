@@ -1,10 +1,16 @@
 import { QueryEngine } from "@comunica/query-sparql";
-import { FinalIndexResult, Index, IndexShape, IndexShapeProperty, IndexStrategyBaseShapeImpl, IndexStrategyFinalIndexesDefaultImpl } from "@semantizer/mixin-index";
-import { BlankNode, DatasetSemantizer, Literal, NamedNode } from "@semantizer/types";
+import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, IndexStrategyBaseShapeImpl } from "@semantizer/mixin-index";
+import { ShaclValidator } from "@semantizer/mixin-shacl";
+import { Dataset, NamedNode, Semantizer } from "@semantizer/types";
+import { IndexStrategyFinalShapeDefaultImpl } from "@semantizer/utils-index-strategy-final-shape";
+import { Readable } from "stream";
 
-export class IndexStrategySparqlComunica extends IndexStrategyBaseShapeImpl {
+export class IndexStrategySparqlComunica extends IndexStrategyBaseShapeImpl implements IndexQueryingStrategy {
 
     private _sparqlQuery: string;
+    // private _subIndexShape: Dataset;
+    private _resultStream: Readable;
+    private _finalIndexStrategy: IndexQueryingStrategy;
 
     /**
      * Here a shape param is expected to be able to find the final indexes. It could be removed when 
@@ -14,45 +20,67 @@ export class IndexStrategySparqlComunica extends IndexStrategyBaseShapeImpl {
      * @param sparqlQuery 
      * @param shape Needed to find the final indexes to query.
      */
-    public constructor(sparqlQuery: string, shape: IndexShape) {
-        super(shape);
+    public constructor(sparqlQuery: string, finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>, semantizer?: Semantizer) {
+        super(finalIndexShape, semantizer);
         this._sparqlQuery = sparqlQuery;
+        // this._subIndexShape = subIndexShape;
+        this._resultStream = this.makeResultStream();
+        this._finalIndexStrategy = new IndexStrategyFinalShapeDefaultImpl(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
     }
 
     public getSparqlQuery(): string {
         return this._sparqlQuery;
     }
 
-    public async execute(rootIndex: Index, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void> {
-        const limitCount: number = limit? limit: 30;
-        const finalIndexesStrategy = new IndexStrategyFinalIndexesDefaultImpl();
-        const finalIndexStream = finalIndexesStrategy.execute(rootIndex, this.getShape(), limit);
+    private pushResult(result: NamedNode | null): void {
+        this._resultStream.push(result);
+    }
+
+    private makeResultStream(): Readable {
+        const resultStream = new Readable({ objectMode: true });
+        resultStream._read = () => { };
+        return resultStream;
+    }
+
+    private getFinalIndexes(index: Index, callBack: (indexes: string[]) => void): Readable {
         const finalIndexes: string[] = [];
-
-        finalIndexStream.on('data', (result: FinalIndexResult) => finalIndexes.push(result.getIndex().getOrigin()?.value!));
-
-        return new Promise((resolve, reject) => {
-            finalIndexStream.on('end', async () => {
-                if (finalIndexes.length > 0) {
-                    const comunicaEngine = new QueryEngine();
-
-                    // @ts-ignore
-                    const bindingsStream = await comunicaEngine.queryBindings(this.getSparqlQuery(), { sources: finalIndexes, unionDefaultGraph: true });
-
-                    bindingsStream.on('data', (binding) => {
-                        const namedNode = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode;
-                        const dataset = this.getSemantizer().build();
-                        dataset.setOrigin(namedNode(binding.get('result').value));
-                        callbackfn(dataset)
-                    });
-                    bindingsStream.on('end', () => resolve());
-                    bindingsStream.on('error', (error) => reject(error));
-                }
-                else reject("No final index found.");
-            });
-
-            finalIndexStream.on('error', (error) => reject(error));
+        const finalIndexStream = index.query(this._finalIndexStrategy);
+        finalIndexStream.on('data', (result: NamedNode) => {
+            finalIndexes.push(result.value);
+            this.log('INFO', "Found final index " + result.value);
         });
+        finalIndexStream.on('end', () => callBack(finalIndexes));
+        finalIndexStream.on('error', (error) => this.log('ERROR', error.toString()));
+        return finalIndexStream;
+    }
+
+    public query(index: Index, options?: IndexQueryingOptions): Readable {
+        this.getFinalIndexes(index, async (finalIndexes: string[]) => {
+            if (finalIndexes.length > 0) {
+                const comunicaEngine = new QueryEngine();
+
+                // @ts-ignore
+                const bindingsStream = await comunicaEngine.queryBindings(this.getSparqlQuery(), { sources: finalIndexes, unionDefaultGraph: true });
+
+                bindingsStream.on('data', (binding) => {
+                    const result: NamedNode = binding.get('result');
+                    this.pushResult(result);
+                    this.log('INFO', "Found result " + result.value);
+                });
+
+                bindingsStream.on('end', () => this.pushResult(null));
+                bindingsStream.on('error', (error) => {
+                    this.log('ERROR', "No final index found.");
+                    this.pushResult(null);
+                });
+            }
+            else {
+                this.log('WARN', "No final index found.");
+                this.pushResult(null);
+            }
+        });
+
+        return this._resultStream;
     }
 
 }

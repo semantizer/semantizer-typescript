@@ -17,8 +17,8 @@
     },
     "@graph": [
         {
-            "@type": "idx:Index",
-            "@id": "root"
+            "@id": "root.jsonld",
+            "@type": "idx:Index"
         },
         {
             "@id": "root#target",
@@ -42,7 +42,7 @@
                     }
                 ]
             },
-            "idx:hasSubIndex": "name"
+            "idx:hasSubIndex": "names.jsonld"
         },
         {
             "@id": "root#skills",
@@ -59,7 +59,7 @@
                     }
                 ]
             },
-            "idx:hasSubIndex": "skills"
+            "idx:hasSubIndex": "skills.jsonld"
         }
     ]
 }

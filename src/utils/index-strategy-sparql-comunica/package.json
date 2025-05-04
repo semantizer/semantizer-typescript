@@ -1,7 +1,7 @@
 {
-  "name": "@semantizer/mixin-index-strategy-sparql-comunica",
+  "name": "@semantizer/utils-index-strategy-sparql-comunica",
   "version": "1.0.0-beta.1",
-  "description": "A Semantizer mixin to query indexes with Comunica using a SPARQL query",
+  "description": "A Semantizer util to query indexes with Comunica using a SPARQL query",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
   "type": "module",
@@ -9,7 +9,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/mixins/index-strategy-sparql-comunica"
+    "directory": "src/utils/index-strategy-sparql-comunica"
   },
   "scripts": {
     "build": "tsc -p .",
@@ -20,11 +20,13 @@
   "license": "MIT",
   "dependencies": {
     "@comunica/query-sparql": "^3.2.3",
-    "@semantizer/mixin-index": "^1.0.0-beta.1"
+    "@semantizer/mixin-index": "beta",
+    "@semantizer/mixin-shacl": "beta",
+    "@semantizer/utils-index-strategy-final-shape": "beta"
   },
   "devDependencies": {
     "@comunica/types": "^3.2.1",
-    "@semantizer/types": "^1.0.0-beta.1",
+    "@semantizer/types": "beta",
     "typescript": "^5.5.2"
   }
 }

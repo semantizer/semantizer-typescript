@@ -6,7 +6,7 @@ export interface IndexQueryingOptions {
 }
 
 export interface IndexOperations {
-    loadEntryStream(strategy: EntryStreamTransformerStrategy<any>): Promise<Readable>;
+    loadEntryStream(strategy: EntryStreamTransformer<any>): Promise<Readable>;
     doesEntryMatchShape(entry: NamedNode | string, shapeToMatch: IndexShape, strategy: IndexShapeComparisonStrategy): boolean;
     countEntryShapeProperties(entry: NamedNode | string): number;
     getEntryShapePropertiesAll(entry: NamedNode | string): Term[] | undefined;
@@ -15,7 +15,7 @@ export interface IndexOperations {
     getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined;
     getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
 
-    query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Promise<Readable>;
+    query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable;
     // onResult: (result: NamedNode) => void
     // findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: NamedNode) => void, options?: IndexQueryingOptions): Promise<void>;
 }
@@ -62,7 +62,7 @@ export interface IndexShapePropertyOperations {
 // }
 
 export interface IndexQueryingStrategy extends WithSemantizer {
-    query(index: Index, options?: IndexQueryingOptions): Promise<Readable>;
+    query(index: Index, options?: IndexQueryingOptions): Readable;
     // query(index: NamedNode | string, callbackfn: (target: NamedNode) => void, limit?: number): Promise<void>;
 }
 

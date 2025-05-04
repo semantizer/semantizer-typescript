@@ -5,6 +5,9 @@ import { ResultCheckerDefaultImpl } from "./ResultCheckerDefaultImpl.js";
 import { ResultCheckerStrategySingle } from "./ResultCheckerStrategySingle.js";
 import { ResultCheckerStrategy } from "./types.js";
 
+// TODO: add a bypass shape mode on target indexes to avoid to recompare
+// the shape as all the index's entries are supposed to target a valid 
+// shape.
 export class IndexStrategyConjunctionDefaultImpl extends IndexStrategyBaseShapeImpl {
 
     protected hasShapeMultiCriteria(): boolean {

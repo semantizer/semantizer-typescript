@@ -15,7 +15,7 @@ export interface WithBaseUri {
     setBaseUri(baseUri: NamedNode | string): void;
 }
 
-export type LoggingLevel = 'WARN' | 'ERROR';
+export type LoggingLevel = 'INFO' | 'WARN' | 'ERROR';
 export type LoggingEntryCallback = (logEntry: LoggingEntry) => void;
 
 export interface WithLogging {

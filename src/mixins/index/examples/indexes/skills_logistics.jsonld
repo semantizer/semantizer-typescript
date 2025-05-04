@@ -22,7 +22,7 @@
         "rdfs:label": "Logistics and distribution manager"
       },
       {
-        "@id": "skill_logistics#target",
+        "@id": "skill_logistics.jsonld#target",
         "@type": "sh:NodeShape",
         "sh:closed": "false",
         "sh:property": [
@@ -41,957 +41,957 @@
         ]
       },
       {
-        "@id": "skill_logistics#0",
+        "@id": "skill_logistics.jsonld#0",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/angela8095/"
       },
       {
-        "@id": "skill_logistics#1",
+        "@id": "skill_logistics.jsonld#1",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/brettmckee7/"
       },
       {
-        "@id": "skill_logistics#2",
+        "@id": "skill_logistics.jsonld#2",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/brownstephanie48/"
       },
       {
-        "@id": "skill_logistics#3",
+        "@id": "skill_logistics.jsonld#3",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/chase8653/"
       },
       {
-        "@id": "skill_logistics#4",
+        "@id": "skill_logistics.jsonld#4",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/clin74/"
       },
       {
-        "@id": "skill_logistics#5",
+        "@id": "skill_logistics.jsonld#5",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/colemanpeter2/"
       },
       {
-        "@id": "skill_logistics#6",
+        "@id": "skill_logistics.jsonld#6",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/connor5764/"
       },
       {
-        "@id": "skill_logistics#7",
+        "@id": "skill_logistics.jsonld#7",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/courtney7751/"
       },
       {
-        "@id": "skill_logistics#8",
+        "@id": "skill_logistics.jsonld#8",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/derrick9736/"
       },
       {
-        "@id": "skill_logistics#9",
+        "@id": "skill_logistics.jsonld#9",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/dwaynemiles0/"
       },
       {
-        "@id": "skill_logistics#10",
+        "@id": "skill_logistics.jsonld#10",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/elizabeth1421/"
       },
       {
-        "@id": "skill_logistics#11",
+        "@id": "skill_logistics.jsonld#11",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/fowlerkatie67/"
       },
       {
-        "@id": "skill_logistics#12",
+        "@id": "skill_logistics.jsonld#12",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/frobles72/"
       },
       {
-        "@id": "skill_logistics#13",
+        "@id": "skill_logistics.jsonld#13",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/gardnerdeanna77/"
       },
       {
-        "@id": "skill_logistics#14",
+        "@id": "skill_logistics.jsonld#14",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/harrislauren95/"
       },
       {
-        "@id": "skill_logistics#15",
+        "@id": "skill_logistics.jsonld#15",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/hollyoconnell20/"
       },
       {
-        "@id": "skill_logistics#16",
+        "@id": "skill_logistics.jsonld#16",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/iallen79/"
       },
       {
-        "@id": "skill_logistics#17",
+        "@id": "skill_logistics.jsonld#17",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jennataylor63/"
       },
       {
-        "@id": "skill_logistics#18",
+        "@id": "skill_logistics.jsonld#18",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jenniferbrown97/"
       },
       {
-        "@id": "skill_logistics#19",
+        "@id": "skill_logistics.jsonld#19",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jeremy228/"
       },
       {
-        "@id": "skill_logistics#20",
+        "@id": "skill_logistics.jsonld#20",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jesusjackson21/"
       },
       {
-        "@id": "skill_logistics#21",
+        "@id": "skill_logistics.jsonld#21",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/joan0392/"
       },
       {
-        "@id": "skill_logistics#22",
+        "@id": "skill_logistics.jsonld#22",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jonathan2494/"
       },
       {
-        "@id": "skill_logistics#23",
+        "@id": "skill_logistics.jsonld#23",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kbailey21/"
       },
       {
-        "@id": "skill_logistics#24",
+        "@id": "skill_logistics.jsonld#24",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kevin4549/"
       },
       {
-        "@id": "skill_logistics#25",
+        "@id": "skill_logistics.jsonld#25",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kimberlybowman4/"
       },
       {
-        "@id": "skill_logistics#26",
+        "@id": "skill_logistics.jsonld#26",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kpierce70/"
       },
       {
-        "@id": "skill_logistics#27",
+        "@id": "skill_logistics.jsonld#27",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/lisa1617/"
       },
       {
-        "@id": "skill_logistics#28",
+        "@id": "skill_logistics.jsonld#28",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/lopezcarolyn63/"
       },
       {
-        "@id": "skill_logistics#29",
+        "@id": "skill_logistics.jsonld#29",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/millermonica75/"
       },
       {
-        "@id": "skill_logistics#30",
+        "@id": "skill_logistics.jsonld#30",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/othompson79/"
       },
       {
-        "@id": "skill_logistics#31",
+        "@id": "skill_logistics.jsonld#31",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/pcohen72/"
       },
       {
-        "@id": "skill_logistics#32",
+        "@id": "skill_logistics.jsonld#32",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/perryjessica73/"
       },
       {
-        "@id": "skill_logistics#33",
+        "@id": "skill_logistics.jsonld#33",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/qfuller63/"
       },
       {
-        "@id": "skill_logistics#34",
+        "@id": "skill_logistics.jsonld#34",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/qmccoy21/"
       },
       {
-        "@id": "skill_logistics#35",
+        "@id": "skill_logistics.jsonld#35",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/qsimmons2/"
       },
       {
-        "@id": "skill_logistics#36",
+        "@id": "skill_logistics.jsonld#36",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/qvelazquez99/"
       },
       {
-        "@id": "skill_logistics#37",
+        "@id": "skill_logistics.jsonld#37",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/renee4332/"
       },
       {
-        "@id": "skill_logistics#38",
+        "@id": "skill_logistics.jsonld#38",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/rubiopatricia0/"
       },
       {
-        "@id": "skill_logistics#39",
+        "@id": "skill_logistics.jsonld#39",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/tammymoore28/"
       },
       {
-        "@id": "skill_logistics#40",
+        "@id": "skill_logistics.jsonld#40",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/tjoseph99/"
       },
       {
-        "@id": "skill_logistics#41",
+        "@id": "skill_logistics.jsonld#41",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/tranlaura72/"
       },
       {
-        "@id": "skill_logistics#42",
+        "@id": "skill_logistics.jsonld#42",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/uchavez20/"
       },
       {
-        "@id": "skill_logistics#43",
+        "@id": "skill_logistics.jsonld#43",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/westcharles38/"
       },
       {
-        "@id": "skill_logistics#44",
+        "@id": "skill_logistics.jsonld#44",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/xgray61/"
       },
       {
-        "@id": "skill_logistics#45",
+        "@id": "skill_logistics.jsonld#45",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/abbottlarry37/"
       },
       {
-        "@id": "skill_logistics#46",
+        "@id": "skill_logistics.jsonld#46",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/adrian2629/"
       },
       {
-        "@id": "skill_logistics#47",
+        "@id": "skill_logistics.jsonld#47",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/billy1240/"
       },
       {
-        "@id": "skill_logistics#48",
+        "@id": "skill_logistics.jsonld#48",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/bmeyers7/"
       },
       {
-        "@id": "skill_logistics#49",
+        "@id": "skill_logistics.jsonld#49",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/carly6081/"
       },
       {
-        "@id": "skill_logistics#50",
+        "@id": "skill_logistics.jsonld#50",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/chad6017/"
       },
       {
-        "@id": "skill_logistics#51",
+        "@id": "skill_logistics.jsonld#51",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/chambersmelissa63/"
       },
       {
-        "@id": "skill_logistics#52",
+        "@id": "skill_logistics.jsonld#52",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/christopher5982/"
       },
       {
-        "@id": "skill_logistics#53",
+        "@id": "skill_logistics.jsonld#53",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/cynthia8652/"
       },
       {
-        "@id": "skill_logistics#54",
+        "@id": "skill_logistics.jsonld#54",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/denise7729/"
       },
       {
-        "@id": "skill_logistics#55",
+        "@id": "skill_logistics.jsonld#55",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/dianecrawford71/"
       },
       {
-        "@id": "skill_logistics#56",
+        "@id": "skill_logistics.jsonld#56",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/floresnicole28/"
       },
       {
-        "@id": "skill_logistics#57",
+        "@id": "skill_logistics.jsonld#57",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/fobrien56/"
       },
       {
-        "@id": "skill_logistics#58",
+        "@id": "skill_logistics.jsonld#58",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/frazierwilliam86/"
       },
       {
-        "@id": "skill_logistics#59",
+        "@id": "skill_logistics.jsonld#59",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/gabriel6299/"
       },
       {
-        "@id": "skill_logistics#60",
+        "@id": "skill_logistics.jsonld#60",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/gavin3735/"
       },
       {
-        "@id": "skill_logistics#61",
+        "@id": "skill_logistics.jsonld#61",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/grimesmark80/"
       },
       {
-        "@id": "skill_logistics#62",
+        "@id": "skill_logistics.jsonld#62",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/gweber80/"
       },
       {
-        "@id": "skill_logistics#63",
+        "@id": "skill_logistics.jsonld#63",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jose525/"
       },
       {
-        "@id": "skill_logistics#64",
+        "@id": "skill_logistics.jsonld#64",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jwatson90/"
       },
       {
-        "@id": "skill_logistics#65",
+        "@id": "skill_logistics.jsonld#65",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kari5266/"
       },
       {
-        "@id": "skill_logistics#66",
+        "@id": "skill_logistics.jsonld#66",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kathryncruz97/"
       },
       {
-        "@id": "skill_logistics#67",
+        "@id": "skill_logistics.jsonld#67",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kimberlyproctor95/"
       },
       {
-        "@id": "skill_logistics#68",
+        "@id": "skill_logistics.jsonld#68",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kingsherri17/"
       },
       {
-        "@id": "skill_logistics#69",
+        "@id": "skill_logistics.jsonld#69",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/lindamiranda76/"
       },
       {
-        "@id": "skill_logistics#70",
+        "@id": "skill_logistics.jsonld#70",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/martinkelsey76/"
       },
       {
-        "@id": "skill_logistics#71",
+        "@id": "skill_logistics.jsonld#71",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/michelleramirez59/"
       },
       {
-        "@id": "skill_logistics#72",
+        "@id": "skill_logistics.jsonld#72",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/nguyenjose95/"
       },
       {
-        "@id": "skill_logistics#73",
+        "@id": "skill_logistics.jsonld#73",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/nolanrachel59/"
       },
       {
-        "@id": "skill_logistics#74",
+        "@id": "skill_logistics.jsonld#74",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/owalker47/"
       },
       {
-        "@id": "skill_logistics#75",
+        "@id": "skill_logistics.jsonld#75",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/randall1059/"
       },
       {
-        "@id": "skill_logistics#76",
+        "@id": "skill_logistics.jsonld#76",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/ryanthompson29/"
       },
       {
-        "@id": "skill_logistics#77",
+        "@id": "skill_logistics.jsonld#77",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/samanthacompton26/"
       },
       {
-        "@id": "skill_logistics#78",
+        "@id": "skill_logistics.jsonld#78",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/samuelfuller61/"
       },
       {
-        "@id": "skill_logistics#79",
+        "@id": "skill_logistics.jsonld#79",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/sbaker30/"
       },
       {
-        "@id": "skill_logistics#80",
+        "@id": "skill_logistics.jsonld#80",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/shane9586/"
       },
       {
-        "@id": "skill_logistics#81",
+        "@id": "skill_logistics.jsonld#81",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/stacy7827/"
       },
       {
-        "@id": "skill_logistics#82",
+        "@id": "skill_logistics.jsonld#82",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/susan9866/"
       },
       {
-        "@id": "skill_logistics#83",
+        "@id": "skill_logistics.jsonld#83",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/vespinoza31/"
       },
       {
-        "@id": "skill_logistics#84",
+        "@id": "skill_logistics.jsonld#84",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/zhanggary17/"
       },
       {
-        "@id": "skill_logistics#85",
+        "@id": "skill_logistics.jsonld#85",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/alexander1737/"
       },
       {
-        "@id": "skill_logistics#86",
+        "@id": "skill_logistics.jsonld#86",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/andreajackson20/"
       },
       {
-        "@id": "skill_logistics#87",
+        "@id": "skill_logistics.jsonld#87",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/ashleylucas92/"
       },
       {
-        "@id": "skill_logistics#88",
+        "@id": "skill_logistics.jsonld#88",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/austinrichard20/"
       },
       {
-        "@id": "skill_logistics#89",
+        "@id": "skill_logistics.jsonld#89",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/benjaminmosley48/"
       },
       {
-        "@id": "skill_logistics#90",
+        "@id": "skill_logistics.jsonld#90",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/christopherwalker27/"
       },
       {
-        "@id": "skill_logistics#91",
+        "@id": "skill_logistics.jsonld#91",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/duncanchase22/"
       },
       {
-        "@id": "skill_logistics#92",
+        "@id": "skill_logistics.jsonld#92",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/ehancock13/"
       },
       {
-        "@id": "skill_logistics#93",
+        "@id": "skill_logistics.jsonld#93",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/eric2538/"
       },
       {
-        "@id": "skill_logistics#94",
+        "@id": "skill_logistics.jsonld#94",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/ijackson58/"
       },
       {
-        "@id": "skill_logistics#95",
+        "@id": "skill_logistics.jsonld#95",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/isaac6114/"
       },
       {
-        "@id": "skill_logistics#96",
+        "@id": "skill_logistics.jsonld#96",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jacksonrebecca93/"
       },
       {
-        "@id": "skill_logistics#97",
+        "@id": "skill_logistics.jsonld#97",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jenniferbrown52/"
       },
       {
-        "@id": "skill_logistics#98",
+        "@id": "skill_logistics.jsonld#98",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jmorris13/"
       },
       {
-        "@id": "skill_logistics#99",
+        "@id": "skill_logistics.jsonld#99",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/john5098/"
       },
       {
-        "@id": "skill_logistics#100",
+        "@id": "skill_logistics.jsonld#100",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jorgemaldonado64/"
       },
       {
-        "@id": "skill_logistics#101",
+        "@id": "skill_logistics.jsonld#101",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/josejohnson19/"
       },
       {
-        "@id": "skill_logistics#102",
+        "@id": "skill_logistics.jsonld#102",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/joshuaschmitt60/"
       },
       {
-        "@id": "skill_logistics#103",
+        "@id": "skill_logistics.jsonld#103",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/joshuavalencia93/"
       },
       {
-        "@id": "skill_logistics#104",
+        "@id": "skill_logistics.jsonld#104",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/justin4465/"
       },
       {
-        "@id": "skill_logistics#105",
+        "@id": "skill_logistics.jsonld#105",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kimberly0340/"
       },
       {
-        "@id": "skill_logistics#106",
+        "@id": "skill_logistics.jsonld#106",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/laurie3727/"
       },
       {
-        "@id": "skill_logistics#107",
+        "@id": "skill_logistics.jsonld#107",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/lbeck75/"
       },
       {
-        "@id": "skill_logistics#108",
+        "@id": "skill_logistics.jsonld#108",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/logan9464/"
       },
       {
-        "@id": "skill_logistics#109",
+        "@id": "skill_logistics.jsonld#109",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/michelleboyer45/"
       },
       {
-        "@id": "skill_logistics#110",
+        "@id": "skill_logistics.jsonld#110",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/moniqueclark44/"
       },
       {
-        "@id": "skill_logistics#111",
+        "@id": "skill_logistics.jsonld#111",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/parsonscory69/"
       },
       {
-        "@id": "skill_logistics#112",
+        "@id": "skill_logistics.jsonld#112",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/patrickholland61/"
       },
       {
-        "@id": "skill_logistics#113",
+        "@id": "skill_logistics.jsonld#113",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/pjohnson61/"
       },
       {
-        "@id": "skill_logistics#114",
+        "@id": "skill_logistics.jsonld#114",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/pollardtodd23/"
       },
       {
-        "@id": "skill_logistics#115",
+        "@id": "skill_logistics.jsonld#115",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/qpeters62/"
       },
       {
-        "@id": "skill_logistics#116",
+        "@id": "skill_logistics.jsonld#116",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/randy1546/"
       },
       {
-        "@id": "skill_logistics#117",
+        "@id": "skill_logistics.jsonld#117",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/thomasaudrey53/"
       },
       {
-        "@id": "skill_logistics#118",
+        "@id": "skill_logistics.jsonld#118",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/tmassey81/"
       },
       {
-        "@id": "skill_logistics#119",
+        "@id": "skill_logistics.jsonld#119",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/travis6830/"
       },
       {
-        "@id": "skill_logistics#120",
+        "@id": "skill_logistics.jsonld#120",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/ulynch53/"
       },
       {
-        "@id": "skill_logistics#121",
+        "@id": "skill_logistics.jsonld#121",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/vbrown61/"
       },
       {
-        "@id": "skill_logistics#122",
+        "@id": "skill_logistics.jsonld#122",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/adamsraymond90/"
       },
       {
-        "@id": "skill_logistics#123",
+        "@id": "skill_logistics.jsonld#123",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/andersonheather15/"
       },
       {
-        "@id": "skill_logistics#124",
+        "@id": "skill_logistics.jsonld#124",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/blackaaron43/"
       },
       {
-        "@id": "skill_logistics#125",
+        "@id": "skill_logistics.jsonld#125",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/bnorris45/"
       },
       {
-        "@id": "skill_logistics#126",
+        "@id": "skill_logistics.jsonld#126",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/bradley7824/"
       },
       {
-        "@id": "skill_logistics#127",
+        "@id": "skill_logistics.jsonld#127",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/charlotte1797/"
       },
       {
-        "@id": "skill_logistics#128",
+        "@id": "skill_logistics.jsonld#128",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/cryan4/"
       },
       {
-        "@id": "skill_logistics#129",
+        "@id": "skill_logistics.jsonld#129",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/deancaldwell65/"
       },
       {
-        "@id": "skill_logistics#130",
+        "@id": "skill_logistics.jsonld#130",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/dianemcclain68/"
       },
       {
-        "@id": "skill_logistics#131",
+        "@id": "skill_logistics.jsonld#131",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/ethompson83/"
       },
       {
-        "@id": "skill_logistics#132",
+        "@id": "skill_logistics.jsonld#132",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jameshart42/"
       },
       {
-        "@id": "skill_logistics#133",
+        "@id": "skill_logistics.jsonld#133",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jasonbrown4/"
       },
       {
-        "@id": "skill_logistics#134",
+        "@id": "skill_logistics.jsonld#134",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/jennifer3912/"
       },
       {
-        "@id": "skill_logistics#135",
+        "@id": "skill_logistics.jsonld#135",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/john1090/"
       },
       {
-        "@id": "skill_logistics#136",
+        "@id": "skill_logistics.jsonld#136",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/joseph1162/"
       },
       {
-        "@id": "skill_logistics#137",
+        "@id": "skill_logistics.jsonld#137",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/joshua7280/"
       },
       {
-        "@id": "skill_logistics#138",
+        "@id": "skill_logistics.jsonld#138",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kimberlyhanna38/"
       },
       {
-        "@id": "skill_logistics#139",
+        "@id": "skill_logistics.jsonld#139",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/kristengutierrez87/"
       },
       {
-        "@id": "skill_logistics#140",
+        "@id": "skill_logistics.jsonld#140",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/larsonmelanie98/"
       },
       {
-        "@id": "skill_logistics#141",
+        "@id": "skill_logistics.jsonld#141",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/markjohnson38/"
       },
       {
-        "@id": "skill_logistics#142",
+        "@id": "skill_logistics.jsonld#142",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/mayaaron35/"
       },
       {
-        "@id": "skill_logistics#143",
+        "@id": "skill_logistics.jsonld#143",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/mccarthymelanie29/"
       },
       {
-        "@id": "skill_logistics#144",
+        "@id": "skill_logistics.jsonld#144",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/medinaamanda42/"
       },
       {
-        "@id": "skill_logistics#145",
+        "@id": "skill_logistics.jsonld#145",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/miguel9972/"
       },
       {
-        "@id": "skill_logistics#146",
+        "@id": "skill_logistics.jsonld#146",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/nrogers79/"
       },
       {
-        "@id": "skill_logistics#147",
+        "@id": "skill_logistics.jsonld#147",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/rebeccasullivan6/"
       },
       {
-        "@id": "skill_logistics#148",
+        "@id": "skill_logistics.jsonld#148",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/rglover77/"
       },
       {
-        "@id": "skill_logistics#149",
+        "@id": "skill_logistics.jsonld#149",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/richard9959/"
       },
       {
-        "@id": "skill_logistics#150",
+        "@id": "skill_logistics.jsonld#150",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/robersonerik29/"
       },
       {
-        "@id": "skill_logistics#151",
+        "@id": "skill_logistics.jsonld#151",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/robertnelson62/"
       },
       {
-        "@id": "skill_logistics#152",
+        "@id": "skill_logistics.jsonld#152",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/simmonsmary63/"
       },
       {
-        "@id": "skill_logistics#153",
+        "@id": "skill_logistics.jsonld#153",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/smithlindsey9/"
       },
       {
-        "@id": "skill_logistics#154",
+        "@id": "skill_logistics.jsonld#154",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/tmarsh60/"
       },
       {
-        "@id": "skill_logistics#155",
+        "@id": "skill_logistics.jsonld#155",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/toddscott29/"
       },
       {
-        "@id": "skill_logistics#156",
+        "@id": "skill_logistics.jsonld#156",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/turnershawn80/"
       },
       {
-        "@id": "skill_logistics#157",
+        "@id": "skill_logistics.jsonld#157",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/veronicacooke28/"
       },
       {
-        "@id": "skill_logistics#158",
+        "@id": "skill_logistics.jsonld#158",
         "@type": "idx:IndexEntry",
-        "idx:hasShape": "skill_logistics#target",
+        "idx:hasShape": "skill_logistics.jsonld#target",
         "idx:hasTarget": "users/weberjuan27/"
       }
     ]

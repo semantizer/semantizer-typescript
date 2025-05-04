@@ -6,7 +6,7 @@ import { EntryStreamTransformer, IndexEntry } from "./types.js";
 /**
  * This transformer transforms streamed quads into an IndexEntry object once it has a shape and a sub index or target.
  */
-export class EntryStreamTransformerStrategyDefaultImpl implements EntryStreamTransformer<IndexEntry> {
+export class EntryStreamTransformerDefaultImpl implements EntryStreamTransformer<IndexEntry> {
 
     private _semantizer: Semantizer;
     private _datasets: Map<string, DatasetSemantizer>;

@@ -22,7 +22,7 @@ export interface ShapeOperations {
 }
 
 export interface ShaclValidator {
-    validate(shapeGraph: Dataset, dataGraph: Dataset): ShaclValidationReport;
+    validate(shapeGraph: Dataset, dataGraph: Dataset): Promise<ShaclValidationReport>;
 }
 
 export interface ShaclValidationReport {

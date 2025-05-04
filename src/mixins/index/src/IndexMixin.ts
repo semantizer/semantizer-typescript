@@ -3,7 +3,7 @@ import { Readable, Transform } from "stream";
 // import { indexEntryFactory } from "./IndexEntryMixin.js";
 import { indexEntryFactory } from "./IndexEntryMixin.js";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformerStrategy, Index, IndexQueryingOptions, IndexQueryingStrategy, IndexShape, IndexShapeComparisonStrategy, IndexStrategy } from "./types";
+import { EntryStreamTransformer, Index, IndexQueryingOptions, IndexQueryingStrategy, IndexShape } from "./types";
 // import { indexEntryFactory } from "./IndexEntryMixin";
 
 export function IndexMixin<
@@ -16,7 +16,7 @@ export function IndexMixin<
          * Transforms the quad stream of this dataset into an IndexEntry stream.
          * @returns A Readable stream of IndexEntry with their linked objects (shape and properties).
          */
-        public async loadEntryStream(strategy: EntryStreamTransformerStrategy<any>): Promise<Readable> {
+        public async loadEntryStream(strategy: EntryStreamTransformer<any>): Promise<Readable> {
             const quadStream = await this.loadQuadStream();
 
             const entryStream = new Transform({
@@ -45,7 +45,7 @@ export function IndexMixin<
         //     });
         // }
 
-        public query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Promise<Readable> {
+        public query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable {
             return strategy.query(this, options);
         }
 
