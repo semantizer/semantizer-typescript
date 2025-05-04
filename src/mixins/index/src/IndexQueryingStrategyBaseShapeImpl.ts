@@ -1,6 +1,7 @@
-import { Dataset, Semantizer, ShaclValidator } from "@semantizer/types";
+import { Dataset, Semantizer, ShaclValidationReport, ShaclValidator } from "@semantizer/types";
 import { IndexQueryingStrategyBaseDefaultImpl } from "./IndexQueryingStrategyBaseDefaultImpl.js";
 import { EntryStreamTransformer, IndexEntry } from "./types.js";
+import { Readable } from "stream";
 
 /**
  * 2024-10-03: The reason is that in the future
@@ -30,12 +31,15 @@ export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = Index
         return this._shaclValidator;
     }
 
-    public async doEntryConformsToShape(entry: Dataset): Promise<boolean> {
-        const validationReport = await this._shaclValidator.validate(this.getShape(), entry);
-        return validationReport.doConforms();
+    public async validate(entry: Dataset): Promise<ShaclValidationReport> {
+        return await this._shaclValidator.validate(this.getShape(), entry);
     }
 
-    protected async processEntry(entry: Entry): Promise<void> {
+    public async doEntryConformsToShape(entry: Dataset): Promise<boolean> {
+        return (await this.validate(entry)).doConforms();
+    }
+
+    protected async processEntry(entry: Entry, entryStream: Readable): Promise<void> {
         if (await this.doEntryConformsToShape(entry)) {
             this.pushResult(entry.getBaseUri());
         }

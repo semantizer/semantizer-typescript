@@ -94,21 +94,24 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._semantizer = semantizer;
     }
 
-    protected abstract processEntry(entry: Entry): Promise<void>;
+    protected abstract processEntry(entry: Entry, entryStream: Readable): Promise<void>;
 
-    protected async process(index: Index): Promise<void> {
-        const entryStream = await index.loadEntryStream(this.getEntryStreamTransformer());
-
+    protected processEntryStream(entryStream: Readable): void {
         entryStream.on('data', async (entry: Entry) => {
             if (this.hasReachLimit()) {
                 this.destroyResultStream();
                 return; // when we have enough results, we should stop the streaming process.
             }
-            this.processEntry(entry);
+            this.processEntry(entry, entryStream);
         });
 
         entryStream.on('end', () => this.endResultStream());
         entryStream.on('error', (error) => this.log('ERROR', "An error occured while querying index: " + error.toString()));
+    }
+
+    protected async process(index: Index): Promise<void> {
+        const entryStream = await index.loadEntryStream(this.getEntryStreamTransformer());
+        this.processEntryStream(entryStream);
     }
 
     protected endResultStream(): void {
