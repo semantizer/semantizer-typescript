@@ -1,4 +1,4 @@
-import { DatasetSemantizer, BlankNode, NamedNode, Literal, Quad, Term, WithSemantizer, Dataset } from "@semantizer/types";
+import { BlankNode, DatasetSemantizer, Literal, NamedNode, Quad, Term, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
 
 export interface IndexQueryingOptions {

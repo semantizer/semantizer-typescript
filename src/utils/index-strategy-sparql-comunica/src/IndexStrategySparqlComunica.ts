@@ -7,7 +7,6 @@ import { Readable } from "stream";
 export class IndexStrategySparqlComunica extends IndexQueryingStrategyBaseShapeImpl {
 
     private _sparqlQuery: string;
-    private _resultStream: Readable;
     private _finalIndexStrategy: IndexQueryingStrategy;
 
     /**
@@ -19,24 +18,13 @@ export class IndexStrategySparqlComunica extends IndexQueryingStrategyBaseShapeI
      * @param shape Needed to find the final indexes to query.
      */
     public constructor(sparqlQuery: string, finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>, semantizer?: Semantizer) {
-        super(finalIndexShape, semantizer);
+        super(finalIndexShape, shaclValidator, entryStreamTransformer, semantizer);
         this._sparqlQuery = sparqlQuery;
-        this._resultStream = this.makeResultStream();
         this._finalIndexStrategy = new IndexStrategyFinalShapeDefaultImpl(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
     }
 
     public getSparqlQuery(): string {
         return this._sparqlQuery;
-    }
-
-    private pushResult(result: NamedNode | null): void {
-        this._resultStream.push(result);
-    }
-
-    private makeResultStream(): Readable {
-        const resultStream = new Readable({ objectMode: true });
-        resultStream._read = () => { };
-        return resultStream;
     }
 
     private getFinalIndexes(index: Index, callBack: (indexes: string[]) => void): Readable {
@@ -77,7 +65,7 @@ export class IndexStrategySparqlComunica extends IndexQueryingStrategyBaseShapeI
             }
         });
 
-        return this._resultStream;
+        return this.getResultStream();
     }
 
 }
