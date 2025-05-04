@@ -1,13 +1,11 @@
 import { QueryEngine } from "@comunica/query-sparql";
-import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, IndexQueryingStrategyBaseShapeImpl } from "@semantizer/mixin-index";
+import { EntryStreamTransformer, Index, IndexEntry } from "@semantizer/mixin-index";
 import { Dataset, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
-import { IndexStrategyFinalShapeDefaultImpl } from "@semantizer/utils-index-strategy-final-shape";
-import { Readable } from "stream";
+import { IndexQueryingStrategyShaclUsingFinalIndex } from "@semantizer/utils-index-strategy-final-shape";
 
-export class IndexStrategySparqlComunica extends IndexQueryingStrategyBaseShapeImpl {
+export class IndexStrategySparqlComunica extends IndexQueryingStrategyShaclUsingFinalIndex {
 
     private _sparqlQuery: string;
-    private _finalIndexStrategy: IndexQueryingStrategy;
 
     /**
      * Here a shape param is expected to be able to find the final indexes. It could be removed when 
@@ -18,54 +16,35 @@ export class IndexStrategySparqlComunica extends IndexQueryingStrategyBaseShapeI
      * @param shape Needed to find the final indexes to query.
      */
     public constructor(sparqlQuery: string, finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>, semantizer?: Semantizer) {
-        super(finalIndexShape, shaclValidator, entryStreamTransformer, semantizer);
+        super(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
         this._sparqlQuery = sparqlQuery;
-        this._finalIndexStrategy = new IndexStrategyFinalShapeDefaultImpl(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer, semantizer);
     }
 
     public getSparqlQuery(): string {
         return this._sparqlQuery;
     }
 
-    private getFinalIndexes(index: Index, callBack: (indexes: string[]) => void): Readable {
-        const finalIndexes: string[] = [];
-        const finalIndexStream = index.query(this._finalIndexStrategy);
-        finalIndexStream.on('data', (result: NamedNode) => {
-            finalIndexes.push(result.value);
-            this.log('INFO', "Found final index " + result.value);
-        });
-        finalIndexStream.on('end', () => callBack(finalIndexes));
-        finalIndexStream.on('error', (error) => this.log('ERROR', error.toString()));
-        return finalIndexStream;
-    }
+    protected async process(index: Index): Promise<void> {
+        const comunicaEngine = new QueryEngine();
+        const finalIndexes = this.getFinalIndexes().map((finalIndex) => finalIndex.value);
 
-    public query(index: Index, options?: IndexQueryingOptions): Readable {
-        this.getFinalIndexes(index, async (finalIndexes: string[]) => {
-            if (finalIndexes.length > 0) {
-                const comunicaEngine = new QueryEngine();
+        // ts-ignore is required below to ignore the sources options type issue: Type 'string[]' 
+        // is not assignable to type '[QuerySourceUnidentified, ...QuerySourceUnidentified[]]'.
+        // Source provides no match for required element at position 0 in target.
+        // @ts-ignore
+        const bindingsStream = await comunicaEngine.queryBindings(this.getSparqlQuery(), { sources: finalIndexes, unionDefaultGraph: true });
 
-                // @ts-ignore
-                const bindingsStream = await comunicaEngine.queryBindings(this.getSparqlQuery(), { sources: finalIndexes, unionDefaultGraph: true });
-
-                bindingsStream.on('data', (binding) => {
-                    const result: NamedNode = binding.get('result');
-                    this.pushResult(result);
-                    this.log('INFO', "Found result " + result.value);
-                });
-
-                bindingsStream.on('end', () => this.pushResult(null));
-                bindingsStream.on('error', (error) => {
-                    this.log('ERROR', "No final index found.");
-                    this.pushResult(null);
-                });
-            }
-            else {
-                this.log('WARN', "No final index found.");
-                this.pushResult(null);
-            }
+        bindingsStream.on('data', (binding) => {
+            const result: NamedNode = binding.get('result');
+            this.pushResult(result);
+            this.log('INFO', "Found result " + result.value);
         });
 
-        return this.getResultStream();
+        bindingsStream.on('end', () => this.pushResult(null));
+        bindingsStream.on('error', (error) => {
+            this.log('ERROR', "No final index found.");
+            this.pushResult(null);
+        });
     }
 
 }

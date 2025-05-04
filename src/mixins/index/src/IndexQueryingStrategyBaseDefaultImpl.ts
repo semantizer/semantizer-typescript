@@ -21,6 +21,10 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._isInitialized = true;
     }
 
+    public isInitialized(): boolean {
+        return this._isInitialized;
+    }
+
     protected init(options?: IndexQueryingOptions): void {
         this.setOptions(options);
 
