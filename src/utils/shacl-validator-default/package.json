@@ -1,0 +1,28 @@
+{
+  "name": "@semantizer/utils-shacl-validator-default",
+  "version": "1.0.0-beta.1",
+  "description": "A Semantizer utility adapter to use the Zazuko's rdf-validate-shacl lib with Semantizer.",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./lib/index.js",
+  "type": "module",
+  "types": "./lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/utils/shacl-validator-default"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "rdf-validate-shacl": "^0.6.2"
+  },
+  "devDependencies": {
+    "@semantizer/types": "beta",
+    "typescript": "^5.5.2"
+  }
+}
