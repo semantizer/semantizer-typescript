@@ -7,8 +7,8 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
     private _promises: Promise<void>[];
     private _subIndexShape: Dataset;
 
-    public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
-        super(finalIndexShape, shaclValidator, entryStreamTransformer);
+    public constructor(targetShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+        super(targetShape, shaclValidator, entryStreamTransformer);
         this._promises = [];
         this._subIndexShape = subIndexShape;
     }
@@ -22,7 +22,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
     }
 
     private async doEntryHasFinalIndex(entry: Dataset): Promise<boolean> {
-        return this.doEntryConformsToShape(entry);
+        return this.doEntryConformsToTargetShape(entry);
     }
 
     private async doEntryHasSubIndexToExplore(entry: Dataset): Promise<boolean> {

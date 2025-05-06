@@ -1,10 +1,10 @@
 import { QueryEngine } from "@comunica/query-sparql";
-import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions } from "@semantizer/mixin-index";
+import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy } from "@semantizer/mixin-index";
 import { Dataset, NamedNode, ShaclValidator } from "@semantizer/types";
 import { IndexQueryingStrategyShaclUsingFinalIndex } from "@semantizer/utils-index-querying-strategy-shacl-final";
 import { Readable } from "stream";
 
-export class IndexStrategySparqlComunica extends IndexQueryingStrategyShaclUsingFinalIndex {
+export class IndexStrategySparqlComunica<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyShaclUsingFinalIndex<Entry> {
 
     private _sparqlQuery: string;
     private _finalIndexes: NamedNode[];
@@ -17,8 +17,8 @@ export class IndexStrategySparqlComunica extends IndexQueryingStrategyShaclUsing
      * @param sparqlQuery 
      * @param shape Needed to find the final indexes to query.
      */
-    public constructor(sparqlQuery: string, finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>) {
-        super(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer);
+    public constructor(sparqlQuery: string, targetShape: Dataset, finalIndexStrategy: IndexQueryingStrategy, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+        super(targetShape, finalIndexStrategy, shaclValidator, entryStreamTransformer);
         this._sparqlQuery = sparqlQuery;
         this._finalIndexes = [];
     }

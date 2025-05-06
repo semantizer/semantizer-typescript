@@ -1,4 +1,4 @@
-import { EntryStreamTransformer, EntryStreamTransformerDefaultImpl, Index, IndexEntry } from "@semantizer/mixin-index";
+import { EntryStreamTransformer, EntryStreamTransformerDefaultImpl, Index, IndexEntry, IndexQueryingStrategy } from "@semantizer/mixin-index";
 import { Dataset, NamedNode, ShaclValidator } from "@semantizer/types";
 import { IndexQueryingStrategyShaclUsingFinalIndex } from "@semantizer/utils-index-querying-strategy-shacl-final";
 import { Readable } from "stream";
@@ -6,13 +6,14 @@ import { Readable } from "stream";
 // TODO: add a bypass shape mode on target indexes to avoid to recompare
 // the shape as all the index's entries are supposed to target a valid 
 // shape.
-export class IndexQueryingStrategyShaclDefaultImpl extends IndexQueryingStrategyShaclUsingFinalIndex {
+export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyShaclUsingFinalIndex<Entry> {
 
     private _entryStreams: Readable[];
     private _results: string[];
+    private _a: Map<string, string>;
 
-    public constructor(finalIndexShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<IndexEntry>) {
-        super(finalIndexShape, subIndexShape, shaclValidator, entryStreamTransformer);
+    public constructor(targetShape: Dataset, finalIndexStrategy: IndexQueryingStrategy, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+        super(targetShape, finalIndexStrategy, shaclValidator, entryStreamTransformer);
         this._entryStreams = [];
         this._results = [];
     }

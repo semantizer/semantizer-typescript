@@ -1,7 +1,7 @@
-import { Dataset, Semantizer, ShaclValidationReport, ShaclValidator } from "@semantizer/types";
+import { Dataset, ShaclValidationReport, ShaclValidator } from "@semantizer/types";
+import { Readable } from "stream";
 import { IndexQueryingStrategyBaseDefaultImpl } from "./IndexQueryingStrategyBaseDefaultImpl.js";
 import { EntryStreamTransformer, IndexEntry } from "./types.js";
-import { Readable } from "stream";
 
 /**
  * 2024-10-03: The reason is that in the future
@@ -14,17 +14,17 @@ import { Readable } from "stream";
  */
 export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyBaseDefaultImpl<Entry> {
 
-    private _shape: Dataset;
+    private _targetShape: Dataset;
     private _shaclValidator: ShaclValidator;
 
-    public constructor(shape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+    public constructor(targetShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
         super(entryStreamTransformer);
-        this._shape = shape;
+        this._targetShape = targetShape;
         this._shaclValidator = shaclValidator;
     }
 
-    public getShape(): Dataset {
-        return this._shape;
+    public getTargetShape(): Dataset {
+        return this._targetShape;
     }
 
     public getShaclValidator(): ShaclValidator {
@@ -32,15 +32,15 @@ export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = Index
     }
 
     public async validate(entry: Dataset): Promise<ShaclValidationReport> {
-        return await this._shaclValidator.validate(this.getShape(), entry);
+        return await this.getShaclValidator().validate(this.getTargetShape(), entry);
     }
 
-    public async doEntryConformsToShape(entry: Dataset): Promise<boolean> {
+    public async doEntryConformsToTargetShape(entry: Dataset): Promise<boolean> {
         return (await this.validate(entry)).doConforms();
     }
 
     protected async processEntry(entry: Entry, entryStream: Readable): Promise<void> {
-        if (await this.doEntryConformsToShape(entry)) {
+        if (await this.doEntryConformsToTargetShape(entry)) {
             this.pushResult(entry.getBaseUri());
         }
     }
