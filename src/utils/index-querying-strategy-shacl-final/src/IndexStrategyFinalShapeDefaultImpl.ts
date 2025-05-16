@@ -35,7 +35,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         if (await this.doEntryHasFinalIndex(entry)) {
             const subIndex = entry.getSubIndex();
             if (subIndex) {
-                this.pushTargetResult(subIndex);
+                this.pushResult(subIndex);
             }
         }
 

@@ -39,10 +39,4 @@ export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = Index
         return (await this.validate(entry)).doConforms();
     }
 
-    // protected async processFinalIndexEntry(entry: Entry, entryStream: Readable): Promise<void> {
-    //     if (await this.doEntryConformsToTargetShape(entry)) {
-    //         this.pushTargetResult(entry.getBaseUri());
-    //     }
-    // }
-
 }

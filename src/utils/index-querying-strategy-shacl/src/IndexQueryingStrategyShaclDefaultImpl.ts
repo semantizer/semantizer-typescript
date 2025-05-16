@@ -66,17 +66,17 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
         return !this._results.has(result.value);
     }
 
-    protected pushTargetResult(result: NamedNode | null) {
+    protected pushResult(result: NamedNode | null) {
         if (result) {
             this._results.add(result.value);
-            super.pushTargetResult(result);
+            super.pushResult(result);
         }
     }
 
     protected async validateEntry(entry: Entry, target: NamedNode): Promise<void> {
         const report = await this.getShaclValidator().validate(this.getTargetShape(), entry);
         if (report.doConforms()) {
-            this.pushTargetResult(target);
+            this.pushResult(target);
         }
     }
 

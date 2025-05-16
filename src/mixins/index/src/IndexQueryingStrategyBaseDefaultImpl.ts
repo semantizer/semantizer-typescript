@@ -43,7 +43,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         return resultStream;
     }
 
-    protected pushTargetResult(result: NamedNode | null): void {
+    protected pushResult(result: NamedNode | null): void {
         this._resultCount++;
         this._resultStream.push(result);
     }
@@ -97,17 +97,13 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._semantizer = semantizer;
     }
 
-    // protected abstract processFinalIndexEntry(entry: Entry, entryStream: Readable): Promise<void>;
-
     protected processEntryStream(entryStream: Readable): void {
         entryStream.on('data', async (entry: Entry) => {
             if (this.hasReachLimit()) {
                 this.destroyResultStream();
                 return; // when we have enough results, we should stop the streaming process.
             }
-            // this.processFinalIndexEntry(entry, entryStream);
         });
-
         entryStream.on('end', () => this.endResultStream());
         entryStream.on('error', (error) => this.log('ERROR', "An error occured while querying index: " + error.toString()));
     }
@@ -118,7 +114,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     }
 
     protected endResultStream(): void {
-        this.pushTargetResult(null);
+        this.pushResult(null);
     }
 
     public query(index: Index, options?: IndexQueryingOptions): Readable {

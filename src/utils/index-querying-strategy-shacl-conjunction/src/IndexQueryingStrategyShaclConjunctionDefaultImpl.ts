@@ -35,7 +35,7 @@ export class IndexQueryingStrategyShaclConjunctionDefaultImpl<Entry extends Inde
             resultCount += 1;
             this._results.set(result.value, resultCount);
             if (this.isResultCountValid(resultCount)) {
-                this.pushTargetResult(result);
+                this.pushResult(result);
             } 
         } else {
             this._results.set(result.value, 1);
