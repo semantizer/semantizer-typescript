@@ -30,7 +30,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         return validationReport.doConforms();
     }
 
-    protected async processEntry(entry: Entry, entryStream: Readable): Promise<void> {
+    protected async processFinalIndexEntry(entry: Entry, entryStream: Readable): Promise<void> {
         // We found a final index
         if (await this.doEntryHasFinalIndex(entry)) {
             const subIndex = entry.getSubIndex();
