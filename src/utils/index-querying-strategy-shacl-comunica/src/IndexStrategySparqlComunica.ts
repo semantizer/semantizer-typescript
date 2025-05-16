@@ -50,14 +50,14 @@ export class IndexStrategySparqlComunica<Entry extends IndexEntry = IndexEntry> 
 
         bindingsStream.on('data', (binding) => {
             const result: NamedNode = binding.get('result');
-            this.pushResult(result);
+            this.pushTargetResult(result);
             this.log('INFO', "Found result " + result.value);
         });
 
-        bindingsStream.on('end', () => this.pushResult(null));
+        bindingsStream.on('end', () => this.pushTargetResult(null));
         bindingsStream.on('error', (error) => {
             this.log('ERROR', "No final index found.");
-            this.pushResult(null);
+            this.pushTargetResult(null);
         });
     }
 
@@ -73,7 +73,7 @@ export class IndexStrategySparqlComunica<Entry extends IndexEntry = IndexEntry> 
             }
             else {
                 this.log('WARN', "No final index found.");
-                this.pushResult(null);
+                this.pushTargetResult(null);
             }
         });
 

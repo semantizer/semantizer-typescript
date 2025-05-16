@@ -97,7 +97,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._semantizer = semantizer;
     }
 
-    protected abstract processFinalIndexEntry(entry: Entry, entryStream: Readable): Promise<void>;
+    // protected abstract processFinalIndexEntry(entry: Entry, entryStream: Readable): Promise<void>;
 
     protected processEntryStream(entryStream: Readable): void {
         entryStream.on('data', async (entry: Entry) => {
@@ -105,7 +105,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
                 this.destroyResultStream();
                 return; // when we have enough results, we should stop the streaming process.
             }
-            this.processFinalIndexEntry(entry, entryStream);
+            // this.processFinalIndexEntry(entry, entryStream);
         });
 
         entryStream.on('end', () => this.endResultStream());

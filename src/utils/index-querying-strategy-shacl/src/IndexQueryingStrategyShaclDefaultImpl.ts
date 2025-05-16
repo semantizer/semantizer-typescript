@@ -69,7 +69,7 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
     protected pushTargetResult(result: NamedNode | null) {
         if (result) {
             this._results.add(result.value);
-            super.pushResult(result);
+            super.pushTargetResult(result);
         }
     }
 

@@ -35,7 +35,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         if (await this.doEntryHasFinalIndex(entry)) {
             const subIndex = entry.getSubIndex();
             if (subIndex) {
-                this.pushResult(subIndex);
+                this.pushTargetResult(subIndex);
             }
         }
 
@@ -49,6 +49,9 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
 
     protected processEntryStream(entryStream: Readable): void {
         super.processEntryStream(entryStream);
+        entryStream.on('data', async (entry: Entry) => {
+            this.processFinalIndexEntry(entry, entryStream);
+        });
         this.pushPromise(new Promise<void>((resolveThis, rejectThis) => {
             entryStream.on('end', async () => resolveThis());
             entryStream.on('error', (error) => rejectThis(error));

@@ -10,7 +10,8 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "typescript": "~5.5.2"
+    "typescript": "~5.5.2",
+    "nx": "21.0.3"
   },
   "workspaces": [
     "src/packages/*",
