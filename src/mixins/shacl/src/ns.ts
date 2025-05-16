@@ -1,4 +1,10 @@
 const shaclNamespace = 'http://www.w3.org/ns/shacl#';
+const rdfNamespace = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+
+export const RDF = {
+    namespace: rdfNamespace,
+    TYPE: rdfNamespace + 'type'
+}
 
 export const SHACL = {
     namespace: shaclNamespace,
