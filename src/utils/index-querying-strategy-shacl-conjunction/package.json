@@ -1,11 +1,15 @@
 {
-  "name": "@semantizer/utils-index-querying-strategy-shacl-conjunction",
-  "version": "1.0.0-beta.1",
-  "description": "A Semantizer util to find same targets in differents indexes using SHACL comparison.",
-  "author": "Maxime Lecoq-Gaillard",
-  "main": "./lib/index.js",
   "type": "module",
-  "types": "./lib/index.d.ts",
+  "name": "@semantizer/utils-index-querying-strategy-shacl-conjunction",
+  "description": "A Semantizer util to find same targets in differents indexes using SHACL comparison.",
+  "version": "1.0.0-beta.1",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
@@ -14,16 +18,14 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build"
   },
-  "license": "MIT",
   "dependencies": {
-    "@semantizer/mixin-index": "beta",
-    "@semantizer/utils-index-querying-strategy-shacl-final": "beta"
+    "@semantizer/mixin-index": "*",
+    "@semantizer/utils-index-querying-strategy-shacl-final": "*"
   },
   "devDependencies": {
-    "@semantizer/types": "beta",
+    "@semantizer/types": "*",
     "typescript": "^5.5.2"
   }
 }

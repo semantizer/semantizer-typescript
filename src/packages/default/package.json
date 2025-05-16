@@ -1,10 +1,15 @@
 {
+  "type": "module",
   "name": "@semantizer/default",
-  "version": "1.0.0-beta.2.0.1",
   "description": "A basic Semantizer setup to use for development including some core packages and the dataset mixin",
+  "version": "1.0.0-beta.2.0.1",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "type": "module",
+  "files": [
+    "dist/**"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
@@ -13,21 +18,18 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build"
   },
-  "author": "Maxime Lecoq-Gaillard",
-  "license": "MIT",
   "dependencies": {
     "@rdfjs/data-model": "^2.0.2",
-    "@semantizer/core": "beta",
-    "@semantizer/core-rdfjs": "beta",
-    "@semantizer/loader-quad-stream-rdfjs": "beta",
-    "@semantizer/loader-rdfjs": "beta",
-    "@semantizer/mixin-dataset": "beta"
+    "@semantizer/core": "*",
+    "@semantizer/core-rdfjs": "*",
+    "@semantizer/loader-quad-stream-rdfjs": "*",
+    "@semantizer/loader-rdfjs": "*",
+    "@semantizer/mixin-dataset": "*"
   },
   "devDependencies": {
-    "@semantizer/types": "beta",
+    "@semantizer/types": "*",
     "@types/rdfjs__data-model": "^2.0.9",
     "typescript": "^5.5.2"
   }

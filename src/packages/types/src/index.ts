@@ -15,10 +15,10 @@ export {
     Dataset as DatasetRdfjs
 } from "@rdfjs/types";
 
-export * from "./lib/Common.js";
-export * from "./lib/Semantizer.js";
-export * from "./lib/Loader.js";
-export * from "./lib/Datasets.js";
-export * from "./lib/Shacl.js";
+export * from "./Common.js";
+export * from "./Semantizer.js";
+export * from "./Loader.js";
+export * from "./Datasets.js";
+export * from "./Shacl.js";
 
 

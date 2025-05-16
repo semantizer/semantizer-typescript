@@ -1,10 +1,15 @@
 {
-  "name": "@semantizer/mixin-changelog",
-  "version": "1.0.0-beta.1.0.0",
-  "description": "A Semantizer mixin to keep track of added and deleted quads in a dataset.",
-  "main": "./lib/index.js",
   "type": "module",
-  "types": "./lib/index.d.ts",
+  "name": "@semantizer/mixin-changelog",
+  "description": "A Semantizer mixin to keep track of added and deleted quads in a dataset.",
+  "version": "1.0.0-beta.1.0.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
@@ -13,13 +18,10 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build"
   },
-  "author": "Maxime Lecoq-Gaillard",
-  "license": "MIT",
   "devDependencies": {
-    "@semantizer/types": "^1.0.0-beta.2.1.0",
+    "@semantizer/types": "*",
     "typescript": "^5.5.2"
   }
 }

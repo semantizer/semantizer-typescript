@@ -1,11 +1,15 @@
 {
-  "name": "@semantizer/mixin-index",
-  "version": "1.0.0-beta.2",
-  "description": "A Semantizer mixin to query indexes",
-  "author": "Maxime Lecoq-Gaillard",
-  "main": "./lib/index.js",
   "type": "module",
-  "types": "./lib/index.d.ts",
+  "name": "@semantizer/mixin-index",
+  "description": "A Semantizer mixin to query indexes",
+  "version": "1.0.0-beta.2",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
@@ -14,12 +18,10 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepublishOnly": "npm run build"
   },
-  "license": "MIT",
   "devDependencies": {
-    "@semantizer/types": "beta",
+    "@semantizer/types": "*",
     "typescript": "^5.5.2"
   }
 }
