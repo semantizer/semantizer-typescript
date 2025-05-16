@@ -1,17 +1,15 @@
 import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, IndexQueryingStrategyBaseDefaultImpl } from "@semantizer/mixin-index";
 import { Readable } from "stream";
-import { NamedNode } from "../../../packages/types";
+import { NamedNode } from "@semantizer/types";
 
 export class IndexQueryingStrategyShaclConjunctionDefaultImpl<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyBaseDefaultImpl<Entry> {
 
     private _targetStrategies: IndexQueryingStrategy[];
-    // private _finalIndexStrategy: IndexQueryingStrategy;
     private _results: Map<string, number>;
 
     public constructor(targetStrategies: IndexQueryingStrategy[], entryStreamTransformer: EntryStreamTransformer<Entry>) {
         super(entryStreamTransformer);
         this._targetStrategies = targetStrategies;
-        // this._finalIndexStrategy = finalIndexStrategy;
         this._results = new Map<string, number>();
     }
 
@@ -32,13 +30,13 @@ export class IndexQueryingStrategyShaclConjunctionDefaultImpl<Entry extends Inde
     }
 
     protected processResult(result: NamedNode): void {
-        const resultCount = this._results.get(result.value);
-        if (resultCount) {
+        let resultCount = this._results.get(result.value);
+        if (resultCount && !this.isResultCountValid(resultCount)) {
+            resultCount += 1;
+            this._results.set(result.value, resultCount);
             if (this.isResultCountValid(resultCount)) {
                 this.pushResult(result);
-            } else {
-                this._results.set(result.value, resultCount + 1);    
-            }
+            } 
         } else {
             this._results.set(result.value, 1);
         }
