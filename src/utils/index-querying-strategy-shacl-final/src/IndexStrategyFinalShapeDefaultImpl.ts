@@ -78,4 +78,8 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         Promise.all(this.getPromises()).then(() => super.endResultStream());
     }
 
+    public getName(): string {
+        return "IndexStrategyFinalShapeDefaultImpl";
+    }
+
 }

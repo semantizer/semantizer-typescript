@@ -1,10 +1,11 @@
 import RdfjsDatasetImpl from "@semantizer/rdfjs-dataset-impl";
-import { BlankNode, LoggingLevel, NamedNode, Quad, Semantizer, Term, WithBaseUri, WithSemantizer } from '@semantizer/types';
+import { BlankNode, LoggingLevel, MixinNamespace, NamedNode, Quad, Semantizer, Term, WithBaseUri, WithMixins, WithSemantizer } from '@semantizer/types';
 
-export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemantizer, WithBaseUri {
+export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithMixins, WithSemantizer, WithBaseUri {
 
     private _semantizer: Semantizer;
     private _baseUri: NamedNode;
+    public mixins: MixinNamespace = {}
 
     public constructor(semantizer: Semantizer, baseUri?: NamedNode | string, quads?: Iterable<Quad>) {
         super(quads);

@@ -1,5 +1,4 @@
 import { Dataset, ShaclValidationReport, ShaclValidator } from "@semantizer/types";
-import { Readable } from "stream";
 import { IndexQueryingStrategyBaseDefaultImpl } from "./IndexQueryingStrategyBaseDefaultImpl.js";
 import { EntryStreamTransformer, IndexEntry } from "./types.js";
 
@@ -37,6 +36,10 @@ export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = Index
 
     public async doEntryConformsToTargetShape(entry: Dataset): Promise<boolean> {
         return (await this.validate(entry)).doConforms();
+    }
+
+    public getName(): string {
+        return "IndexQueryingStrategyBaseShapeImpl";
     }
 
 }

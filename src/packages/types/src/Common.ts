@@ -3,6 +3,12 @@ import { Semantizer } from "./Semantizer";
 
 export type Resource = NamedNode | BlankNode;
 
+export interface MixinNamespace {}
+
+export interface WithMixins {
+    mixins: MixinNamespace;
+}
+
 export interface WithSemantizer {
     getSemantizer(): Semantizer;
     setSemantizer(semantizer: Semantizer): void;

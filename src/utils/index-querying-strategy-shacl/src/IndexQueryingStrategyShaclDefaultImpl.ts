@@ -34,7 +34,7 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
 
     private async processFinalIndex(finalIndex: Index): Promise<void> {
         const entryStreamStrategy = new EntryStreamTransformerDefaultImpl(this.getSemantizer());
-        const entryStream = await finalIndex.loadEntryStream(entryStreamStrategy);
+        const entryStream = await finalIndex.mixins.index.loadEntryStream(entryStreamStrategy);
         this._entryStreams.push(entryStream);
         entryStream.on('data', (entry: Entry) => this.processFinalIndexEntry(entry));
         entryStream.on('error', (error) => this.log('ERROR', "An error occured during the processing a final index."));
@@ -78,6 +78,10 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
         if (report.doConforms()) {
             this.pushResult(target);
         }
+    }
+
+    public getName(): string {
+        return "IndexQueryingStrategyShaclDefaultImpl";
     }
 
 }

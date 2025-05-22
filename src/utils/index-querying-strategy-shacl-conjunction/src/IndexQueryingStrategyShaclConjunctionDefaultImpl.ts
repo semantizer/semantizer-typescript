@@ -42,12 +42,16 @@ export class IndexQueryingStrategyShaclConjunctionDefaultImpl<Entry extends Inde
         }
     }
 
-    public query(index: Index, options?: IndexQueryingOptions): Readable {
+    public query(dataset: Index, options?: IndexQueryingOptions): Readable {
         this.init(options);
         for (const targetStrategy of this._targetStrategies) {
-            index.query(targetStrategy).on('data', (result: NamedNode) => this.processResult(result));
+            dataset.mixins.index.query(targetStrategy).on('data', (result: NamedNode) => this.processResult(result));
         }
         return this.getResultStream();
+    }
+
+    public getName(): string {
+        return "IndexQueryingStrategyShaclConjunctionDefaultImpl";
     }
 
 }

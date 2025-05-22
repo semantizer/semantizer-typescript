@@ -1,7 +1,6 @@
-import { BlankNode, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
+import { BlankNode, Dataset, DatasetSemantizer, DatasetSemantizerMixinConstructor, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
 import { IDX } from "./namespaces.js";
-import { IndexEntry, IndexShape } from "./types";
-import { indexShapeFactory } from "./IndexShapeMixin.js";
+import { IndexEntry } from "./types";
 
 /**
  * This mixin is used internally by the `IndexMixin:loadEntryStream()` method
@@ -14,7 +13,7 @@ export function IndexEntryMixin<
 
     return class IndexEntryMixinImpl extends Base implements IndexEntry {
 
-        public doesMatchShape(shape: IndexShape, shaclValidator: ShaclValidator): boolean {
+        public doesMatchShape(shape: Dataset, shaclValidator: ShaclValidator): boolean {
             throw new Error("Not implemented.");
         }
 
@@ -36,7 +35,7 @@ export function IndexEntryMixin<
 
         // TODO: replace subject _:b2 by namedNode('') === baseUri
         // this way we can use getBaseUri in requests.
-        public getShapeDataset(): IndexShape {
+        public getShapeDataset(): Dataset {
             const entryShapeTerm = this.getShape();
 
             if (!entryShapeTerm) {
@@ -96,7 +95,7 @@ export function IndexEntryMixin<
                 entryShapeDataset = rebasedDataset;
             }
 
-            return this.getSemantizer().build(indexShapeFactory, entryShapeDataset);
+            return this.getSemantizer().build(entryShapeDataset);
         }
 
     }

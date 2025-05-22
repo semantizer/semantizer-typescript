@@ -80,4 +80,8 @@ export class IndexStrategySparqlComunica<Entry extends IndexEntry = IndexEntry> 
         return this.getResultStream();
     }
 
+    public getName(): string {
+        return "IndexStrategySparqlComunica";
+    }
+
 }

@@ -12,10 +12,7 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
     }
 
     public getFinalIndexesStream(index: Index): Readable {
-        const finalIndexStream = index.query(this._finalIndexStrategy);
-        finalIndexStream.on('data', (result: NamedNode) => {
-            this.log('INFO', "Found final index " + result.value);
-        });
+        const finalIndexStream = index.mixins.index.query(this._finalIndexStrategy);
         finalIndexStream.on('error', (error) => this.log('ERROR', error.toString()));
         return finalIndexStream;
     }
@@ -28,6 +25,10 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
             this.process(finalIndexDataset); 
         });
         return this.getResultStream();
+    }
+
+    public getName(): string {
+        return "IndexQueryingStrategyShaclUsingFinalIndex";
     }
 
 }

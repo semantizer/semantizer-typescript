@@ -20,6 +20,8 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._isInitialized = true;
     }
 
+    public abstract getName(): string;
+
     public isInitialized(): boolean {
         return this._isInitialized;
     }
@@ -39,12 +41,15 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
 
     protected makeResultStream(): Readable {
         const resultStream = new Readable({ objectMode: true });
-        resultStream._read = () => { };
+        resultStream._read = () => {};
         return resultStream;
     }
 
     protected pushResult(result: NamedNode | null): void {
-        this._resultCount++;
+        if (result) {
+            this.log('INFO', `Strategy ${this.getName()} has found result: ${result.value}`);
+            this._resultCount++;
+        }
         this._resultStream.push(result);
     }
 
@@ -89,7 +94,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
 
     public getSemantizer(): Semantizer {
         if (!this._semantizer)
-            throw new Error("Strategy is not attached to a Semantizer instance.")
+            throw new Error("Strategy is not attached to a Semantizer instance.");
         return this._semantizer;
     }
 
@@ -109,7 +114,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     }
 
     protected async process(index: Index): Promise<void> {
-        const entryStream = await index.loadEntryStream(this.getEntryStreamTransformer());
+        const entryStream = await index.mixins.index.loadEntryStream(this.getEntryStreamTransformer());
         this.processEntryStream(entryStream);
     }
 

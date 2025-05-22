@@ -7,58 +7,66 @@ export function TypeIndexMixin<
 >(Base: TBase) {
     return class TypeIndexImpl extends Base implements TypeIndex {
 
-        public registerInstanceForClass(registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void {
-            this.addObjectUri(registration, RDF.TYPE, TYPE_INDEX.TypeRegistration, this.getDefaultGraphTerm());
-            this.addObjectUri(registration, TYPE_INDEX.forClass, forClass, this.getDefaultGraphTerm());
-            this.addObjectUri(registration, TYPE_INDEX.instance, instance);
-        }
+        public get typeindex() {
 
-        public getRegistrationForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined {
-            const results: NamedNode[] = [];
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const namedGraph = graph ? (typeof graph === 'string') ? dataFactory.namedNode(graph) : graph : undefined;
-            const registrations = this.match(
-                undefined,
-                dataFactory.namedNode(TYPE_INDEX.forClass),
-                (typeof forClass === 'string') ? dataFactory.namedNode(forClass) : forClass,
-                namedGraph
-            );
-            for (const registration of registrations) {
-                if (registration.subject.termType === 'NamedNode') {
-                    results.push(registration.subject);
-                }
-            }
-            return  results.length > 0 ? results : undefined;
-        }
-        
-        public getRegisteredInstanceForClass(forClass: NamedNode | string, graph?: Term | string): NamedNode | undefined {
-            const registrations = this.getRegisteredInstanceForClassAll(forClass);
-            return registrations && registrations[0] ? registrations[0] : undefined;
-        }
+            return {
 
-        public getRegisteredInstanceForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined {
-            const results: NamedNode[] = [];
-            const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-            const namedGraph = graph ? (typeof graph === 'string') ? dataFactory.namedNode(graph) : graph : undefined;
-            const registrations = this.getRegistrationForClassAll(forClass, graph);
-            if (registrations) {
-                for (const registration of registrations) {
-                    const instances = this.match(
-                        registration,
-                        dataFactory.namedNode(TYPE_INDEX.instance),
+                registerInstanceForClass: (registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void => {
+                    this.addObjectUri(registration, RDF.TYPE, TYPE_INDEX.TypeRegistration, this.getDefaultGraphTerm());
+                    this.addObjectUri(registration, TYPE_INDEX.forClass, forClass, this.getDefaultGraphTerm());
+                    this.addObjectUri(registration, TYPE_INDEX.instance, instance);
+                },
+
+                getRegistrationForClassAll: (forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined => {
+                    const results: NamedNode[] = [];
+                    const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+                    const namedGraph = graph ? (typeof graph === 'string') ? dataFactory.namedNode(graph) : graph : undefined;
+                    const registrations = this.match(
                         undefined,
+                        dataFactory.namedNode(TYPE_INDEX.forClass),
+                        (typeof forClass === 'string') ? dataFactory.namedNode(forClass) : forClass,
                         namedGraph
                     );
-                    for (const instance of instances) {
-                        if (instance.object.termType === 'NamedNode') {
-                            results.push(instance.object);
+                    for (const registration of registrations) {
+                        if (registration.subject.termType === 'NamedNode') {
+                            results.push(registration.subject);
                         }
                     }
-                }
-            }
-            return results.length > 0 ? results : undefined;
-        }
+                    return  results.length > 0 ? results : undefined;
+                },
+                
+                getRegisteredInstanceForClass: (forClass: NamedNode | string, graph?: Term | string): NamedNode | undefined => {
+                    const registrations = this.typeindex.getRegisteredInstanceForClassAll(forClass);
+                    return registrations && registrations[0] ? registrations[0] : undefined;
+                },
 
+                getRegisteredInstanceForClassAll: (forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined => {
+                    const results: NamedNode[] = [];
+                    const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+                    const namedGraph = graph ? (typeof graph === 'string') ? dataFactory.namedNode(graph) : graph : undefined;
+                    const registrations = this.typeindex.getRegistrationForClassAll(forClass, graph);
+                    if (registrations) {
+                        for (const registration of registrations) {
+                            const instances = this.match(
+                                registration,
+                                dataFactory.namedNode(TYPE_INDEX.instance),
+                                undefined,
+                                namedGraph
+                            );
+                            for (const instance of instances) {
+                                if (instance.object.termType === 'NamedNode') {
+                                    results.push(instance.object);
+                                }
+                            }
+                        }
+                    }
+                    return results.length > 0 ? results : undefined;
+                }
+
+            }
+
+        }
+        
     }
 }
 

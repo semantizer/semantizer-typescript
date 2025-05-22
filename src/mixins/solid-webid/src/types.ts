@@ -1,6 +1,12 @@
 import { WebIdProfile } from "@semantizer/mixin-webid";
 import { DatasetSemantizer, Loader, NamedNode } from "@semantizer/types";
 
+declare module "@semantizer/types" {
+    interface MixinNamespace {
+        solid: SolidWebIdOperations;
+    }
+}
+
 export interface SolidWebIdProfileOperations {
     loadExtendedProfile(loader?: Loader): Promise<void>;
 }
@@ -16,8 +22,10 @@ export interface SolidWebIdOperations {
 }
 
 export interface SolidPreferencesOperations {
-    getSeeAlsoAll(): NamedNode[] | undefined;
-    getPrivateTypeIndex(webId: string | NamedNode): NamedNode | undefined;
+    solid: {
+        getSeeAlsoAll(): NamedNode[] | undefined;
+        getPrivateTypeIndex(webId: string | NamedNode): NamedNode | undefined;
+    }
 }
 
 export interface SolidPreferencesCreateParams {

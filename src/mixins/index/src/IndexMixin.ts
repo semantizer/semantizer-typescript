@@ -1,85 +1,94 @@
-import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
+import { BlankNode, Dataset, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformer, Index, IndexQueryingOptions, IndexQueryingStrategy, IndexShape } from "./types";
+import { EntryStreamTransformer, Index, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 
 export function IndexMixin<
     TBase extends DatasetSemantizerMixinConstructor
 >(Base: TBase) {
 
-    return class IndexMixinImpl extends Base implements Index {
-        
-        /**
-         * Transforms the quad stream of this dataset into an IndexEntry stream.
-         * @returns A Readable stream of IndexEntry with their linked objects (shape and properties).
-         */
-        public async loadEntryStream(strategy: EntryStreamTransformer<any>): Promise<Readable> {
-            const quadStream = await this.loadQuadStream();
+    return class IndexMixinImpl extends Base {
 
-            const entryStream = new Transform({
-                objectMode: true,
+        public constructor(...args: any[]) {
+            super(...args);
+            this.mixins.index = {
+                ...(this.mixins.index ?? {}),
 
-                transform(quad: Quad, encoding, callback) {
-                    const entry = strategy.transform(quad);
-                    if (entry) {
-                        this.push(entry);
-                    }
-                    callback(); // not sure if this is necessary?
-                }
-            });
+                /**
+                 * Transforms the quad stream of this dataset into an IndexEntry stream.
+                 * @returns A Readable stream of IndexEntry with their linked objects (shape and properties).
+                 */
+                loadEntryStream: async (strategy: EntryStreamTransformer<any>): Promise<Readable> => {
+                    const quadStream = await this.loadQuadStream();
 
-            // @ts-ignore
-            return quadStream.pipe(entryStream); // WARNING: the pipe method comes from the implementation of the underlying used parser (it can comes from @rdfjs/common-formats if the package loader-rdfjs is used (which uses @rdfjs/fetch)).
-            // TODO: ask @rdfjs/types why the Stream interface does not export a pipe method (and also other methods of streams like pause, resume and destroy).
+                    const entryStream = new Transform({
+                        objectMode: true,
+
+                        transform(quad: Quad, encoding, callback) {
+                            const entry = strategy.transform(quad);
+                            if (entry) {
+                                this.push(entry);
+                            }
+                            callback(); // not sure if this is necessary?
+                        }
+                    });
+
+                    // @ts-ignore
+                    return quadStream.pipe(entryStream); // WARNING: the pipe method comes from the implementation of the underlying used parser (it can comes from @rdfjs/common-formats if the package loader-rdfjs is used (which uses @rdfjs/fetch)).
+                    // TODO: ask @rdfjs/types why the Stream interface does not export a pipe method (and also other methods of streams like pause, resume and destroy).
+                },
+
+                // public async forEachEntry(callbackfn: (value: NamedNode, index?: number, array?: NamedNode[]) => Promise<void>): Promise<void> {
+                //     const indexEntryType = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#IndexEntry');
+                //     this.forEachSubGraph(async (subGraph) => {
+                //         if (subGraph.isDefaultGraphRdfTypeOf(indexEntryType)) {
+                //             await callbackfn(this.getSemantizer().build(indexEntryFactory, subGraph));
+                //         }
+                //     });
+                // }
+
+                query: (strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable => {
+                    strategy.setSemantizer(this.getSemantizer());
+                    return strategy.query(this, options);
+                },
+
+                // public createEntry()
+                // public setEntryProperty
+                // public addEntryShapeProperty(entry, property);
+
+                hasEntrySubIndex: (entry: NamedNode | string): boolean => {
+                    return this.getObjectUri(entry, IDX.HAS_SUB_INDEX) !== undefined;
+                },
+
+                getEntryTarget: (entry: NamedNode | string): NamedNode | undefined => {
+                    return this.getObjectUri(entry, IDX.HAS_TARGET);
+                },
+
+                getEntrySubIndex: (entry: NamedNode | string): NamedNode | undefined => {
+                    return this.getObjectUri(entry, IDX.HAS_SUB_INDEX);
+                },
+
+                getEntryShape: (entry: NamedNode | string): NamedNode | BlankNode | undefined => {
+                    return this.getObjectLinked(entry, IDX.HAS_SHAPE);
+                },
+
+                doesEntryMatchShape: (entry: NamedNode | string, shape: Dataset, shaclValidator: ShaclValidator): boolean => {
+                    throw new Error("Not implemented");
+                },
+
+                countEntryShapeProperties: (entry: NamedNode | string): number => {
+                    const properties = this.mixins.index.getEntryShapePropertiesAll(entry);
+                    return properties?.length ?? 0;
+                },
+
+                getEntryShapePropertiesAll: (entry: NamedNode | string): Term[] | undefined => {
+                    const shape = this.mixins.index.getEntryShape(entry);
+                    return shape ? this.getObjectLinkedAll(shape, SHACL.PROPERTY) : undefined;
+                },
+            }
+
         }
 
-        // public async forEachEntry(callbackfn: (value: NamedNode, index?: number, array?: NamedNode[]) => Promise<void>): Promise<void> {
-        //     const indexEntryType = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#IndexEntry');
-        //     this.forEachSubGraph(async (subGraph) => {
-        //         if (subGraph.isDefaultGraphRdfTypeOf(indexEntryType)) {
-        //             await callbackfn(this.getSemantizer().build(indexEntryFactory, subGraph));
-        //         }
-        //     });
-        // }
-
-        public query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable {
-            strategy.setSemantizer(this.getSemantizer());
-            return strategy.query(this, options);
-        }
-
-        // public createEntry()
-        // public setEntryProperty
-        // public addEntryShapeProperty(entry, property);
-
-        public hasEntrySubIndex(entry: NamedNode | string): boolean {
-            return this.getObjectUri(entry, IDX.HAS_SUB_INDEX) !== undefined;
-        }
-
-        public getEntryTarget(entry: NamedNode | string): NamedNode | undefined {
-            return this.getObjectUri(entry, IDX.HAS_TARGET);
-        }
-
-        public getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined {
-            return this.getObjectUri(entry, IDX.HAS_SUB_INDEX);
-        }
-
-        public getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined {
-            return this.getObjectLinked(entry, IDX.HAS_SHAPE);
-        }
-
-        public doesEntryMatchShape(entry: NamedNode | string, shape: IndexShape, shaclValidator: ShaclValidator): boolean {
-            throw new Error("Not implemented");
-        }
-
-        public countEntryShapeProperties(entry: NamedNode | string): number {
-            const properties = this.getEntryShapePropertiesAll(entry);
-            return properties?.length ?? 0;
-        }
-
-        public getEntryShapePropertiesAll(entry: NamedNode | string): Term[] | undefined {
-            const shape = this.getEntryShape(entry);
-            return shape ? this.getObjectLinkedAll(shape, SHACL.PROPERTY) : undefined;
-        }
     }
 
 }

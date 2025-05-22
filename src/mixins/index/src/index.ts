@@ -4,7 +4,6 @@ export * from "./types.js";
 export * from './namespaces.js';
 export * from "./IndexMixin.js";
 export * from "./IndexEntryMixin.js";
-export * from "./IndexShapeMixin.js";
 export * from "./IndexQueryingStrategyBaseDefaultImpl.js";
 export * from "./IndexQueryingStrategyBaseShapeImpl.js";
 export * from './EntryStreamTransformerDefaultImpl.js';

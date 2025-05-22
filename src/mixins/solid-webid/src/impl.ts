@@ -17,10 +17,10 @@ export function SolidWebIdProfileMixin<
     return class SolidWebIdProfileImpl extends Base implements SolidWebIdProfile {
 
         public async loadExtendedProfile(loader?: Loader): Promise<void> {
-            const primaryTopicUri = this.getPrimaryTopic();
+            const primaryTopicUri = this.webid.getPrimaryTopic();
             if (primaryTopicUri) {
-                const primaryTopic: SolidWebId = await this.getSemantizer().load(primaryTopicUri.value, solidWebIdFactory);
-                const otherProfiles = primaryTopic.getSeeAlsoAll();
+                const primaryTopic = await this.getSemantizer().load(primaryTopicUri.value, solidWebIdFactory);
+                const otherProfiles = primaryTopic.mixins.solid?.getSeeAlsoAll();
                 if (otherProfiles) {
                     for (const profile of otherProfiles) {
                         await this.load(profile, { loader });
@@ -30,7 +30,7 @@ export function SolidWebIdProfileMixin<
         }
 
         public async check(webId: string | NamedNode): Promise<void> {
-            const solidWebIdUri = this.getPrimaryTopic();
+            const solidWebIdUri = this.webid.getPrimaryTopic();
 
             if (solidWebIdUri) {
                 if ((typeof webId === 'string' && webId !== solidWebIdUri.value) || (typeof webId !== 'string' && solidWebIdUri.equals(webId))) {
@@ -45,65 +45,74 @@ export function SolidWebIdProfileMixin<
 export function SolidWebIdMixin<
     TBase extends WebIdProfileConstructor
 >(Base: TBase) {
-    return class SolidWebIdImpl extends Base implements SolidWebId {
+    return class SolidWebIdImpl extends Base { //implements SolidWebId {
 
-        public check(): void {
+        public constructor(...args: any[]) {
+            super(...args);
+            this.mixins.solid = {
+                ...(this.mixins.solid ?? {}),
 
-        }
+                // check: (): void => {
 
-        public addPreferencesDocument(preferencesDocumentUri: string | NamedNode): void {
-            const webId = this.getPrimaryTopic();
-            if (webId) {
-                this.addObjectUri(webId, ns.pim + 'preferencesFile', preferencesDocumentUri, this.getDefaultGraphTerm());
-            }
-        }
+                // },
 
-        public getPreferencesDocument(): NamedNode | undefined {
-            const webId = this.getPrimaryTopic();
-            if (webId) {
-                return this.getObjectUri(webId, ns.pim + 'preferencesFile', this.getDefaultGraphTerm());
-            }
-        }
+                addPreferencesDocument: (preferencesDocumentUri: string | NamedNode): void => {
+                    const webId = this.webid.getPrimaryTopic();
+                    if (webId) {
+                        this.addObjectUri(webId, ns.pim + 'preferencesFile', preferencesDocumentUri, this.getDefaultGraphTerm());
+                    }
+                },
 
-        public getLdpInbox(): NamedNode | undefined {
-            const webId = this.getPrimaryTopic();
-            if (webId) {
-                return this.getObjectUri(webId, ns.ldp + 'inbox', this.getDefaultGraphTerm());
-            }
-        }
+                getPreferencesDocument: (): NamedNode | undefined => {
+                    const webId = this.webid.getPrimaryTopic();
+                    if (webId) {
+                        return this.getObjectUri(webId, ns.pim + 'preferencesFile', this.getDefaultGraphTerm());
+                    }
+                },
 
-        public getStorageAll(): NamedNode[] | undefined {
-            const webId = this.getPrimaryTopic();
-            if (webId) {
-                return this.getObjectUriAll(webId, ns.pim + 'storage', this.getDefaultGraphTerm());
-            }
-        }
+                getLdpInbox: (): NamedNode | undefined => {
+                    const webId = this.webid.getPrimaryTopic();
+                    if (webId) {
+                        return this.getObjectUri(webId, ns.ldp + 'inbox', this.getDefaultGraphTerm());
+                    }
+                },
 
-        public getPublicTypeIndex(): NamedNode | undefined {
-            const webId = this.getPrimaryTopic();
-            if (webId) {
-                return this.getObjectUri(webId, ns.solid + 'publicTypeIndex', this.getDefaultGraphTerm());
-            }
-        }
+                getStorageAll: (): NamedNode[] | undefined => {
+                    const webId = this.webid.getPrimaryTopic();
+                    if (webId) {
+                        return this.getObjectUriAll(webId, ns.pim + 'storage', this.getDefaultGraphTerm());
+                    }
+                },
 
-        public async getPrivateTypeIndex(): Promise<NamedNode | undefined> {
-            let privateTypeIndexUri: NamedNode | undefined = undefined;
-            const preferencesFileUri = this.getPreferencesDocument();
-            if (preferencesFileUri) {
-                const preferencesFile: SolidPreferencesDocument = await this.getSemantizer().load(preferencesFileUri.value, solidPreferencesFactory);
-                const webId = this.getPrimaryTopic();
-                if (webId) {
-                    privateTypeIndexUri = preferencesFile.getPrivateTypeIndex(webId);
+                getPublicTypeIndex: (): NamedNode | undefined => {
+                    const webId = this.webid.getPrimaryTopic();
+                    if (webId) {
+                        return this.getObjectUri(webId, ns.solid + 'publicTypeIndex', this.getDefaultGraphTerm());
+                    }
+                },
+
+                getPrivateTypeIndex: async (): Promise<NamedNode | undefined> => {
+                    let privateTypeIndexUri: NamedNode | undefined = undefined;
+                    const preferencesFileUri = this.mixins.solid?.getPreferencesDocument();
+                    if (preferencesFileUri) {
+                        const preferencesFile: SolidPreferencesDocument = await this.getSemantizer().load(preferencesFileUri.value, solidPreferencesFactory);
+                        const webId = this.webid.getPrimaryTopic();
+                        if (webId) {
+                            privateTypeIndexUri = preferencesFile.solid.getPrivateTypeIndex(webId);
+                        }
+                    }
+                    return privateTypeIndexUri;
+                },
+
+                getSeeAlsoAll: (): NamedNode[] | undefined => {
+                    const webId = this.webid.getPrimaryTopic();
+                    if (webId) {
+                        return this.getObjectUriAll(webId, ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
+                    }
                 }
-            }
-            return privateTypeIndexUri;
-        }
 
-        public getSeeAlsoAll(): NamedNode[] | undefined {
-            const webId = this.getPrimaryTopic();
-            if (webId) {
-                return this.getObjectUriAll(webId, ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
             }
+
         }
 
     }
@@ -115,12 +124,20 @@ export function SolidPreferencesMixin<
 >(Base: TBase) {
     return class SolidPreferencesImpl extends Base implements SolidPreferencesDocument {
 
-        public getPrivateTypeIndex(webId: string | NamedNode): NamedNode | undefined {
-            return this.getObjectUri(webId, ns.solid + 'privateTypeIndex', this.getDefaultGraphTerm());
-        }
+        public get solid() {
+            
+            return { 
+                
+                getPrivateTypeIndex: (webId: string | NamedNode): NamedNode | undefined => {
+                    return this.getObjectUri(webId, ns.solid + 'privateTypeIndex', this.getDefaultGraphTerm());
+                },
 
-        public getSeeAlsoAll(): NamedNode[] | undefined {
-            return this.getObjectUriAll(this.getBaseUri(), ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
+                getSeeAlsoAll: (): NamedNode[] | undefined => {
+                    return this.getObjectUriAll(this.getBaseUri(), ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
+                }
+
+            }
+
         }
 
     }

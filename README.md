@@ -30,7 +30,7 @@ const distantPerson = await semantizer.load("http://example.org/john-smith", foa
 console.log(distantPerson.getGivenName()); // shows "John Smith"
 ```
 
-## Available mixins
+## Available mixins and utils
 
 The base mixin is the "dataset" mixin. It offers basic methods such as `getObjectLiteral()`, `getObjectUri()` and so on. You can especially look at the `DatasetSemantizer` type defined in the [types package](./src/packages/types/) to list the available methods of the dataset mixin.
 
@@ -42,11 +42,21 @@ The documentation of each mixin is available into the mixin directory. Click on 
 | [dataset](./src/mixins/dataset/) | The base mixin. Provides essential methods. |
 | [foaf-person](./src/mixins/foaf/) | The [foaf:Person](http://xmlns.com/foaf/spec/#term_Person) mixin. |
 | [index](./src/mixins/index/) | A mixin to query indexes. |
+| [shacl](./src/mixins/shacl/) | A mixin to manipulate SHACL shapes. |
 | [solid-changelog-n3](./src/mixins/solid-changelog-n3/) | A mixin to serialize a dataset changelog into a N3 patch. |
 | [solid-container](./src/mixins/solid-container/) | A mixin to manipulate Solid containers. |
 | [solid-webid](./src/mixins/solid-webid/) | A mixin to manipulate [Solid WebId profiles](https://solid.github.io/webid-profile/). |
 | [typeindex](./src/mixins/typeindex/) | A mixin to manipulate [TypeIndexes](https://solid.github.io/type-indexes/). |
 | [webid](./src/mixins/webid/) | A mixin to manipulate [WebId](https://w3c.github.io/WebID/spec/identity/) profiles. |
+
+| Util      | Description |
+| -----------| ----------- |
+| [index-entry-stream-transformer](./src/utils/index-entry-stream-transformer) | A mixin to record the changes made to a dataset. |
+| [index-querying-strategy-shacl](./src/mixins/index-querying-strategy-shacl/) | Desc. |
+| [index-querying-strategy-shacl-comunica](./src/mixins/index-querying-strategy-shacl-comunica/) | Desc. |
+| [index-querying-strategy-shacl-conjunction](./src/mixins/index-querying-strategy-shacl-conjunction/) | Desc. |
+| [index-querying-strategy-shacl-final](./src/mixins/index-querying-strategy-shacl-final/) | Desc. |
+| [shacl-validator-default](./src/mixins/shacl-validator-default/) | Desc. |
 
 ## Development
 
