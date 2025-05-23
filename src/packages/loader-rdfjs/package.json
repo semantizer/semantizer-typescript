@@ -21,7 +21,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@rdfjs/fetch": "^3.1.1"
+    "@rdfjs/fetch": "^3.1.1",
+    "@semantizer/http-error": "*"
   },
   "devDependencies": {
     "@semantizer/types": "*",

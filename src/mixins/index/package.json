@@ -20,6 +20,9 @@
     "dev": "tsc -w",
     "prepublishOnly": "npm run build"
   },
+  "dependencies": {
+    "@semantizer/http-error": "*"
+  },
   "devDependencies": {
     "@semantizer/types": "*",
     "typescript": "^5.5.2"

@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@semantizer/mixin-index": "*",
+    "@semantizer/http-error": "*",
     "@semantizer/utils-index-querying-strategy-shacl-final": "*"
   },
   "devDependencies": {

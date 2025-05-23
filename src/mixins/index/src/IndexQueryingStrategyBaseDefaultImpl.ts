@@ -1,4 +1,5 @@
 import { LoggingLevel, NamedNode, Semantizer, Term, WithSemantizer } from "@semantizer/types";
+import { HttpError } from "@semantizer/http-error";
 import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 import { Readable } from "stream";
 
@@ -114,8 +115,15 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     }
 
     protected async process(index: Index): Promise<void> {
-        const entryStream = await index.mixins.index.loadEntryStream(this.getEntryStreamTransformer());
-        this.processEntryStream(entryStream);
+        try {
+            const entryStream = await index.mixins.index.loadEntryStream(this.getEntryStreamTransformer());
+            this.processEntryStream(entryStream);
+        } catch (e) {
+            if (e instanceof HttpError) {
+                this.log('ERROR', `A HTTP ${e.code} error occured while loading the index ${index.getBaseUri().value}`);
+            }
+            else this.log('ERROR', "An error occured while loading the index " + index.getBaseUri().value);
+        }
     }
 
     protected endResultStream(): void {

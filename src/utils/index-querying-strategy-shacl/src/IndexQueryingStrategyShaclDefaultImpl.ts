@@ -1,5 +1,6 @@
 import { EntryStreamTransformer, EntryStreamTransformerDefaultImpl, Index, IndexEntry, IndexQueryingStrategy } from "@semantizer/mixin-index";
 import { Dataset, NamedNode, ShaclValidator } from "@semantizer/types";
+import { HttpError } from "@semantizer/http-error";
 import { IndexQueryingStrategyShaclUsingFinalIndex } from "@semantizer/utils-index-querying-strategy-shacl-final";
 import { Readable } from "stream";
 
@@ -33,11 +34,18 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
     }
 
     private async processFinalIndex(finalIndex: Index): Promise<void> {
-        const entryStreamStrategy = new EntryStreamTransformerDefaultImpl(this.getSemantizer());
-        const entryStream = await finalIndex.mixins.index.loadEntryStream(entryStreamStrategy);
-        this._entryStreams.push(entryStream);
-        entryStream.on('data', (entry: Entry) => this.processFinalIndexEntry(entry));
-        entryStream.on('error', (error) => this.log('ERROR', "An error occured during the processing a final index."));
+        try {
+            const entryStreamStrategy = new EntryStreamTransformerDefaultImpl(this.getSemantizer());
+            const entryStream = await finalIndex.mixins.index.loadEntryStream(entryStreamStrategy);
+            this._entryStreams.push(entryStream);
+            entryStream.on('data', (entry: Entry) => this.processFinalIndexEntry(entry));
+            entryStream.on('error', (error) => this.log('ERROR', "An error occured during the processing a final index."));
+        } catch (e) {
+            if (e instanceof HttpError) {
+                this.log('ERROR', `A HTTP ${e.code} error occured while loading the final index ${finalIndex.getBaseUri().value}`);
+            }
+            else this.log('ERROR', "An error occured while loading the final index " + finalIndex.getBaseUri().value);
+        }
     }
 
     protected async processFinalIndexEntry(entry: Entry): Promise<void> {
