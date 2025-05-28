@@ -107,7 +107,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._semantizer = semantizer;
     }
 
-    protected async processEntryStream(entryStream: Readable): Promise<void> {
+    protected async processEntryStream(entryStream: Readable, index: Index): Promise<void> {
         // entryStream.on('data', async (entry: Entry) => {
         //     if (this.hasReachLimit()) {
         //         this.destroyResultStream();
@@ -115,13 +115,13 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         //     }
         // });
         entryStream.on('end', () => this.endResultStream());
-        entryStream.on('error', (error) => this.log('ERROR', "An error occured while querying index: " + error.toString()));
+        entryStream.on('error', (error) => this.log('ERROR', `An error occured while querying index: ${index.getBaseUri().value}: ${error.toString()}.`));
     }
 
     protected async process(index: Index): Promise<void> {
         try {
             const entryStream = await index.mixins.index.loadEntryStream(this.getEntryStreamTransformer());
-            this.processEntryStream(entryStream);
+            this.processEntryStream(entryStream, index);
         } catch (e) {
             if (e instanceof HttpError) {
                 this.log('ERROR', `A HTTP ${e.code} error occured while loading the index ${index.getBaseUri().value}`);

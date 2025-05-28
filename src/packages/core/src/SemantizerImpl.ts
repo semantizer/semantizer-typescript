@@ -47,7 +47,8 @@ export class SemantizerImpl implements Semantizer {
 
     public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
         if (this._logEntryCallbacks.size > 0) {
-            const loggingEntry = { level, subject, code, message };
+            const date = new Date();
+            const loggingEntry = { date, level, subject, code, message };
             for (const callback of this._logEntryCallbacks) {
                 callback(loggingEntry);
             }

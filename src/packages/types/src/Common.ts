@@ -36,6 +36,7 @@ export interface WithLogging {
 }
 
 export interface LoggingEntry {
+    date: Date;
     level: LoggingLevel;
     subject?: Term;
     code?: number;
