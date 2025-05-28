@@ -108,20 +108,18 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     }
 
     protected async processEntryStream(entryStream: Readable, index: Index): Promise<void> {
-        // entryStream.on('data', async (entry: Entry) => {
-        //     if (this.hasReachLimit()) {
-        //         this.destroyResultStream();
-        //         return; // when we have enough results, we should stop the streaming process.
-        //     }
-        // });
-        entryStream.on('end', () => this.endResultStream());
+        this.registerEntryStreamErrorCallback(entryStream, index);
+    }
+
+    protected registerEntryStreamErrorCallback(entryStream: Readable, index: Index): void {
         entryStream.on('error', (error) => this.log('ERROR', `An error occured while querying index: ${index.getBaseUri().value}: ${error.toString()}.`));
     }
 
     protected async process(index: Index): Promise<void> {
         try {
             const entryStream = await index.mixins.index.loadEntryStream(this.getEntryStreamTransformer());
-            this.processEntryStream(entryStream, index);
+            await this.processEntryStream(entryStream, index);
+            this.endResultStream(index);
         } catch (e) {
             if (e instanceof HttpError) {
                 this.log('ERROR', `A HTTP ${e.code} error occured while loading the index ${index.getBaseUri().value}`);
@@ -130,7 +128,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         }
     }
 
-    protected endResultStream(): void {
+    protected endResultStream(index: Index): void {
         this.pushResult(null);
         this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} is terminated.`);
     }

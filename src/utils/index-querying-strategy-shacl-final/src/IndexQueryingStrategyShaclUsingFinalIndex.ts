@@ -82,7 +82,7 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
             finalIndexDataset.setBaseUri(finalIndex);
             await this.process(finalIndexDataset); 
         }
-        this.endResultStream();
+        this.endResultStream(index);
     }
 
     public query(index: Index, options?: IndexQueryingOptions): Readable {
