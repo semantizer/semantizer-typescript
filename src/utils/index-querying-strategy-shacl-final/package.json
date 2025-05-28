@@ -21,7 +21,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@semantizer/mixin-index": "*"
+    "@semantizer/mixin-index": "*",
+    "@semantizer/http-error": "*"
   },
   "devDependencies": {
     "@semantizer/types": "*",

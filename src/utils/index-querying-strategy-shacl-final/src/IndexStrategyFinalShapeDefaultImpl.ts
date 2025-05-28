@@ -47,19 +47,20 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         }
     }
 
-    protected processEntryStream(entryStream: Readable): void {
+    protected async processEntryStream(entryStream: Readable): Promise<void> {
         super.processEntryStream(entryStream);
-        entryStream.on('data', async (entry: Entry) => {
-            this.processFinalIndexEntry(entry, entryStream);
-        });
         this.pushPromise(new Promise<void>((resolveThis, rejectThis) => {
             entryStream.on('end', async () => resolveThis());
             entryStream.on('error', (error) => rejectThis(error));
         }));
+        for await (const entry of entryStream) {
+            await this.processFinalIndexEntry(entry, entryStream);
+        }
     }
 
     private async processSubIndex(entry: Entry, entryStream: Readable): Promise<void> {
         const subIndexUri = entry.getSubIndex();
+        this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} has found a sub-index: ${subIndexUri?.value}`);
         if (subIndexUri) {
             try {
                 entryStream.pause();
@@ -75,7 +76,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
     }
 
     protected endResultStream(): void {
-        Promise.all(this.getPromises()).then(() => super.endResultStream());
+        Promise.all(this.getPromises()).then(() => { console.log("CHILD"); super.endResultStream() });
     }
 
     public getName(): string {

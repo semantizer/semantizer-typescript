@@ -13,12 +13,15 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     private _hasLimit: boolean;
     private _isInitialized: boolean;
 
+    public _instanceName: string;
+
     public constructor(entryStreamTransformer: EntryStreamTransformer<Entry>) {
         this._entryStreamTransformer = entryStreamTransformer;
         this._resultStream = this.makeResultStream();
         this._resultCount = 0;
         this._hasLimit = false;
         this._isInitialized = true;
+        this._instanceName = (Math.random() + 1).toString(36).substring(7);
     }
 
     public abstract getName(): string;
@@ -47,8 +50,8 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     }
 
     protected pushResult(result: NamedNode | null): void {
-        if (result) {
-            this.log('INFO', `Strategy ${this.getName()} has found result: ${result.value}`);
+        if (result !== null) {
+            this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} has found a result: ${result.value}`);
             this._resultCount++;
         }
         this._resultStream.push(result);
@@ -73,6 +76,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     protected destroyResultStream(): void {
         this._resultStream.pause(); // if the stream is not paused, the call to destroy() would have no effect
         this._resultStream.destroy(); // handled by the 'close' event (see below)
+        this.log('INFO', `Strategy ${this.getName()} result stream has been destroyed.`);
     }
 
     public getResultStream(): Readable {
@@ -103,13 +107,13 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._semantizer = semantizer;
     }
 
-    protected processEntryStream(entryStream: Readable): void {
-        entryStream.on('data', async (entry: Entry) => {
-            if (this.hasReachLimit()) {
-                this.destroyResultStream();
-                return; // when we have enough results, we should stop the streaming process.
-            }
-        });
+    protected async processEntryStream(entryStream: Readable): Promise<void> {
+        // entryStream.on('data', async (entry: Entry) => {
+        //     if (this.hasReachLimit()) {
+        //         this.destroyResultStream();
+        //         return; // when we have enough results, we should stop the streaming process.
+        //     }
+        // });
         entryStream.on('end', () => this.endResultStream());
         entryStream.on('error', (error) => this.log('ERROR', "An error occured while querying index: " + error.toString()));
     }
@@ -128,9 +132,11 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
 
     protected endResultStream(): void {
         this.pushResult(null);
+        this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} is terminated.`);
     }
 
     public query(index: Index, options?: IndexQueryingOptions): Readable {
+        this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} is starting.`);
         this.init(options);
         this.process(index);
         return this.getResultStream();

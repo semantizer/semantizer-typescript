@@ -34,8 +34,12 @@ export function IndexMixin<
                     });
 
                     // @ts-ignore
-                    return quadStream.pipe(entryStream); // WARNING: the pipe method comes from the implementation of the underlying used parser (it can comes from @rdfjs/common-formats if the package loader-rdfjs is used (which uses @rdfjs/fetch)).
-                    // TODO: ask @rdfjs/types why the Stream interface does not export a pipe method (and also other methods of streams like pause, resume and destroy).
+                    return quadStream.pipe(entryStream); 
+                    // WARNING: the pipe method comes from the implementation of the underlying used parser 
+                    // (it can comes from @rdfjs/common-formats if the package loader-rdfjs is used (which 
+                    // uses @rdfjs/fetch)).
+                    // TODO: ask @rdfjs/types why the Stream interface does not export a pipe method 
+                    // (and also other methods of streams like pause, resume and destroy).
                 },
 
                 // public async forEachEntry(callbackfn: (value: NamedNode, index?: number, array?: NamedNode[]) => Promise<void>): Promise<void> {

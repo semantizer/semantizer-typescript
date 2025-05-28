@@ -33,6 +33,10 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
         this.processFinalIndex(finalIndex);
     }
 
+    protected onFinalIndexesStreamEnd(): void {
+        this.pushResult(null);
+    }
+
     private async processFinalIndex(finalIndex: Index): Promise<void> {
         try {
             const entryStreamStrategy = new EntryStreamTransformerDefaultImpl(this.getSemantizer());
@@ -51,7 +55,7 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
     protected async processFinalIndexEntry(entry: Entry): Promise<void> {
         try {
             const target = this.getEntryTargetEnsuringItIsANamedNode(entry);
-            if (this.isResultHasNotAlreadyBeenReturned(target)) {
+            if (this.tryToEndResultStream(target)) {
                 await this.validateEntry(entry, target);
             }
         } catch (e) {
@@ -70,15 +74,16 @@ export class IndexQueryingStrategyShaclDefaultImpl<Entry extends IndexEntry = In
         throw new Error();
     }
 
-    protected isResultHasNotAlreadyBeenReturned(result: NamedNode): boolean {
+    protected tryToEndResultStream(result: NamedNode): boolean {
         return !this._results.has(result.value);
     }
 
     protected pushResult(result: NamedNode | null) {
-        if (result) {
+        this.log("INFO", "PUSH RESULT: " + (result?.value ?? 'null'));
+        if (result !== null) {
             this._results.add(result.value);
-            super.pushResult(result);
         }
+        super.pushResult(result);
     }
 
     protected async validateEntry(entry: Entry, target: NamedNode): Promise<void> {
