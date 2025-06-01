@@ -53,6 +53,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         if (result !== null) {
             this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} has found a result: ${result.value}`);
             this._resultCount++;
+            this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} result count is now: ${this._resultCount}`);
         }
         this._resultStream.push(result);
     }
@@ -114,7 +115,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         //         return; // when we have enough results, we should stop the streaming process.
         //     }
         // });
-        entryStream.on('end', () => this.endResultStream());
+        // entryStream.on('end', () => this.endResultStream());
         entryStream.on('error', (error) => this.log('ERROR', "An error occured while querying index: " + error.toString()));
     }
 
