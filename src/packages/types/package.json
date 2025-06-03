@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@semantizer/types",
   "description": "Semantizer types definition",
-  "version": "1.0.0-beta.2.2.0",
+  "version": "1.0.0-3.0.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "types": "./dist/index.d.ts",

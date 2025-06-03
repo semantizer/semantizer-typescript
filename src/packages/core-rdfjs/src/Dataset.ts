@@ -1,5 +1,5 @@
 import RdfjsDatasetImpl from "@semantizer/rdfjs-dataset-impl";
-import { BlankNode, LoggingLevel, MixinNamespace, NamedNode, Quad, Semantizer, Term, WithBaseUri, WithMixins, WithSemantizer } from '@semantizer/types';
+import { BlankNode, LoggingComponent, LoggingLevel, MixinNamespace, NamedNode, Quad, Semantizer, WithBaseUri, WithLoggingOptions, WithMixins, WithSemantizer } from '@semantizer/types';
 
 export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithMixins, WithSemantizer, WithBaseUri {
 
@@ -19,9 +19,28 @@ export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithMixins
             this._baseUri = namedNode('');
         }
     }
+
+    public getLoggingComponent(): LoggingComponent {
+        return {
+            type: 'PACKAGE',
+            name: 'core-rdfjs'
+        }
+    }
+
+    public log(level: LoggingLevel, message: string, options?: WithLoggingOptions): void {
+        this.getSemantizer().log(this, level, message, options);
+    }
     
-    public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
-        this.getSemantizer().log(level, message, code, subject);
+    public logInfo(message: string, options?: WithLoggingOptions): void {
+        this.getSemantizer().logInfo(this, message, options);
+    }
+    
+    public logWarning(message: string, options?: WithLoggingOptions): void {
+        this.getSemantizer().logWarning(this, message, options);
+    }
+    
+    public logError(message: string, options?: WithLoggingOptions): void {
+        this.getSemantizer().logError(this, message, options);
     }
 
     public getBaseUri(): NamedNode {

@@ -1,5 +1,5 @@
-import { DataFactory, NamedNode, Quad } from "@rdfjs/types";
-import { QuadIterableSemantizer, WithLogging } from "./Common";
+import { BlankNode, DataFactory, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Object, Quad_Predicate, Quad_Subject } from "@rdfjs/types";
+import { LoggingEntryCallback, LoggingLevel, QuadIterableSemantizer, WithLogging, WithLoggingOptions } from "./Common";
 import { DatasetBaseFactory, DatasetSemantizer } from "./Datasets";
 import { Fetch, Loader, LoaderQuadStream } from "./Loader";
 
@@ -18,7 +18,7 @@ export type MixinFactoryFunction<
     TMixin extends DatasetSemantizer
 > = (semantizer: Semantizer) => MixinFactory<TBase, TMixin>;
 
-export interface Semantizer extends WithLogging {
+export interface Semantizer {
     getConfiguration(): Configuration;
     setConfiguration(configuration: Configuration): void;
     
@@ -35,7 +35,19 @@ export interface Semantizer extends WithLogging {
     build<TBase extends Constructor, TMixin extends DatasetSemantizer>(mixinFactoryFunction: MixinFactoryFunction<TBase, TMixin>, fromDataset?: QuadIterableSemantizer): TMixin;
     build<TBase extends Constructor, TMixin extends DatasetSemantizer>(mixinFactoryFunctionOrDataset?: MixinFactoryFunction<TBase, TMixin> | QuadIterableSemantizer, fromDataset?: QuadIterableSemantizer): DatasetSemantizer | TMixin;
 
-    // TODO: Can be move to another class
+    log(component: WithLogging, level: LoggingLevel, message: string, options?: WithLoggingOptions): void;
+    logInfo(component: WithLogging, message: string, options?: WithLoggingOptions): void;
+    logWarning(component: WithLogging, message: string, options?: WithLoggingOptions): void;
+    logError(component: WithLogging, message: string, options?: WithLoggingOptions): void;
+
+    // Could be moved to a dedicated mixin, like the one to create quad 
+    createQuad(subject: Quad_Subject, predicate: Quad_Predicate, object: Quad_Object, graph?: Quad_Graph): Quad;
+    createDefaultGraph(): DefaultGraph;
+    createBlankNode(value?: string): BlankNode;
+    createNamedNode(uri: string): NamedNode;
+    createLiteral(value: string, languageOrDatatype?: string | NamedNode): Literal;
+
+    // TODO: Can be moved to another class
     // getContext(): Context | undefined;
     // setContext(context: Context): void;
     // expand(uri: string): string;
@@ -49,6 +61,22 @@ export interface Configuration {
     getMixinFactoryImpl(): MixinFactoryConstructor<any, any>;
     getDatasetBaseFactory(): DatasetBaseFactory;
     getDatasetImpl(): DatasetImplConstructor;
+
+    setLoader(loader: Loader): void;
+    setLoaderQuadStream(loaderQuadStream: LoaderQuadStream): void;
+    setRdfDataModelFactory(dataFactory: DataFactory): void;
+    setMixinFactoryImpl(mixinFactoryConstructor: MixinFactoryConstructor<any, any>): void;
+    setDatasetBaseFactory(datasetBaseFactory: DatasetBaseFactory): void;
+    setDatasetImpl(datasetConstructor: DatasetImplConstructor): void;
+
+    enableLogging(level?: LoggingLevel): void;
+    disableLogging(): void;
+    setLoggingLevel(level: LoggingLevel): void;
+    isLoggingEnabled(): boolean;
+    getLoggingLevel(): LoggingLevel;
+    getRegisteredLoggingEntryCallbacks(): Set<LoggingEntryCallback>;
+    registerLoggingEntryCallback(callback: LoggingEntryCallback): void;
+    unregisterLoggingEntryCallback(callback: LoggingEntryCallback): void;
 }
 
 export interface MixinFactory<

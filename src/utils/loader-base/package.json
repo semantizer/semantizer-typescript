@@ -1,8 +1,8 @@
 {
   "type": "module",
-  "name": "@semantizer/loader-quad-stream-rdfjs",
-  "description": "A Semantizer package to load datasets from the network with streams using the RDFJS fetch library",
-  "version": "1.0.0-2.1.0",
+  "name": "@semantizer/util-loader-base",
+  "description": "A Semantizer base class to implement Loader and LoaderQuadStream.",
+  "version": "1.0.0-1.0.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -13,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/packages/loader-quad-stream-rdfjs"
+    "directory": "src/utils/loader-base"
   },
   "scripts": {
     "build": "tsc -p .",
@@ -21,14 +21,8 @@
     "prepublishOnly": "npm run build",
     "nx-release-publish": "npm publish"
   },
-  "dependencies": {
-    "@rdfjs/fetch": "^3.1.1",
-    "@semantizer/util-loader-base": "*",
-    "@semantizer/http-error": "*"
-  },
   "devDependencies": {
     "@semantizer/types": "*",
-    "@types/rdfjs__fetch": "^3.0.7",
     "typescript": "^5.5.2"
   }
 }

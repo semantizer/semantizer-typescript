@@ -35,7 +35,6 @@ export interface IndexEntryOperations {
 
 export interface IndexQueryingStrategy extends WithSemantizer {
     query(index: Index, options?: IndexQueryingOptions): Readable;
-    getName(): string;
 }
 
 export interface EntryStreamTransformer<Entry> {

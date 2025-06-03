@@ -1,8 +1,9 @@
 import { DatasetCore, NamedNode, Quad, Stream } from "@rdfjs/types";
+import { WithSemantizer } from "./Common";
 
 export type Fetch = typeof fetch;
 
-export interface Loader {
+export interface Loader extends WithSemantizer {
     /**
      * 
      * @param uri 
@@ -12,7 +13,7 @@ export interface Loader {
     load(uri: string | NamedNode, fetch?: Fetch): Promise<DatasetCore<Quad, Quad>>;
 }
 
-export interface LoaderQuadStream {
+export interface LoaderQuadStream extends WithSemantizer {
     /**
      * 
      * @param uri 

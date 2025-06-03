@@ -1,5 +1,5 @@
 import { EntryStreamTransformer, Index, IndexEntry, indexFactory, IndexQueryingOptions, IndexQueryingStrategyBaseShapeImpl } from "@semantizer/mixin-index";
-import { Dataset, ShaclValidator } from "@semantizer/types";
+import { Dataset, LoggingComponent, LoggingLevel, ShaclValidator, WithLoggingOptions } from "@semantizer/types";
 import { Readable } from "stream";
 
 export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyBaseShapeImpl<Entry> {
@@ -47,7 +47,7 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
 
     private async processSubIndex(entry: Entry, entryStream: Readable): Promise<void> {
         const subIndexUri = entry.getSubIndex();
-        this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} has found a sub-index: ${subIndexUri?.value}`);
+        this.logInfo(`found a sub-index: ${subIndexUri?.value}`);
         if (subIndexUri) {
             try {
                 entryStream.pause();
@@ -56,8 +56,8 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
                 await this.process(subIndex);
                 entryStream.resume();
             }
-            catch (e) { this.log('ERROR', "Error while loading " + subIndexUri + e) }
-        } else { this.log('WARN', "No subIndex found for potencial result source.") }
+            catch (e) { this.logError("Error while loading " + subIndexUri + e) }
+        } else { this.logWarning("No subIndex found for potencial result source.") }
     }
 
     public isRootIndex(index: Index): boolean {
@@ -73,13 +73,21 @@ export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = Index
         }
     }
 
-    public getName(): string {
-        return "IndexStrategyFinalShapeDefaultImpl";
-    }
-
     public query(index: Index, options?: IndexQueryingOptions): Readable {
         this._rootIndex = index;
         return super.query(index, options);
+    }
+
+    public log(level: LoggingLevel, message: string, options?: WithLoggingOptions): void {
+        const newOptions = { ...options, source: "IndexStrategyFinalShapeDefaultImpl" };
+        super.log(level, message, newOptions);
+    }
+
+    public getLoggingComponent(): LoggingComponent {
+        return {
+            type: 'UTIL',
+            name: 'index-querying-strategy-shacl-final'
+        }
     }
 
 }

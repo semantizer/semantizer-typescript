@@ -1,7 +1,7 @@
-import { LoggingLevel, NamedNode, Semantizer, Term, WithSemantizer } from "@semantizer/types";
 import { HttpError } from "@semantizer/http-error";
-import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
+import { LoggingComponent, LoggingLevel, NamedNode, Semantizer, WithLoggingOptions, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
+import { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 
 export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEntry = IndexEntry> implements WithSemantizer, IndexQueryingStrategy {
 
@@ -23,8 +23,6 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._isInitialized = true;
         this._instanceName = (Math.random() + 1).toString(36).substring(7);
     }
-
-    public abstract getName(): string;
 
     public isInitialized(): boolean {
         return this._isInitialized;
@@ -51,7 +49,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
 
     protected pushResult(result: NamedNode | null): void {
         if (result !== null) {
-            this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} has found a result: ${result.value}`);
+            this.logInfo(`found a result: ${result.value}`);
             this._resultCount++;
         }
         this._resultStream.push(result);
@@ -76,7 +74,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     protected destroyResultStream(): void {
         this._resultStream.pause(); // if the stream is not paused, the call to destroy() would have no effect
         this._resultStream.destroy(); // handled by the 'close' event (see below)
-        this.log('INFO', `Strategy ${this.getName()} result stream has been destroyed.`);
+        this.logInfo("result stream has been destroyed.");
     }
 
     public getResultStream(): Readable {
@@ -93,8 +91,28 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
         this._hasLimit = (limit !== undefined && limit > 0);
     }
 
-    public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
-        this.getSemantizer().log(level, message, code, subject);
+    public getLoggingComponent(): LoggingComponent {
+        return {
+            type: 'MIXIN',
+            name: 'index'
+        }
+    }
+
+    public log(level: LoggingLevel, message: string, options?: WithLoggingOptions): void {
+        const newOptions = { ...options, instance: this._instanceName };
+        this.getSemantizer().log(this, level, message, newOptions);
+    }
+    
+    public logInfo(message: string, options?: WithLoggingOptions): void {
+        this.log('INFO', message, options);
+    }
+    
+    public logWarning(message: string, options?: WithLoggingOptions): void {
+        this.log('WARN', message, options);
+    }
+    
+    public logError(message: string, options?: WithLoggingOptions): void {
+        this.log('ERROR', message, options);
     }
 
     public getSemantizer(): Semantizer {
@@ -112,7 +130,7 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
     }
 
     protected registerEntryStreamErrorCallback(entryStream: Readable, index: Index): void {
-        entryStream.on('error', (error) => this.log('ERROR', `An error occured while querying index: ${index.getBaseUri().value}: ${error.toString()}.`));
+        entryStream.on('error', (error) => this.logError(`An error occured while querying index: ${index.getBaseUri().value}: ${error.toString()}.`));
     }
 
     protected async process(index: Index): Promise<void> {
@@ -122,19 +140,19 @@ export abstract class IndexQueryingStrategyBaseDefaultImpl<Entry extends IndexEn
             this.endResultStream(index);
         } catch (e) {
             if (e instanceof HttpError) {
-                this.log('ERROR', `A HTTP ${e.code} error occured while loading the index ${index.getBaseUri().value}`);
+                this.logError(`A HTTP ${e.code} error occured while loading the index ${index.getBaseUri().value}`);
             }
-            else this.log('ERROR', "An error occured while loading the index " + index.getBaseUri().value);
+            else this.logError("An error occured while loading the index " + index.getBaseUri().value);
         }
     }
 
     protected endResultStream(index: Index): void {
         this.pushResult(null);
-        this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} is terminated.`);
+        this.logInfo("terminated");
     }
 
     public query(index: Index, options?: IndexQueryingOptions): Readable {
-        this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} is starting.`);
+        this.logInfo("starting");
         this.init(options);
         this.process(index);
         return this.getResultStream();

@@ -39,14 +39,14 @@ export function IndexEntryMixin<
             const entryShapeTerm = this.getShape();
 
             if (!entryShapeTerm) {
-                this.log('ERROR', "No triple having the entry as subject and the idx:hasShape as predicate was found.", 0, this.getBaseUri());
+                this.logError("No triple having the entry as subject and the idx:hasShape as predicate was found.", { subject: this.getBaseUri() });
                 throw new Error("Entry has no shape");
             }
             
             let entryShapeDataset = this.getSubGraph(entryShapeTerm, this.getDefaultGraphTerm());
 
             if (!entryShapeDataset) {
-                this.log('ERROR', `The entry shape ${entryShapeTerm} was not found.`, 0, this.getBaseUri());
+                this.logError(`The entry shape ${entryShapeTerm} was not found.`, { subject: this.getBaseUri() });
                 throw new Error("Entry has no shape");
             }
 

@@ -1,7 +1,7 @@
-import { BlankNode, Dataset as DatasetRdfjs, DefaultGraph, Term, Literal, NamedNode, Quad, Stream, Quad_Subject, Quad_Predicate, Quad_Graph } from "@rdfjs/types";
-import { Countable, QuadIterableSemantizer, Resource, WithBaseUri, WithLogging, WithMixins, WithSemantizer } from './Common';
-import { Semantizer } from "./Semantizer";
+import { BlankNode, Dataset as DatasetRdfjs, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Predicate, Quad_Subject, Stream, Term } from "@rdfjs/types";
+import { Countable, QuadIterableSemantizer, Resource, WithBaseUri, WithMixins, WithSemantizer } from './Common';
 import { Fetch, Loader, LoaderQuadStream } from "./Loader";
+import { Semantizer } from "./Semantizer";
 
 export interface Dataset extends DatasetRdfjs, Countable {
     // addQuad(subject, predicate, object, graph?): void; // graph default is set to DefaultGraph
@@ -138,7 +138,7 @@ export interface Dataset extends DatasetRdfjs, Countable {
 }
 
 
-export type DatasetSemantizer = Dataset & WithMixins & WithSemantizer & WithBaseUri;
+    export type DatasetSemantizer = Dataset & WithMixins & WithSemantizer & WithBaseUri;
 export type DatasetSemantizerMixinConstructor = new (...args: any[]) => DatasetSemantizer;
 export type DatasetSemantizerRdfjsMixinConstructor = new(...args: any[]) => DatasetRdfjs & WithMixins & WithSemantizer & WithBaseUri;
 

@@ -1,5 +1,5 @@
 import indexFactory, { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, IndexQueryingStrategyBaseShapeImpl } from "@semantizer/mixin-index";
-import { Dataset, NamedNode, ShaclValidator } from "@semantizer/types";
+import { Dataset, LoggingComponent, LoggingLevel, NamedNode, ShaclValidator, WithLoggingOptions } from "@semantizer/types";
 import { HttpError } from "@semantizer/http-error";
 import { Readable } from "stream";
 
@@ -22,15 +22,15 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
         try {
             const entryStreamStrategy = this.getEntryStreamTransformer(); // new EntryStreamTransformerDefaultImpl(this.getSemantizer());
             const entryStream = await finalIndex.mixins.index.loadEntryStream(entryStreamStrategy);
-            entryStream.on('error', (error) => this.log('ERROR', "An error occured during the processing a final index."));
+            entryStream.on('error', (error) => this.logError("An error occured during the processing a final index."));
             for await (const entry of entryStream) {
                 await this.processFinalIndexEntry(entry);
             }
         } catch (e) {
             if (e instanceof HttpError) {
-                this.log('ERROR', `A HTTP ${e.code} error occured while loading the final index ${finalIndex.getBaseUri().value}`);
+                this.logError(`A HTTP ${e.code} error occured while loading the final index ${finalIndex.getBaseUri().value}`);
             }
-            else this.log('ERROR', "An error occured while loading the final index " + finalIndex.getBaseUri().value);
+            else this.logError("An error occured while loading the final index " + finalIndex.getBaseUri().value);
         }
     }
 
@@ -41,7 +41,7 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
                 await this.validateEntry(entry, target);
             }
         } catch (e) {
-            this.log('ERROR', "Unable to process entry " + entry.getBaseUri().value);
+            this.logError("Unable to process entry " + entry.getBaseUri().value);
         }
     }
 
@@ -50,9 +50,9 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
         if (target) {
             if (target.termType === 'NamedNode') {
                 return target;
-            } else this.log('WARN', "Target entry uses a blank node as target which is not recommended.");
+            } else this.logWarning("Target entry uses a blank node as target which is not recommended.");
         }
-        this.log('ERROR', "Target entry does not have a target.");
+        this.logError("Target entry does not have a target.");
         throw new Error();
     }
 
@@ -76,7 +76,7 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
 
     private async processFinalIndexStream(index: Index): Promise<void> {
         const finalIndexStream = index.mixins.index.query(this._finalIndexStrategy);
-        finalIndexStream.on('error', (error) => this.log('ERROR', error.toString()));
+        finalIndexStream.on('error', (error) => this.logError(error.toString()));
         for await (const finalIndex of finalIndexStream) {
             const finalIndexDataset = this.getSemantizer().build(indexFactory);
             finalIndexDataset.setBaseUri(finalIndex);
@@ -86,14 +86,22 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
     }
 
     public query(index: Index, options?: IndexQueryingOptions): Readable {
-        this.log('INFO', `Strategy ${this.getName()} - ${this._instanceName} is starting.`);
+        this.logInfo("starting");
         this.init(options);
         this.processFinalIndexStream(index);
         return this.getResultStream();
     }
 
-    public getName(): string {
-        return "IndexQueryingStrategyShaclUsingFinalIndex";
+    public log(level: LoggingLevel, message: string, options?: WithLoggingOptions): void {
+        const newOptions = { ...options, source: "IndexQueryingStrategyShaclUsingFinalIndex" };
+        super.log(level, message, newOptions);
+    }
+
+    public getLoggingComponent(): LoggingComponent {
+        return {
+            type: 'UTIL',
+            name: 'index-querying-strategy-shacl-final'
+        }
     }
 
 }

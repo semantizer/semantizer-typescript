@@ -1,7 +1,7 @@
-import { BlankNode, Dataset, DatasetSemantizerMixinConstructor, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
+import { BlankNode, Dataset, DatasetSemantizerMixinConstructor, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformer, Index, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
+import { EntryStreamTransformer, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 
 export function IndexMixin<
     TBase extends DatasetSemantizerMixinConstructor
@@ -51,7 +51,15 @@ export function IndexMixin<
                 //     });
                 // }
 
+                // getLoggingComponent: (): LoggingComponent => {
+                //     return {
+                //         type: 'MIXIN',
+                //         name: 'index'
+                //     }
+                // },
+
                 query: (strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable => {
+                    this.logInfo("Start querying...");
                     strategy.setSemantizer(this.getSemantizer());
                     return strategy.query(this, options);
                 },
@@ -91,6 +99,13 @@ export function IndexMixin<
                 },
             }
 
+        }
+
+        public getLoggingComponent(): LoggingComponent {
+            return {
+                type: 'MIXIN',
+                name: 'index'
+            }
         }
 
     }

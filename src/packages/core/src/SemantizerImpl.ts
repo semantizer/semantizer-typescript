@@ -1,4 +1,4 @@
-import { Configuration, Constructor, Semantizer, DatasetSemantizer, MixinFactory, MixinFactoryFunction, DatasetImplConstructor, QuadIterableSemantizer, Fetch, NamedNode, LoggingLevel, LoggingEntryCallback, Term } from "@semantizer/types";
+import { Configuration, Constructor, Semantizer, DatasetSemantizer, MixinFactory, MixinFactoryFunction, DatasetImplConstructor, QuadIterableSemantizer, Fetch, NamedNode, LoggingLevel, LoggingEntryCallback, Term, LoggingComponent, BlankNode, DefaultGraph, Literal, Quad, Quad_Graph, Quad_Object, Quad_Predicate, Quad_Subject, LoggingEntry, WithLogging, WithLoggingOptions } from "@semantizer/types";
 import { MixinFactoryImpl } from "./MixinFactoryImpl.js";
 
 type T = new (...args: any[]) => DatasetSemantizer;
@@ -6,15 +6,11 @@ type T = new (...args: any[]) => DatasetSemantizer;
 export class SemantizerImpl implements Semantizer {
 
     private _configuration: Configuration;
-    private _loggingEnabled: boolean;
-    private _loggingLevel: LoggingLevel;
-    private _logEntryCallbacks: Set<LoggingEntryCallback>;
 
-    public constructor(configuration: Configuration, enableLogging: boolean = false, loggingLevel: LoggingLevel = 'WARN') {
+    public constructor(configuration: Configuration) {
         this._configuration = configuration;
-        this._loggingEnabled = enableLogging;
-        this._loggingLevel = loggingLevel;
-        this._logEntryCallbacks = new Set();
+        configuration.getLoader().setSemantizer(this);
+        configuration.getLoaderQuadStream().setSemantizer(this);
     }
     
     public getConfiguration(): Configuration {
@@ -45,43 +41,66 @@ export class SemantizerImpl implements Semantizer {
         return mixinFactoryFunctionOrDataset && typeof mixinFactoryFunctionOrDataset === 'function' ? mixinFactoryFunctionOrDataset(this).build(fromDataset) : this.getConfiguration().getDatasetBaseFactory().build(this, mixinFactoryFunctionOrDataset ?? fromDataset);
     }
 
-    public log(level: LoggingLevel, message: string, code?: number, subject?: Term): void {
-        if (this._logEntryCallbacks.size > 0) {
-            const date = new Date();
-            const loggingEntry = { date, level, subject, code, message };
-            for (const callback of this._logEntryCallbacks) {
+    public createQuad(subject: Quad_Subject, predicate: Quad_Predicate, object: Quad_Object, graph?: Quad_Graph): Quad {
+        return this.getConfiguration().getRdfDataModelFactory().quad(subject, predicate, object, graph);
+    }
+    
+    public createDefaultGraph(): DefaultGraph {
+        return this.getConfiguration().getRdfDataModelFactory().defaultGraph();
+    }
+    
+    public createBlankNode(value?: string): BlankNode {
+        return this.getConfiguration().getRdfDataModelFactory().blankNode(value);
+    }
+    
+    public createNamedNode(uri: string): NamedNode {
+        return this.getConfiguration().getRdfDataModelFactory().namedNode(uri);
+    }
+    
+    public createLiteral(value: string, languageOrDatatype?: string | NamedNode): Literal {
+        return this.getConfiguration().getRdfDataModelFactory().literal(value, languageOrDatatype);
+    }
+
+    public getLoggingComponent(): LoggingComponent {
+        return {
+            type: 'PACKAGE',
+            name: 'core'
+        }
+    }
+
+    protected createLoggingEntry(component: WithLogging, level: LoggingLevel, message: string, options?: WithLoggingOptions): LoggingEntry {
+        return {
+            component: component.getLoggingComponent(),
+            date: new Date(),
+            level,
+            message,
+            code: options?.code,
+            instance: options?.instance,
+            source: options?.source,
+            subject: options?.subject
+        }
+    }
+
+    public log(component: WithLogging, level: LoggingLevel, message: string, options?: WithLoggingOptions): void {
+        const loggingEntryCallbacks = this.getConfiguration().getRegisteredLoggingEntryCallbacks();
+        if (loggingEntryCallbacks.size > 0) {
+            const loggingEntry = this.createLoggingEntry(component, level, message, options);
+            for (const callback of loggingEntryCallbacks) {
                 callback(loggingEntry);
             }
         }
     }
 
-    public enableLogging(level: LoggingLevel = 'WARN'): void {
-        this._loggingEnabled = true;
-        this.setLoggingLevel(level);
+    public logInfo(component: WithLogging, message: string, options?: WithLoggingOptions): void {
+        this.log(component, 'INFO', message, options);
+    }
+    
+    public logWarning(component: WithLogging, message: string, options?: WithLoggingOptions): void {
+        this.log(component, 'WARN', message, options);
     }
 
-    public setLoggingLevel(level: LoggingLevel): void {
-        this._loggingLevel = level;
-    }
-    
-    public disableLogging(): void {
-        this._loggingEnabled = false;
-    }
-    
-    public isLoggingEnabled(): boolean {
-        return this._loggingEnabled;
-    }
-    
-    public getLoggingLevel(): LoggingLevel {
-        return this._loggingLevel;
-    }
-    
-    public registerEntryCallback(callback: LoggingEntryCallback): void {
-        this._logEntryCallbacks.add(callback);
-    }
-
-    public unregisterEntryCallback(callback: LoggingEntryCallback): void {
-        this._logEntryCallbacks.delete(callback);
+    public logError(component: WithLogging, message: string, options?: WithLoggingOptions): void {
+        this.log(component, 'ERROR', message, options);
     }
 
 }

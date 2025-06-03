@@ -3,17 +3,15 @@ import { Semantizer } from "./Semantizer";
 
 export type Resource = NamedNode | BlankNode;
 
-export interface MixinNamespace {}
+export interface MixinNamespace { }
 
 export interface WithMixins {
     mixins: MixinNamespace;
 }
 
-export interface WithSemantizer {
+export interface WithSemantizer extends WithLogging {
     getSemantizer(): Semantizer;
     setSemantizer(semantizer: Semantizer): void;
-    log(level: LoggingLevel, message: string, code?: number, subject?: Term): void;
-    // toRdfjsDataset(): DatasetRdfjs;
 }
 
 export interface WithBaseUri {
@@ -23,19 +21,32 @@ export interface WithBaseUri {
 
 export type LoggingLevel = 'INFO' | 'WARN' | 'ERROR';
 export type LoggingEntryCallback = (logEntry: LoggingEntry) => void;
+export type LoggingComponentType = 'PACKAGE' | 'MIXIN' | 'UTIL';
+
+export interface LoggingComponent {
+    type: LoggingComponentType;
+    name: string;
+}
+
+export interface WithLoggingOptions {
+    source?: string;
+    instance?: string;
+    code?: number;
+    subject?: Term;
+}
 
 export interface WithLogging {
-    log(level: LoggingLevel, message: string, code?: number, subject?: Term): void;
-    enableLogging(level?: LoggingLevel): void;
-    disableLogging(): void;
-    setLoggingLevel(level: LoggingLevel): void;
-    isLoggingEnabled(): boolean;
-    getLoggingLevel(): LoggingLevel;
-    registerEntryCallback(callback: LoggingEntryCallback): void;
-    unregisterEntryCallback(callback: LoggingEntryCallback): void;
+    getLoggingComponent(): LoggingComponent;
+    log(level: LoggingLevel, message: string, options?: WithLoggingOptions): void;
+    logInfo(message: string, options?: WithLoggingOptions): void;
+    logWarning(message: string, options?: WithLoggingOptions): void;
+    logError(message: string, options?: WithLoggingOptions): void;
 }
 
 export interface LoggingEntry {
+    component: LoggingComponent;
+    source?: string;
+    instance?: string;
     date: Date;
     level: LoggingLevel;
     subject?: Term;

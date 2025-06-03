@@ -38,8 +38,4 @@ export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = Index
         return (await this.validate(entry)).doConforms();
     }
 
-    public getName(): string {
-        return "IndexQueryingStrategyBaseShapeImpl";
-    }
-
 }
