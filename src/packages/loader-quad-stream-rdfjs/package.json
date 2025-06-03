@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@semantizer/loader-quad-stream-rdfjs",
   "description": "A Semantizer package to load datasets from the network with streams using the RDFJS fetch library",
-  "version": "1.0.0-beta.2.0.0",
+  "version": "1.0.0-2.1.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
   "dependencies": {
     "@rdfjs/fetch": "^3.1.1",

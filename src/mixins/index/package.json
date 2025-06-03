@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@semantizer/mixin-index",
   "description": "A Semantizer mixin to query indexes",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-2",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
   "dependencies": {
     "@semantizer/http-error": "*"

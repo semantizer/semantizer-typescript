@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@semantizer/core-rdfjs",
   "description": "A RDFJS dataset that can be used by other Semantizer packages and mixins (adapter)",
-  "version": "1.0.0-beta.2.1.0",
+  "version": "1.0.0-2.1.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
   "dependencies": {
     "@semantizer/rdfjs-dataset-impl": "*"

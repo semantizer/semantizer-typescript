@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@semantizer/http-error",
   "description": "A Semantizer package to throw HTTP Error",
-  "version": "1.0.0-beta.1.0.0",
+  "version": "1.0.0-1.1.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
   "devDependencies": {
     "typescript": "^5.5.2"

@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@semantizer/loader-n3",
   "description": "A Semantizer package to load datasets from the network using the N3 library",
-  "version": "1.0.0-beta.1.0.1",
+  "version": "1.0.0-1.1.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
   "dependencies": {
     "n3": "^1.24.0",

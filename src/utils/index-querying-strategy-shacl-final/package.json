@@ -1,8 +1,8 @@
 {
   "type": "module",
-  "name": "@semantizer/utils-index-querying-strategy-shacl-final",
+  "name": "@semantizer/util-index-querying-strategy-shacl-final",
   "description": "A Semantizer util to stream final indexes using SHACL shape comparison.",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-1.0.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
   "dependencies": {
     "@semantizer/mixin-index": "*",

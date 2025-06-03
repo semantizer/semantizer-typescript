@@ -2,7 +2,7 @@
   "type": "module",
   "name": "@semantizer/mixin-solid-changelog-n3",
   "description": "",
-  "version": "1.0.0-beta.1.0.0",
+  "version": "1.0.0-1.1.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -13,7 +13,8 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
   "dependencies": {
     "@semantizer/mixin-changelog": "*"
