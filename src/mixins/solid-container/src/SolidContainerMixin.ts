@@ -1,13 +1,13 @@
-import { DatasetSemantizerMixinConstructor, NamedNode, Semantizer } from '@semantizer/types';
-import { SolidContainer } from './types';
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
+import { NamedNode, Semantizer } from '@semantizer/types';
 
 const LDP = 'http://www.w3.org/ns/ldp#';
 
 export function SolidContainerMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
 
-    return class SolidContainerMixinImpl extends Base { //implements SolidContainer {
+    return class SolidContainerMixinImpl extends Base {
 
         public constructor(...args: any[]) {
             super(...args);
@@ -15,7 +15,7 @@ export function SolidContainerMixin<
                 ...(this.mixins.solid ?? {}),
                 
                 getContainedResources: (): NamedNode[] | undefined => {
-                    return this.getObjectUriAll(this.getBaseUri(), LDP + 'contains');
+                    return this.mixins.dataset.getObjectUriAll(this.getBaseUri(), LDP + 'contains');
                 }
 
             }

@@ -1,4 +1,4 @@
-import { Dataset, ShaclValidationReport, ShaclValidator } from "@semantizer/types";
+import { DatasetRdfjs, ShaclValidationReport, ShaclValidator } from "@semantizer/types";
 import { IndexQueryingStrategyBaseDefaultImpl } from "./IndexQueryingStrategyBaseDefaultImpl.js";
 import { EntryStreamTransformer, IndexEntry } from "./types.js";
 
@@ -13,16 +13,16 @@ import { EntryStreamTransformer, IndexEntry } from "./types.js";
  */
 export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyBaseDefaultImpl<Entry> {
 
-    private _targetShape: Dataset;
+    private _targetShape: DatasetRdfjs;
     private _shaclValidator: ShaclValidator;
 
-    public constructor(targetShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+    public constructor(targetShape: DatasetRdfjs, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
         super(entryStreamTransformer);
         this._targetShape = targetShape;
         this._shaclValidator = shaclValidator;
     }
 
-    public getTargetShape(): Dataset {
+    public getTargetShape(): DatasetRdfjs {
         return this._targetShape;
     }
 
@@ -30,11 +30,11 @@ export class IndexQueryingStrategyBaseShapeImpl<Entry extends IndexEntry = Index
         return this._shaclValidator;
     }
 
-    public async validate(entry: Dataset): Promise<ShaclValidationReport> {
+    public async validate(entry: DatasetRdfjs): Promise<ShaclValidationReport> {
         return await this.getShaclValidator().validate(this.getTargetShape(), entry);
     }
 
-    public async doEntryConformsToTargetShape(entry: Dataset): Promise<boolean> {
+    public async doEntryConformsToTargetShape(entry: DatasetRdfjs): Promise<boolean> {
         return (await this.validate(entry)).doConforms();
     }
 

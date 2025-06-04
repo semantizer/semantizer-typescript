@@ -23,7 +23,7 @@ export function SolidWebIdProfileMixin<
                 const otherProfiles = primaryTopic.mixins.solid?.getSeeAlsoAll();
                 if (otherProfiles) {
                     for (const profile of otherProfiles) {
-                        await this.load(profile, { loader });
+                        await this.mixins.dataset.load(profile, { loader });
                     }
                 }
             }
@@ -59,35 +59,35 @@ export function SolidWebIdMixin<
                 addPreferencesDocument: (preferencesDocumentUri: string | NamedNode): void => {
                     const webId = this.webid.getPrimaryTopic();
                     if (webId) {
-                        this.addObjectUri(webId, ns.pim + 'preferencesFile', preferencesDocumentUri, this.getDefaultGraphTerm());
+                        this.mixins.dataset.addObjectUri(webId, ns.pim + 'preferencesFile', preferencesDocumentUri, this.mixins.dataset.getDefaultGraphTerm());
                     }
                 },
 
                 getPreferencesDocument: (): NamedNode | undefined => {
                     const webId = this.webid.getPrimaryTopic();
                     if (webId) {
-                        return this.getObjectUri(webId, ns.pim + 'preferencesFile', this.getDefaultGraphTerm());
+                        return this.mixins.dataset.getObjectUri(webId, ns.pim + 'preferencesFile', this.mixins.dataset.getDefaultGraphTerm());
                     }
                 },
 
                 getLdpInbox: (): NamedNode | undefined => {
                     const webId = this.webid.getPrimaryTopic();
                     if (webId) {
-                        return this.getObjectUri(webId, ns.ldp + 'inbox', this.getDefaultGraphTerm());
+                        return this.mixins.dataset.getObjectUri(webId, ns.ldp + 'inbox', this.mixins.dataset.getDefaultGraphTerm());
                     }
                 },
 
                 getStorageAll: (): NamedNode[] | undefined => {
                     const webId = this.webid.getPrimaryTopic();
                     if (webId) {
-                        return this.getObjectUriAll(webId, ns.pim + 'storage', this.getDefaultGraphTerm());
+                        return this.mixins.dataset.getObjectUriAll(webId, ns.pim + 'storage', this.mixins.dataset.getDefaultGraphTerm());
                     }
                 },
 
                 getPublicTypeIndex: (): NamedNode | undefined => {
                     const webId = this.webid.getPrimaryTopic();
                     if (webId) {
-                        return this.getObjectUri(webId, ns.solid + 'publicTypeIndex', this.getDefaultGraphTerm());
+                        return this.mixins.dataset.getObjectUri(webId, ns.solid + 'publicTypeIndex', this.mixins.dataset.getDefaultGraphTerm());
                     }
                 },
 
@@ -107,7 +107,7 @@ export function SolidWebIdMixin<
                 getSeeAlsoAll: (): NamedNode[] | undefined => {
                     const webId = this.webid.getPrimaryTopic();
                     if (webId) {
-                        return this.getObjectUriAll(webId, ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
+                        return this.mixins.dataset.getObjectUriAll(webId, ns.rdfs + 'seeAlso', this.mixins.dataset.getDefaultGraphTerm());
                     }
                 }
 
@@ -129,11 +129,11 @@ export function SolidPreferencesMixin<
             return { 
                 
                 getPrivateTypeIndex: (webId: string | NamedNode): NamedNode | undefined => {
-                    return this.getObjectUri(webId, ns.solid + 'privateTypeIndex', this.getDefaultGraphTerm());
+                    return this.mixins.dataset.getObjectUri(webId, ns.solid + 'privateTypeIndex', this.mixins.dataset.getDefaultGraphTerm());
                 },
 
                 getSeeAlsoAll: (): NamedNode[] | undefined => {
-                    return this.getObjectUriAll(this.getBaseUri(), ns.rdfs + 'seeAlso', this.getDefaultGraphTerm());
+                    return this.mixins.dataset.getObjectUriAll(this.getBaseUri(), ns.rdfs + 'seeAlso', this.mixins.dataset.getDefaultGraphTerm());
                 }
 
             }
@@ -160,7 +160,7 @@ export function solidPreferencesFactory(semantizer: Semantizer) {
 
 export function createSolidPreferencesDocument(semantizer: Semantizer, params?: SolidPreferencesCreateParams): SolidPreferencesDocument {
     const solidPreferencesDocument = semantizer.build(solidPreferencesFactory);
-    solidPreferencesDocument.addObjectUri(solidPreferencesDocument.getBaseUri(), ns.rdf + 'type', ns.pim + 'ConfigurationFile', solidPreferencesDocument.getDefaultGraphTerm());
-    params?.seeAlso?.forEach(seeAlso => solidPreferencesDocument.addObjectUri(solidPreferencesDocument.getBaseUri(), ns.rdfs + 'seeAlso', seeAlso, solidPreferencesDocument.getDefaultGraphTerm()));
+    solidPreferencesDocument.mixins.dataset.addObjectUri(solidPreferencesDocument.getBaseUri(), ns.rdf + 'type', ns.pim + 'ConfigurationFile', solidPreferencesDocument.mixins.dataset.getDefaultGraphTerm());
+    params?.seeAlso?.forEach(seeAlso => solidPreferencesDocument.mixins.dataset.addObjectUri(solidPreferencesDocument.getBaseUri(), ns.rdfs + 'seeAlso', seeAlso, solidPreferencesDocument.mixins.dataset.getDefaultGraphTerm()));
     return solidPreferencesDocument;
 }

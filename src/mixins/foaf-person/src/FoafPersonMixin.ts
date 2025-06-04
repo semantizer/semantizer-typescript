@@ -1,12 +1,13 @@
-import { DatasetSemantizer, NamedNode, Resource, Semantizer, DatasetSemantizerMixinConstructor, DefaultGraph, Term, Quad_Subject, Quad_Graph } from "@semantizer/types";
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
+import { Quad_Graph, Quad_Subject, Semantizer } from "@semantizer/types";
 import { FOAF, MyersBriggs } from "./ns.js";
 import { FoafPerson } from "./types";
 
 export function FoafPersonMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
 
-    return class FoafPersonImpl extends Base { // implements FoafPerson {
+    return class FoafPersonImpl extends Base {
 
         public constructor(...args: any[]) {
             super(...args);
@@ -14,11 +15,11 @@ export function FoafPersonMixin<
                 ...(this.mixins.foaf ?? {}),
                 
                 getAge: (subject: Quad_Subject | string, graph?: Quad_Graph | string): number | undefined => {
-                    return this.getObjectInteger(subject ?? this.getBaseUri(), FOAF.AGE, graph ?? this.getDefaultGraphTerm());
+                    return this.mixins.dataset.getObjectInteger(subject ?? this.getBaseUri(), FOAF.AGE, graph ?? this.mixins.dataset.getDefaultGraphTerm());
                 },
 
                 getGivenName: (subject?: Quad_Subject | string, graph?: Quad_Graph | string): string | undefined => {
-                    return this.getObjectStringNoLocale(subject ?? this.getBaseUri(), FOAF.GIVEN_NAME, graph ?? this.getDefaultGraphTerm());
+                    return this.mixins.dataset.getObjectStringNoLocale(subject ?? this.getBaseUri(), FOAF.GIVEN_NAME, graph ?? this.mixins.dataset.getDefaultGraphTerm());
                 },
 
                 getLastName: (): string => {

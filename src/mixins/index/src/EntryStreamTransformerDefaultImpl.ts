@@ -40,7 +40,7 @@ export class EntryStreamTransformerDefaultImpl implements EntryStreamTransformer
             dataset.add(quad);
 
             const rdf = this._semantizer.getConfiguration().getRdfDataModelFactory();
-            const isEntry = dataset.isDefaultGraphRdfTypeOf(rdf.namedNode(IDX.INDEX_ENTRY));
+            const isEntry = dataset.mixins.dataset.isDefaultGraphRdfTypeOf(rdf.namedNode(IDX.INDEX_ENTRY));
             const hasShape = isEntry && dataset.some(q => q.predicate.equals(rdf.namedNode(IDX.HAS_SHAPE)));
             const hasSubIndex = hasShape && dataset.some(q => q.predicate.equals(rdf.namedNode(IDX.HAS_SUB_INDEX)));
             const hasTarget = hasShape && !hasSubIndex && dataset.some(q => q.predicate.equals(rdf.namedNode(IDX.HAS_TARGET)));

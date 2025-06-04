@@ -1,4 +1,4 @@
-import { Dataset, DatasetSemantizer, NamedNode, Term } from "@semantizer/types";
+import { DatasetSemantizer, NamedNode, Term } from "@semantizer/types";
 
 export interface TypeIndexNonDestructiveOperations {
     typeindex: {

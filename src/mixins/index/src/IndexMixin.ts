@@ -1,13 +1,14 @@
-import { BlankNode, Dataset, DatasetSemantizerMixinConstructor, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetRdfjs, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformer, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
+import { EntryStreamTransformer, IndexQueryingOptions, IndexQueryingStrategy, IndexTest } from "./types";
 
 export function IndexMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
 
-    return class IndexMixinImpl extends Base {
+    return class IndexMixinImpl extends Base implements IndexTest {
 
         public constructor(...args: any[]) {
             super(...args);
@@ -19,7 +20,7 @@ export function IndexMixin<
                  * @returns A Readable stream of IndexEntry with their linked objects (shape and properties).
                  */
                 loadEntryStream: async (strategy: EntryStreamTransformer<any>): Promise<Readable> => {
-                    const quadStream = await this.loadQuadStream();
+                    const quadStream = await this.mixins.dataset.loadQuadStream();
 
                     const entryStream = new Transform({
                         objectMode: true,
@@ -69,22 +70,22 @@ export function IndexMixin<
                 // public addEntryShapeProperty(entry, property);
 
                 hasEntrySubIndex: (entry: NamedNode | string): boolean => {
-                    return this.getObjectUri(entry, IDX.HAS_SUB_INDEX) !== undefined;
+                    return this.mixins.dataset.getObjectUri(entry, IDX.HAS_SUB_INDEX) !== undefined;
                 },
 
                 getEntryTarget: (entry: NamedNode | string): NamedNode | undefined => {
-                    return this.getObjectUri(entry, IDX.HAS_TARGET);
+                    return this.mixins.dataset.getObjectUri(entry, IDX.HAS_TARGET);
                 },
 
                 getEntrySubIndex: (entry: NamedNode | string): NamedNode | undefined => {
-                    return this.getObjectUri(entry, IDX.HAS_SUB_INDEX);
+                    return this.mixins.dataset.getObjectUri(entry, IDX.HAS_SUB_INDEX);
                 },
 
                 getEntryShape: (entry: NamedNode | string): NamedNode | BlankNode | undefined => {
-                    return this.getObjectLinked(entry, IDX.HAS_SHAPE);
+                    return this.mixins.dataset.getObjectLinked(entry, IDX.HAS_SHAPE);
                 },
 
-                doesEntryMatchShape: (entry: NamedNode | string, shape: Dataset, shaclValidator: ShaclValidator): boolean => {
+                doesEntryMatchShape: (entry: NamedNode | string, shape: DatasetRdfjs, shaclValidator: ShaclValidator): boolean => {
                     throw new Error("Not implemented");
                 },
 
@@ -95,7 +96,7 @@ export function IndexMixin<
 
                 getEntryShapePropertiesAll: (entry: NamedNode | string): Term[] | undefined => {
                     const shape = this.mixins.index.getEntryShape(entry);
-                    return shape ? this.getObjectLinkedAll(shape, SHACL.PROPERTY) : undefined;
+                    return shape ? this.mixins.dataset.getObjectLinkedAll(shape, SHACL.PROPERTY) : undefined;
                 },
             }
 

@@ -1,8 +1,9 @@
-import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer } from "@semantizer/types";
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
+import { BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer } from "@semantizer/types";
 import { RDF, SHACL } from "./ns";
 
 export function ShaclShapeMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
 
     return class ShaclShapeMixinImpl extends Base {
@@ -18,11 +19,11 @@ export function ShaclShapeMixin<
                     ...(this.mixins.shacl?.shape ?? {}), // could be removed as we want to override any existing shape methods?
 
                     getPath: (property: NamedNode | BlankNode | string, graph?: Quad_Graph | string): NamedNode | undefined => {
-                        return this.getObjectUri(property, SHACL.PATH, graph);
+                        return this.mixins.dataset.getObjectUri(property, SHACL.PATH, graph);
                     },
 
                     isClosed: (shape: Quad_Subject | string, graph?: Quad_Graph | string): boolean | undefined => {
-                        return this.getObjectBoolean(shape, SHACL.CLOSED, graph);
+                        return this.mixins.dataset.getObjectBoolean(shape, SHACL.CLOSED, graph);
                     },
 
                     setIsClosed: (shape: Quad_Subject | string, closed: boolean, graph?: Quad_Graph | string): void => {
@@ -30,7 +31,7 @@ export function ShaclShapeMixin<
                     },
 
                     createShapeAsNamedNode: (uri: NamedNode | string, graph?: Quad_Graph | string): NamedNode => {
-                        this.addObjectUri(uri, RDF.TYPE, SHACL.NODE_SHAPE, graph);
+                        this.mixins.dataset.addObjectUri(uri, RDF.TYPE, SHACL.NODE_SHAPE, graph);
                         return typeof uri === 'string' ? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(uri) : uri;
                     },
 
@@ -44,12 +45,12 @@ export function ShaclShapeMixin<
 
                     createPropertyAsBlankNode: (shape: Quad_Subject | string, name?: string, graph?: Quad_Graph | string): BlankNode => {
                         const property = this.getSemantizer().getConfiguration().getRdfDataModelFactory().blankNode(name);
-                        this.addObjectBlankNode(shape, SHACL.PROPERTY, property, graph);
+                        this.mixins.dataset.addObjectBlankNode(shape, SHACL.PROPERTY, property, graph);
                         return property;
                     },
 
                     setPath: (property: NamedNode | BlankNode | string, path: NamedNode, oldPath?: NamedNode, graph?: Quad_Graph | string): void => {
-                        this.setObjectUri(property, SHACL.PATH, path, oldPath, graph);
+                        this.mixins.dataset.setObjectUri(property, SHACL.PATH, path, oldPath, graph);
                     },
 
                     addHasValue: (property: NamedNode | BlankNode | string, value: Quad_Object, graph?: Quad_Graph | string): void => {

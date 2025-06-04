@@ -1,9 +1,10 @@
-import { DatasetSemantizerMixinConstructor, NamedNode, Semantizer, Term } from "@semantizer/types";
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
+import { NamedNode, Semantizer, Term } from "@semantizer/types";
 import { TypeIndex } from "./types.js";
 import { RDF, TYPE_INDEX } from "./voc.js";
 
 export function TypeIndexMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
     return class TypeIndexImpl extends Base implements TypeIndex {
 
@@ -12,9 +13,9 @@ export function TypeIndexMixin<
             return {
 
                 registerInstanceForClass: (registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void => {
-                    this.addObjectUri(registration, RDF.TYPE, TYPE_INDEX.TypeRegistration, this.getDefaultGraphTerm());
-                    this.addObjectUri(registration, TYPE_INDEX.forClass, forClass, this.getDefaultGraphTerm());
-                    this.addObjectUri(registration, TYPE_INDEX.instance, instance);
+                    this.mixins.dataset.addObjectUri(registration, RDF.TYPE, TYPE_INDEX.TypeRegistration, this.mixins.dataset.getDefaultGraphTerm());
+                    this.mixins.dataset.addObjectUri(registration, TYPE_INDEX.forClass, forClass, this.mixins.dataset.getDefaultGraphTerm());
+                    this.mixins.dataset.addObjectUri(registration, TYPE_INDEX.instance, instance);
                 },
 
                 getRegistrationForClassAll: (forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined => {
@@ -76,15 +77,15 @@ export function typeIndexFactory(semantizer: Semantizer) {
 
 export function createPublicTypeIndex(semantizer: Semantizer): TypeIndex {
     const typeIndex = semantizer.build(typeIndexFactory);
-    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.TypeIndex, typeIndex.getDefaultGraphTerm());
-    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.ListedDocument, typeIndex.getDefaultGraphTerm());
+    typeIndex.mixins.dataset.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.TypeIndex, typeIndex.mixins.dataset.getDefaultGraphTerm());
+    typeIndex.mixins.dataset.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.ListedDocument, typeIndex.mixins.dataset.getDefaultGraphTerm());
     return typeIndex;
 }
 
 export function createPrivateTypeIndex(semantizer: Semantizer): TypeIndex {
     const typeIndex = semantizer.build(typeIndexFactory);
-    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.TypeIndex, typeIndex.getDefaultGraphTerm());
-    typeIndex.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.UnlistedDocument, typeIndex.getDefaultGraphTerm());
+    typeIndex.mixins.dataset.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.TypeIndex, typeIndex.mixins.dataset.getDefaultGraphTerm());
+    typeIndex.mixins.dataset.addObjectUri(typeIndex.getBaseUri(), RDF.TYPE, TYPE_INDEX.UnlistedDocument, typeIndex.mixins.dataset.getDefaultGraphTerm());
     return typeIndex;
 }
 

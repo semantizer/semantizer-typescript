@@ -1,5 +1,5 @@
 import indexFactory, { EntryStreamTransformer, Index, IndexEntry, IndexQueryingOptions, IndexQueryingStrategy, IndexQueryingStrategyBaseShapeImpl } from "@semantizer/mixin-index";
-import { Dataset, LoggingComponent, LoggingLevel, NamedNode, ShaclValidator, WithLoggingOptions } from "@semantizer/types";
+import { DatasetRdfjs, LoggingComponent, LoggingLevel, NamedNode, ShaclValidator, WithLoggingOptions } from "@semantizer/types";
 import { HttpError } from "@semantizer/http-error";
 import { Readable } from "stream";
 
@@ -8,7 +8,7 @@ export class IndexQueryingStrategyShaclUsingFinalIndex<Entry extends IndexEntry 
     private _finalIndexStrategy: IndexQueryingStrategy;
     private _results: Set<string>; // results already returned.
 
-    public constructor(targetShape: Dataset, finalIndexStrategy: IndexQueryingStrategy, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+    public constructor(targetShape: DatasetRdfjs, finalIndexStrategy: IndexQueryingStrategy, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
         super(targetShape, shaclValidator, entryStreamTransformer);
         this._finalIndexStrategy = finalIndexStrategy;
         this._results = new Set<string>();

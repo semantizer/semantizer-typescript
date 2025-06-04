@@ -1,11 +1,11 @@
 import ShaclValidatorZazuko from "rdf-validate-shacl";
-import { Dataset, ShaclValidationReport, ShaclValidationResult, ShaclValidator } from "@semantizer/types";
+import { DatasetRdfjs, ShaclValidationReport, ShaclValidationResult, ShaclValidator } from "@semantizer/types";
 
 type ShaclValidationReportZazuko = Awaited<ReturnType<ShaclValidatorZazuko["validate"]>>;
 
 export class ValidatorImpl implements ShaclValidator {
     
-    public async validate(shapeGraph: Dataset, dataGraph: Dataset): Promise<ShaclValidationReport> {
+    public async validate(shapeGraph: DatasetRdfjs, dataGraph: DatasetRdfjs): Promise<ShaclValidationReport> {
         const validator = new ShaclValidatorZazuko(shapeGraph, {});
         const validationReport = await validator.validate(dataGraph);
         return new ValidationReportImpl(validationReport);

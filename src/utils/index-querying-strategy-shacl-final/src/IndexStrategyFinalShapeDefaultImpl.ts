@@ -1,22 +1,22 @@
 import { EntryStreamTransformer, Index, IndexEntry, indexFactory, IndexQueryingOptions, IndexQueryingStrategyBaseShapeImpl } from "@semantizer/mixin-index";
-import { Dataset, LoggingComponent, LoggingLevel, ShaclValidator, WithLoggingOptions } from "@semantizer/types";
+import { DatasetRdfjs, LoggingComponent, LoggingLevel, ShaclValidator, WithLoggingOptions } from "@semantizer/types";
 import { Readable } from "stream";
 
 export class IndexStrategyFinalShapeDefaultImpl<Entry extends IndexEntry = IndexEntry> extends IndexQueryingStrategyBaseShapeImpl<Entry> {
 
-    private _subIndexShape: Dataset;
+    private _subIndexShape: DatasetRdfjs;
     private _rootIndex: Index | undefined;
 
-    public constructor(targetShape: Dataset, subIndexShape: Dataset, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
+    public constructor(targetShape: DatasetRdfjs, subIndexShape: DatasetRdfjs, shaclValidator: ShaclValidator, entryStreamTransformer: EntryStreamTransformer<Entry>) {
         super(targetShape, shaclValidator, entryStreamTransformer);
         this._subIndexShape = subIndexShape;
     }
 
-    private async doEntryHasFinalIndex(entry: Dataset): Promise<boolean> {
+    private async doEntryHasFinalIndex(entry: DatasetRdfjs): Promise<boolean> {
         return this.doEntryConformsToTargetShape(entry);
     }
 
-    private async doEntryHasSubIndexToExplore(entry: Dataset): Promise<boolean> {
+    private async doEntryHasSubIndexToExplore(entry: DatasetRdfjs): Promise<boolean> {
         const validationReport = await this.getShaclValidator().validate(this._subIndexShape, entry);
         return validationReport.doConforms();
     }
