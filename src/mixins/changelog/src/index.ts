@@ -1,4 +1,5 @@
-import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Quad, Semantizer } from '@semantizer/types';
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
+import { DatasetSemantizer, Quad, Semantizer } from '@semantizer/types';
 
 const AddedQuadsSymbol = Symbol('changelogAddedQuads');
 const DeletedQuadsSymbol = Symbol('changelogDeletedQuads');
@@ -13,7 +14,7 @@ export interface ChangelogOperations {
 }
 
 export function ChangelogMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
 
     return class ChangelogMixinImpl extends Base implements Changelog {

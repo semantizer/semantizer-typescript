@@ -1,4 +1,5 @@
-import { BlankNode, DatasetSemantizerMixinConstructor, NamedNode } from "@semantizer/types";
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
+import { BlankNode, NamedNode } from "@semantizer/types";
 
 export interface WithLiteralHelperAdd {
     addBoolean(subject: NamedNode, predicate: NamedNode, value: string, graph?: NamedNode): void;
@@ -13,7 +14,7 @@ export interface WithLiteralHelperAdd {
 }
 
 export function LiteralHelperAddMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
 
     return class LiteralHelperAddMixinImpl extends Base implements WithLiteralHelperAdd {

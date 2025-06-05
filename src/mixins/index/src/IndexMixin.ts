@@ -2,13 +2,13 @@ import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
 import { BlankNode, DatasetRdfjs, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformer, IndexQueryingOptions, IndexQueryingStrategy, IndexTest } from "./types";
+import { EntryStreamTransformer, Index, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 
 export function IndexMixin<
     TBase extends DatasetMixinConstructor
 >(Base: TBase) {
 
-    return class IndexMixinImpl extends Base implements IndexTest {
+    return class IndexMixinImpl extends Base  {
 
         public constructor(...args: any[]) {
             super(...args);
@@ -115,4 +115,9 @@ export function IndexMixin<
 
 export function indexFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(IndexMixin);
+}
+
+function test(semantizer: Semantizer) {
+    const ds: Index = semantizer.build(indexFactory);
+    ds.mixins.index.query
 }

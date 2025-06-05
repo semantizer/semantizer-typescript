@@ -1,12 +1,11 @@
-import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerRdfjsMixinConstructor, DatasetQuadStreamOptions, Quad_Subject, Quad_Predicate, Quad_Graph, LoggingLevel } from '@semantizer/types';
+import { Term, BlankNode, Quad, Stream, DefaultGraph, DatasetRdfjs, Literal, NamedNode, DatasetLoadOptions, DatasetSemantizer, Resource, DatasetSemantizerConstructor, DatasetQuadStreamOptions, Quad_Subject, Quad_Predicate, Quad_Graph, LoggingLevel, Semantizer } from '@semantizer/types';
 import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromTermOrStringOrNull, isUrlAbsolute } from './utils.js';
-import { Dataset } from './types.js';
 
 export function DatasetMixin<
-    TBase extends DatasetSemantizerRdfjsMixinConstructor // PB: can be impl other than rdfjs
+    TBase extends DatasetSemantizerConstructor // PB: can be impl other than rdfjs
 >(Base: TBase) {
 
-    return class DatasetMixinImpl extends Base implements Dataset {
+    return class DatasetMixinImpl extends Base {
 
         public constructor(...args: any[]) {
             super(...args);
@@ -586,4 +585,8 @@ export function DatasetMixin<
 
     }
 
+}
+
+export function datasetFactory(semantizer: Semantizer) {
+    return semantizer.getMixinFactory(DatasetMixin);
 }

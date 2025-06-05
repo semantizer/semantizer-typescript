@@ -1,3 +1,4 @@
+
 import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
 import { BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer } from "@semantizer/types";
 import { RDF, SHACL } from "./ns";

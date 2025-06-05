@@ -26,8 +26,7 @@
     "@semantizer/core": "*",
     "@semantizer/core-rdfjs": "*",
     "@semantizer/loader-quad-stream-rdfjs": "*",
-    "@semantizer/loader-rdfjs": "*",
-    "@semantizer/mixin-dataset": "*"
+    "@semantizer/loader-rdfjs": "*"
   },
   "devDependencies": {
     "@semantizer/types": "*",

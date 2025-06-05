@@ -1,6 +1,7 @@
-import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Loader, NamedNode, Semantizer } from "@semantizer/types";
-import { SolidPreferencesCreateParams, SolidPreferencesDocument, SolidWebId, SolidWebIdProfile } from "./types";
+import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
 import { WebIdProfileConstructor, WebIdProfileMixin } from "@semantizer/mixin-webid";
+import { Loader, NamedNode, Semantizer } from "@semantizer/types";
+import { SolidPreferencesCreateParams, SolidPreferencesDocument, SolidWebIdProfile } from "./types";
 
 const ns = {
     solid: 'http://www.w3.org/ns/solid/terms#',
@@ -120,7 +121,7 @@ export function SolidWebIdMixin<
 }
 
 export function SolidPreferencesMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TBase extends DatasetMixinConstructor
 >(Base: TBase) {
     return class SolidPreferencesImpl extends Base implements SolidPreferencesDocument {
 

@@ -2,8 +2,6 @@ import { ChangelogMixin, ChangelogMixinConstructor } from '@semantizer/mixin-cha
 import { Semantizer } from '@semantizer/types';
 import { Serializer, SolidChangelogN3, SolidChangelogN3Operations } from './types';
 
-
-
 export function SolidChangelogN3Mixin<
     TBase extends ChangelogMixinConstructor
 >(Base: TBase) {
