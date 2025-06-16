@@ -3,11 +3,13 @@ import { Semantizer } from "./Semantizer";
 
 export type Resource = NamedNode | BlankNode;
 
-export interface MixinNamespace {}
-
-export interface WithMixins<Namespace extends any> {
-    mixins: Namespace; // MixinNamespace;
+export interface WithMixins<T extends object = {}> {
+    mixins: T;
 }
+
+// export interface WithMixins<Namespace extends any> {
+//     mixins: Namespace; // MixinNamespace;
+// }
 
 export interface WithSemantizer extends WithLogging {
     getSemantizer(): Semantizer;

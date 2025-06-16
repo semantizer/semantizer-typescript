@@ -3,8 +3,10 @@ import { QuadIterableSemantizer, WithBaseUri, WithMixins, WithSemantizer } from 
 import { Fetch, Loader, LoaderQuadStream } from "./Loader";
 import { Semantizer } from "./Semantizer";
 
-export type DatasetSemantizer<Namespace extends any> = DatasetRdfjs & WithMixins<Namespace> & WithSemantizer & WithBaseUri;
-export type DatasetSemantizerConstructor<Namespace extends any> = new (...args: any[]) => DatasetSemantizer<Namespace>;
+export type DatasetSemantizer<T extends object = {}> = DatasetRdfjs & WithSemantizer & WithBaseUri & WithMixins<T>;
+export type DatasetSemantizerConstructor<T extends object = {}> = new (...args: any[]) => DatasetSemantizer<T>;
+// export type DatasetSemantizer<MixinNamespace extends {} = {}> = DatasetRdfjs & WithSemantizer & WithBaseUri & WithMixins<MixinNamespace>;
+// export type DatasetSemantizerConstructor<MixinNamespace extends {} = {}> = new (...args: any[]) => DatasetSemantizer<MixinNamespace>;
 // export type DatasetSemantizerRdfjsMixinConstructor = new (...args: any[]) => DatasetRdfjs & WithMixins & WithSemantizer & WithBaseUri;
 
 export interface DatasetLoadOptions {
@@ -15,7 +17,7 @@ export interface DatasetQuadStreamOptions {
     quadStreamLoader?: LoaderQuadStream;
 }
 
-export interface DatasetBaseFactory<Namespace extends any> {
-    load(semantizer: Semantizer, resource: string | NamedNode, fetch?: Fetch): Promise<DatasetSemantizer<Namespace>>;
-    build(semantizer: Semantizer, sourceDataset?: QuadIterableSemantizer): DatasetSemantizer<Namespace>;
+export interface DatasetBaseFactory {
+    load<T extends object = {}>(semantizer: Semantizer, resource: string | NamedNode, fetch?: Fetch): Promise<DatasetSemantizer<T>>;
+    build<T extends object = {}>(semantizer: Semantizer, sourceDataset?: QuadIterableSemantizer): DatasetSemantizer<T>;
 }

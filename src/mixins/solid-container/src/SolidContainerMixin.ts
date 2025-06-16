@@ -1,21 +1,26 @@
-import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
-import { NamedNode, Semantizer } from '@semantizer/types';
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { DatasetSemantizerConstructor, NamedNode, Semantizer, WithMixins } from '@semantizer/types';
+import { SolidContainerMixinNamespace, SolidContainerMixinOperations } from "./types";
 
 const LDP = 'http://www.w3.org/ns/ldp#';
 
 export function SolidContainerMixin<
-    TBase extends DatasetMixinConstructor
+    TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
 
-    return class SolidContainerMixinImpl extends Base {
+    return class SolidContainerMixinImpl extends Base implements WithMixins<TMixins & SolidContainerMixinNamespace> {
 
-        public constructor(...args: any[]) {
-            super(...args);
-            this.mixins.solid = {
-                ...(this.mixins.solid ?? {}),
-                
-                getContainedResources: (): NamedNode[] | undefined => {
-                    return this.mixins.dataset.getObjectUriAll(this.getBaseUri(), LDP + 'contains');
+        public get mixins(): TMixins & SolidContainerMixinNamespace {
+            const parentMixins = super.mixins as TMixins & Partial<{ solid: Partial<SolidContainerMixinOperations> }>;
+
+            return {
+                ...parentMixins,
+                solid: {
+                    ...(parentMixins.solid ?? {}),
+                    getContainedResources: (): NamedNode[] | undefined => {
+                        return this.mixins.dataset.getObjectUriAll(this.getBaseUri(), LDP + 'contains');
+                    }
                 }
 
             }
@@ -27,5 +32,6 @@ export function SolidContainerMixin<
 }
 
 export function solidContainerFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(SolidContainerMixin);
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(SolidContainerMixin, DatasetMixin(_DatasetImpl));
 }

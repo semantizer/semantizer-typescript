@@ -11,6 +11,7 @@
   "license": "MIT",
   "scripts": {
     "build": "npx nx run-many -t build",
+    "build-types": "npx nx run @semantizer/types:build",
     "version": "npx nx release version",
     "version-dry": "npx nx release version --dry-run",
     "publish": "npx nx release publish"

@@ -1,17 +1,17 @@
-import { Constructor, DatasetImplConstructor, DatasetSemantizer, Fetch, MixinFactory, NamedNode, QuadIterableSemantizer, Semantizer } from "@semantizer/types";
+import { MixinConstructor, DatasetImplConstructor, DatasetSemantizer, Fetch, MixinFactory, NamedNode, QuadIterableSemantizer, Semantizer } from "@semantizer/types";
 
 // (TODO move to default ? or to a dedicated package.)
 // (Add also a MixinFactoryDatasetCore package ?)
 // --> Not necessarily as this does not depend on other packages than types.
 export class MixinFactoryImpl<
-    TBase extends Constructor, 
+    TBase extends MixinConstructor, 
     TMixin extends DatasetSemantizer
 > implements MixinFactory<TBase, TMixin> {
 
     private _semantizer: Semantizer;
-    private _mixedClass: Constructor<TMixin>;
+    private _mixedClass: MixinConstructor<TMixin>;
 
-    constructor(semantizer: Semantizer, mixin: (Base: TBase) => Constructor<TMixin>, baseClass: TBase) {
+    constructor(semantizer: Semantizer, mixin: (Base: TBase) => MixinConstructor<TMixin>, baseClass: TBase) {
         this._semantizer = semantizer;
         this._mixedClass = mixin(baseClass);
     }
