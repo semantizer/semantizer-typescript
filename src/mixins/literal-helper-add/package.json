@@ -16,9 +16,6 @@
     "prepublishOnly": "npm run build",
     "nx-release-publish": "npm publish"
   },
-  "dependencies": {
-    "@semantizer/mixin-dataset": "*"
-  },
   "devDependencies": {
     "@semantizer/types": "*",
     "typescript": "^5.5.2"

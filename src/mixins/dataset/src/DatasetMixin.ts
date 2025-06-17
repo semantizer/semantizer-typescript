@@ -595,5 +595,5 @@ export function DatasetMixin<
 }
 
 export function datasetFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory<Dataset>(DatasetMixin);
+    return semantizer.getMixinFactory(DatasetMixin);
 }

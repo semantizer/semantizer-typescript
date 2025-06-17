@@ -1,8 +1,8 @@
 import { DatasetSemantizerConstructor, Quad, Semantizer, WithMixins } from '@semantizer/types';
 import { ChangelogMixinNamespace, ChangelogMixinOperations } from './types';
 
-const AddedQuadsSymbol = Symbol('changelogAddedQuads');
-const DeletedQuadsSymbol = Symbol('changelogDeletedQuads');
+export const AddedQuadsSymbol = Symbol('changelogAddedQuads');
+export const DeletedQuadsSymbol = Symbol('changelogDeletedQuads');
 
 export function ChangelogMixin<
     TMixins extends object,

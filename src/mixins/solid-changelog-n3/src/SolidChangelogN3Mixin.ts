@@ -1,5 +1,5 @@
 import { ChangelogMixin, ChangelogMixinNamespace } from '@semantizer/mixin-changelog';
-import { DatasetSemantizerConstructor, Semantizer, WithMixins } from '@semantizer/types';
+import { DatasetSemantizerConstructor, MixinFactory, Semantizer, WithMixins } from '@semantizer/types';
 import { Serializer, SolidChangelogN3, SolidChangelogN3MixinNamespace, SolidChangelogN3MixinOperations } from './types';
 
 export function SolidChangelogN3Mixin<
@@ -64,7 +64,7 @@ export function SolidChangelogN3Mixin<
 
 }
 
-export function solidChangelogN3Factory(semantizer: Semantizer) {
+export function solidChangelogN3Factory(semantizer: Semantizer): MixinFactory<DatasetSemantizerConstructor<ChangelogMixinNamespace>, SolidChangelogN3> {
     const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
     return semantizer.getMixinFactory(SolidChangelogN3Mixin, ChangelogMixin(_DatasetImpl));
 }

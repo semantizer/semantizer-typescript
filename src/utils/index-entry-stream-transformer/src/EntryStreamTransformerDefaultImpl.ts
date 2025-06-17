@@ -1,5 +1,6 @@
 import { IDX, IndexEntry, indexEntryFactory } from "@semantizer/mixin-index";
 import { DatasetSemantizer, Quad, Semantizer } from "@semantizer/types";
+import { datasetFactory, Dataset } from "@semantizer/mixin-dataset";
 import { EntryStreamTransformer } from "./types.js";
 
 /**
@@ -8,11 +9,11 @@ import { EntryStreamTransformer } from "./types.js";
 export class EntryStreamTransformerStrategyDefaultImpl implements EntryStreamTransformer<IndexEntry> {
 
     private _semantizer: Semantizer;
-    private _datasets: Map<string, DatasetSemantizer>;
+    private _datasets: Map<string, Dataset>;
 
     public constructor(semantizer: Semantizer) {
         this._semantizer = semantizer;
-        this._datasets = new Map<string, DatasetSemantizer>();
+        this._datasets = new Map<string, Dataset>();
     }
 
     public transform(quad: Quad): IndexEntry | undefined {
@@ -23,7 +24,7 @@ export class EntryStreamTransformerStrategyDefaultImpl implements EntryStreamTra
             let dataset = this._datasets.get(quad.subject.value);
 
             if (!dataset) {
-                dataset = this._semantizer.build();
+                dataset = this._semantizer.build(datasetFactory);
 
                 if (quad.subject.termType === 'NamedNode') {
                     dataset.setBaseUri(quad.subject);
