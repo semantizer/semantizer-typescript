@@ -1,30 +1,32 @@
+import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 import { DatasetSemantizer, NamedNode, Term } from "@semantizer/types";
 
-export interface TypeIndexNonDestructiveOperations {
-    typeindex: {
-        // getStatementForClass(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
-        // getStatementForInstance(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
-        // getStatementForInstanceContainer(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
+export type TypeIndex = DatasetSemantizer<TypeIndexMixinNamespace>;
+export type TypeIndexMixinNamespace = DatasetMixinNamespace & { typeindex: TypeIndexMixinOperations };
 
-        // getStatementAllForClass(registration: string | TypeIndexRegistration): TypeIndexStatement[];
-        // getStatementAllForInstance(registration: string | TypeIndexRegistration): TypeIndexStatement[];
-        // getStatementAllForInstanceContainer(registration: string | TypeIndexRegistration): TypeIndexStatement[];
+export interface TypeIndexMixinOperations {
+    // getStatementForClass(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
+    // getStatementForInstance(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
+    // getStatementForInstanceContainer(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
 
-        // getForClassAll(): string[];
+    // getStatementAllForClass(registration: string | TypeIndexRegistration): TypeIndexStatement[];
+    // getStatementAllForInstance(registration: string | TypeIndexRegistration): TypeIndexStatement[];
+    // getStatementAllForInstanceContainer(registration: string | TypeIndexRegistration): TypeIndexStatement[];
 
-        // getRegistrationAllForClass(forClass: string): TypeIndexRegistration[];
-        // getRegistrationAllForInstance(instance: string): TypeIndexRegistration[];
-        // getRegistrationAllForInstanceContainer(instanceContainer: string): TypeIndexRegistration[];
+    // getForClassAll(): string[];
 
-        // // Add other forEach like: forEachOfInstance, forEachOfInstanceContainer?
-        // forEachOfClass(forClass: string, callbackfn: (value: TypeIndexRegistration, index?: number, array?: TypeIndexRegistration[]) => void, thisArg?: any): void;
+    // getRegistrationAllForClass(forClass: string): TypeIndexRegistration[];
+    // getRegistrationAllForInstance(instance: string): TypeIndexRegistration[];
+    // getRegistrationAllForInstanceContainer(instanceContainer: string): TypeIndexRegistration[];
 
-        registerInstanceForClass(registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void;
+    // // Add other forEach like: forEachOfInstance, forEachOfInstanceContainer?
+    // forEachOfClass(forClass: string, callbackfn: (value: TypeIndexRegistration, index?: number, array?: TypeIndexRegistration[]) => void, thisArg?: any): void;
 
-        getRegistrationForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined;
-        getRegisteredInstanceForClass(forClass: NamedNode | string, graph?: Term | string): NamedNode | undefined; // TODO: check arity: onlyOne or Many?
-        getRegisteredInstanceForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined; // TODO: check arity: onlyOne or Many?
-    }
+    registerInstanceForClass(registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void;
+
+    getRegistrationForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined;
+    getRegisteredInstanceForClass(forClass: NamedNode | string, graph?: Term | string): NamedNode | undefined; // TODO: check arity: onlyOne or Many?
+    getRegisteredInstanceForClassAll(forClass: NamedNode | string, graph?: Term | string): NamedNode[] | undefined; // TODO: check arity: onlyOne or Many?
 }
 
 // export interface TypeIndexDestructiveOperations {
@@ -83,4 +85,4 @@ export interface TypeIndexNonDestructiveOperations {
 // export type TypeIndexRegistrationWithNonDestructiveOperations = ThingWithNonDestructiveOperations<TypeIndexStatement> & TypeIndexRegistrationNonDestructiveOperations;
 // export type TypeIndexRegistration = Thing<TypeIndexStatement> & TypeIndexRegistrationNonDestructiveOperations & TypeIndexRegistrationDestructiveOperations;
 // export type TypeIndexWithNonDestructiveOperations = DocumentWithNonDestructiveOperations<TypeIndexRegistrationWithNonDestructiveOperations> & TypeIndexNonDestructiveOperations;
-export type TypeIndex = DatasetSemantizer & TypeIndexNonDestructiveOperations; // & TypeIndexDestructiveOperations;
+// export type TypeIndex = DatasetSemantizer & TypeIndexNonDestructiveOperations; // & TypeIndexDestructiveOperations;

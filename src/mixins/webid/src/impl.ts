@@ -1,22 +1,27 @@
-import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
-import { NamedNode, Semantizer, Term } from "@semantizer/types";
-import { WebIdProfile } from "./types";
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { DatasetSemantizerConstructor, NamedNode, Semantizer, Term, WithMixins } from "@semantizer/types";
+import { WebIdProfileMixinNamespace, WebIdProfileMixinOperations } from "./types";
 
 export function WebIdProfileMixin<
-    TBase extends DatasetMixinConstructor
+    TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
-    return class WebIdProfileImpl extends Base implements WebIdProfile {
+    return class WebIdProfileImpl extends Base implements WithMixins<TMixins & WebIdProfileMixinNamespace> {
 
-        public get webid() {
+        public get mixins(): TMixins & WebIdProfileMixinNamespace {
+            const parentMixins = super.mixins as TMixins & Partial<{ webid: Partial<WebIdProfileMixinOperations> }>;
 
             return {
+                ...parentMixins,
+                webid: {
+                    ...(parentMixins.webid ?? {}),
+                    getMaker: (subject?: Term | string, graph?: Term | string): NamedNode | undefined => {
+                        return this.mixins.dataset.getObjectUri(subject ?? this.getBaseUri(), 'http://xmlns.com/foaf/0.1/maker', graph ?? this.mixins.dataset.getDefaultGraphTerm());
+                    },
 
-                getMaker: (subject?: Term | string, graph?: Term | string): NamedNode | undefined => {
-                    return this.mixins.dataset.getObjectUri(subject ?? this.getBaseUri(), 'http://xmlns.com/foaf/0.1/maker', graph ?? this.mixins.dataset.getDefaultGraphTerm());
-                },
-
-                getPrimaryTopic: (subject?: Term | string, graph?: Term | string): NamedNode | undefined => {
-                    return this.mixins.dataset.getObjectUri(subject ?? this.getBaseUri(), 'http://xmlns.com/foaf/0.1/primaryTopic', graph ?? this.mixins.dataset.getDefaultGraphTerm());
+                    getPrimaryTopic: (subject?: Term | string, graph?: Term | string): NamedNode | undefined => {
+                        return this.mixins.dataset.getObjectUri(subject ?? this.getBaseUri(), 'http://xmlns.com/foaf/0.1/primaryTopic', graph ?? this.mixins.dataset.getDefaultGraphTerm());
+                    }
                 }
 
             }
@@ -27,5 +32,6 @@ export function WebIdProfileMixin<
 }
 
 export function webIdFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(WebIdProfileMixin);
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(WebIdProfileMixin, DatasetMixin(_DatasetImpl));
 }

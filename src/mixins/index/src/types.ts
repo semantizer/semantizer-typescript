@@ -1,19 +1,15 @@
-import { BlankNode, DatasetRdfjs, NamedNode, Quad, ShaclValidator, Term, WithBaseUri, WithSemantizer } from "@semantizer/types";
+import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetRdfjs, DatasetSemantizer, NamedNode, Quad, ShaclValidator, Term, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
-import { Dataset, DatasetOperations } from "@semantizer/mixin-dataset";
 
-declare module "@semantizer/types" {
-    interface MixinNamespace {
-        dataset: DatasetOperations,
-        index: IndexOperations;
-    }
-}
+export type Index = DatasetSemantizer<IndexMixinNamespace>;
+export type IndexMixinNamespace = DatasetMixinNamespace & { index: IndexMixinOperations };
 
 export interface IndexQueryingOptions {
     limit?: number;
 }
 
-export interface IndexOperations {
+export interface IndexMixinOperations {
     loadEntryStream(strategy: EntryStreamTransformer<any>): Promise<Readable>;
     doesEntryMatchShape(entry: NamedNode | string, shapeToMatch: DatasetRdfjs, shaclValidator: ShaclValidator): boolean;
     countEntryShapeProperties(entry: NamedNode | string): number;
@@ -43,18 +39,4 @@ export interface EntryStreamTransformer<Entry> {
     transform(quad: Quad): Entry | undefined;
 }
 
-export type IndexEntry = Dataset & IndexEntryOperations;
-
-export type Index = DatasetRdfjs & WithSemantizer & WithBaseUri & {
-    mixins: {
-        dataset: DatasetOperations;
-        index: IndexOperations;
-    }
-}
-
-export type IndexTest = {
-    mixins: {
-        // dataset: DatasetOperations;
-        index: IndexOperations;
-    }
-}
+export type IndexEntry = DatasetSemantizer & IndexEntryOperations;

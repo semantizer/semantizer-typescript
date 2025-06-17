@@ -1,7 +1,6 @@
-import { BlankNode, DatasetSemantizer, DatasetRdfjs, DatasetSemantizerMixinConstructor, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
 import { IDX } from "./namespaces.js";
-import { IndexEntry } from "./types";
-import { DatasetMixinConstructor, Dataset } from "@semantizer/mixin-dataset";
 
 /**
  * This mixin is used internally by the `IndexMixin:loadEntryStream()` method
@@ -9,10 +8,11 @@ import { DatasetMixinConstructor, Dataset } from "@semantizer/mixin-dataset";
  * @returns 
  */
 export function IndexEntryMixin<
-    TBase extends DatasetMixinConstructor
+    TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
 
-    return class IndexEntryMixinImpl extends Base implements IndexEntry {
+    return class IndexEntryMixinImpl extends Base { //implements IndexEntry {
 
         public doesMatchShape(shape: DatasetRdfjs, shaclValidator: ShaclValidator): boolean {
             throw new Error("Not implemented.");
@@ -43,7 +43,7 @@ export function IndexEntryMixin<
                 this.logError("No triple having the entry as subject and the idx:hasShape as predicate was found.", { subject: this.getBaseUri() });
                 throw new Error("Entry has no shape");
             }
-            
+
             let entryShapeDataset = this.mixins.dataset.getSubGraph(entryShapeTerm, this.mixins.dataset.getDefaultGraphTerm());
 
             if (!entryShapeDataset) {
@@ -51,13 +51,13 @@ export function IndexEntryMixin<
                 throw new Error("Entry has no shape");
             }
 
-            const addLinkedObjects = (datasetToProcess: Dataset) => {
-                for (const quadFromDatasetToProcess of datasetToProcess.mixins.dataset) {
+            const addLinkedObjects = (datasetToProcess: DatasetSemantizer) => {
+                for (const quadFromDatasetToProcess of datasetToProcess) {
                     const object = quadFromDatasetToProcess.object;
                     if (object.termType === 'NamedNode' || object.termType === 'BlankNode') {
                         const objectDataset = this.mixins.dataset.getSubGraph(object, this.mixins.dataset.getDefaultGraphTerm());
                         if (objectDataset && entryShapeDataset) {
-                            entryShapeDataset.mixins.dataset.addAll(objectDataset.mixins.dataset);
+                            entryShapeDataset.addAll(objectDataset);
                             addLinkedObjects(objectDataset);
                         }
                     }
@@ -69,9 +69,9 @@ export function IndexEntryMixin<
             if (entryShapeTerm.termType === 'BlankNode') {
                 const rebasedDataset = this.getSemantizer().build();
                 const rdf = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-                for (const quadToRebase of entryShapeDataset.mixins.dataset) {
+                for (const quadToRebase of entryShapeDataset) {
                     if (quadToRebase.subject.equals(entryShapeTerm)) {
-                        rebasedDataset.mixins.dataset.add(
+                        rebasedDataset.add(
                             rdf.quad(
                                 rdf.namedNode(''),
                                 quadToRebase.predicate,
@@ -81,7 +81,7 @@ export function IndexEntryMixin<
                         );
                     }
                     else if (quadToRebase.object.equals(entryShapeTerm)) {
-                        rebasedDataset.mixins.dataset.add(
+                        rebasedDataset.add(
                             rdf.quad(
                                 quadToRebase.subject,
                                 quadToRebase.predicate,
@@ -90,7 +90,7 @@ export function IndexEntryMixin<
                             )
                         );
                     }
-                    else rebasedDataset.mixins.dataset.add(quadToRebase);
+                    else rebasedDataset.add(quadToRebase);
                 }
 
                 entryShapeDataset = rebasedDataset;
@@ -103,5 +103,6 @@ export function IndexEntryMixin<
 }
 
 export function indexEntryFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(IndexEntryMixin);
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(IndexEntryMixin, DatasetMixin(_DatasetImpl));
 }

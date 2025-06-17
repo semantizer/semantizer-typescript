@@ -1,13 +1,11 @@
-import { DatasetSemantizer, Quad_Graph, Quad_Subject, Term } from "@semantizer/types";
+import { DatasetSemantizer, Quad_Graph, Quad_Subject } from "@semantizer/types";
 import { MyersBriggs } from "./ns";
+import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 
-declare module "@semantizer/types" {
-    interface MixinNamespace {
-        foaf?: FoafPersonOperations;
-    }
-}
+export type FoafPerson = DatasetSemantizer & FoafPersonMixinNamespace;
+export type FoafPersonMixinNamespace = DatasetMixinNamespace & { foaf: FoafPersonMixinOperations };
 
-export interface FoafPersonOperations {
+export interface FoafPersonMixinOperations {
     getAge(subject: Quad_Subject | string, graph?: Quad_Graph | string): number | undefined;
 
     // getPastProject(): Thing;
@@ -25,5 +23,3 @@ export interface FoafPersonOperations {
     // getWorkplaceHomepage(): Document;
     getKnows(): FoafPerson[];
 }
-
-export type FoafPerson = DatasetSemantizer & FoafPersonOperations;

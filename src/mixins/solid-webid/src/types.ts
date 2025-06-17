@@ -1,17 +1,21 @@
-import { WebIdProfile } from "@semantizer/mixin-webid";
+import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { WebIdProfileMixinNamespace } from "@semantizer/mixin-webid";
 import { DatasetSemantizer, Loader, NamedNode } from "@semantizer/types";
 
-declare module "@semantizer/types" {
-    interface MixinNamespace {
-        solid: SolidWebIdOperations;
-    }
-}
+export type SolidWebIdProfile = DatasetSemantizer<SolidWebIdProfileMixinNamespace>;
+export type SolidWebIdProfileMixinNamespace = WebIdProfileMixinNamespace & { webid: SolidWebIdProfileMixinOperations };
 
-export interface SolidWebIdProfileOperations {
+export type SolidWebId = DatasetSemantizer<SolidWebIdMixinNamespace>;
+export type SolidWebIdMixinNamespace = SolidWebIdProfileMixinNamespace & { webid: SolidWebIdMixinOperations };
+
+export type SolidPreferences = DatasetSemantizer<SolidWebIdMixinNamespace>;
+export type SolidPreferencesMixinNamespace = DatasetMixinNamespace & { webid: SolidPreferencesMixinOperations };
+
+export interface SolidWebIdProfileMixinOperations {
     loadExtendedProfile(loader?: Loader): Promise<void>;
 }
 
-export interface SolidWebIdOperations {
+export interface SolidWebIdMixinOperations {
     addPreferencesDocument(preferencesDocumentUri: string | NamedNode): void
     getPublicTypeIndex(): NamedNode | undefined;
     getPrivateTypeIndex(): Promise<NamedNode | undefined>;
@@ -21,20 +25,11 @@ export interface SolidWebIdOperations {
     getStorageAll(): NamedNode[] | undefined;
 }
 
-export interface SolidPreferencesOperations {
-    solid: {
-        getSeeAlsoAll(): NamedNode[] | undefined;
-        getPrivateTypeIndex(webId: string | NamedNode): NamedNode | undefined;
-    }
+export interface SolidPreferencesMixinOperations {
+    getSeeAlsoAll(): NamedNode[] | undefined;
+    getPrivateTypeIndex(webId: string | NamedNode): NamedNode | undefined;
 }
 
 export interface SolidPreferencesCreateParams {
     seeAlso?: string[];
 }
-
-export type SolidWebIdProfile = WebIdProfile & SolidWebIdProfileOperations;
-export type SolidWebId = DatasetSemantizer & SolidWebIdOperations;
-export type SolidPreferencesDocument = DatasetSemantizer & SolidPreferencesOperations;
-export type SolidWebIdProfileConstructor = new (...args: any[]) => SolidWebIdProfile;
-export type SolidWebIdConstructor = new (...args: any[]) => SolidWebId;
-export type SolidPreferencesConstructor = new (...args: any[]) => SolidPreferencesDocument;

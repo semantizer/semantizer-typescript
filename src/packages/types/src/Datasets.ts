@@ -3,9 +3,8 @@ import { QuadIterableSemantizer, WithBaseUri, WithMixins, WithSemantizer } from 
 import { Fetch, Loader, LoaderQuadStream } from "./Loader";
 import { Semantizer } from "./Semantizer";
 
-export type DatasetSemantizer = DatasetRdfjs & WithMixins & WithSemantizer & WithBaseUri;
-export type DatasetSemantizerMixinConstructor = new (...args: any[]) => DatasetSemantizer;
-export type DatasetSemantizerRdfjsMixinConstructor = new (...args: any[]) => DatasetRdfjs & WithMixins & WithSemantizer & WithBaseUri;
+export type DatasetSemantizer<T extends object = {}> = DatasetRdfjs & WithSemantizer & WithBaseUri & WithMixins<T>;
+export type DatasetSemantizerConstructor<T extends object = {}> = new (...args: any[]) => DatasetSemantizer<T>;
 
 export interface DatasetLoadOptions {
     loader?: Loader

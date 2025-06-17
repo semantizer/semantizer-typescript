@@ -1,19 +1,9 @@
-import { BlankNode, Countable, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetRdfjs, DatasetSemantizer, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Predicate, Quad_Subject, Resource, Stream, Term } from "@semantizer/types";
+import { BlankNode, Countable, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetSemantizer, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Predicate, Quad_Subject, Resource, Stream, Term } from "@semantizer/types";
 
-declare module "@semantizer/types" {
-    interface MixinNamespace {
-        dataset: DatasetOperations;
-    }
-}
+export type Dataset = DatasetSemantizer<DatasetMixinNamespace>;
+export type DatasetMixinNamespace = { dataset: DatasetMixinOperations };
 
-export type Dataset = DatasetSemantizer/* & {
-    mixins: {
-        dataset: DatasetOperations;
-    }
-}*/;
-export type DatasetMixinConstructor = new (...args: any[]) => Dataset;
-
-export interface DatasetOperations extends DatasetRdfjs, Countable {
+export interface DatasetMixinOperations extends Countable {
     hasNamedGraph(): boolean;
     countNamedGraph(): number;
 

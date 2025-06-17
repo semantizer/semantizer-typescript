@@ -1,14 +1,9 @@
+import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 import { DatasetSemantizer, NamedNode } from "@semantizer/types";
 
+export type SolidContainer = DatasetSemantizer<SolidContainerMixinNamespace>;
+export type SolidContainerMixinNamespace = DatasetMixinNamespace & { solid: SolidContainerMixinOperations };
 
-declare module "@semantizer/types" {
-    interface MixinNamespace {
-        solid: SolidContainerOperations;
-    }
-}
-
-export interface SolidContainerOperations {
+export interface SolidContainerMixinOperations {
     getContainedResources(): NamedNode[] | undefined;
 }
-
-export type SolidContainer = DatasetSemantizer & SolidContainerOperations;

@@ -6,7 +6,7 @@
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
-  "types": "./kdist/index.d.ts",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist/**"
   ],
@@ -22,6 +22,7 @@
     "nx-release-publish": "npm publish"
   },
   "dependencies": {
+    "@semantizer/mixin-dataset": "*",
     "@semantizer/mixin-index": "*"
   },
   "devDependencies": {
