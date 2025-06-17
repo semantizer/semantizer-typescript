@@ -1,19 +1,23 @@
 {
-  "name": "@semantizer/mixin-literal-helper-add",
-  "version": "1.0.0",
-  "description": "",
-  "main": "./lib/index.js",
   "type": "module",
-  "types": "./lib/index.d.ts",
+  "name": "@semantizer/mixin-literal-helper-add",
+  "description": "",
+  "version": "1.0.0-1.0.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
-  "author": "Maxime Lecoq-Gaillard",
-  "license": "MIT",
   "devDependencies": {
-    "@semantizer/types": "^1.0.0",
+    "@semantizer/types": "*",
     "typescript": "^5.5.2"
   }
 }

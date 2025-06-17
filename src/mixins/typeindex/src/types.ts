@@ -1,6 +1,10 @@
-import { Dataset, DatasetSemantizer, NamedNode, Term } from "@semantizer/types";
+import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { DatasetSemantizer, NamedNode, Term } from "@semantizer/types";
 
-export interface TypeIndexNonDestructiveOperations {
+export type TypeIndex = DatasetSemantizer<TypeIndexMixinNamespace>;
+export type TypeIndexMixinNamespace = DatasetMixinNamespace & { typeindex: TypeIndexMixinOperations };
+
+export interface TypeIndexMixinOperations {
     // getStatementForClass(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
     // getStatementForInstance(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
     // getStatementForInstanceContainer(registration: string | TypeIndexRegistration): TypeIndexStatement | undefined;
@@ -26,25 +30,25 @@ export interface TypeIndexNonDestructiveOperations {
 }
 
 // export interface TypeIndexDestructiveOperations {
-    // createRegistration(): TypeIndexRegistration;
-    // createRegistrationForInstance(forClass: string, instance: string, nameHintOrUri?: string): TypeIndexRegistration;
-    // createRegistrationForInstanceContainer(forClass: string, instanceContainer: string, nameHintOrUri?: string): TypeIndexRegistration;
+// createRegistration(): TypeIndexRegistration;
+// createRegistrationForInstance(forClass: string, instance: string, nameHintOrUri?: string): TypeIndexRegistration;
+// createRegistrationForInstanceContainer(forClass: string, instanceContainer: string, nameHintOrUri?: string): TypeIndexRegistration;
 
-    // addForClassToRegistration(registration: string | TypeIndexRegistration, forClass: string): TypeIndexRegistration;
-    // addInstanceToRegistration(registration: string | TypeIndexRegistration, instance: string): TypeIndexRegistration;
-    // addInstanceContainerToRegistration(registration: string | TypeIndexRegistration, instanceContainer: string):  TypeIndexRegistration;
-    
-    // setForClassOfRegistration(registration: string | TypeIndexRegistration, forClass: string, oldValue?: string): TypeIndexRegistration;
-    // setInstanceOfRegistration(registration: string | TypeIndexRegistration, instance: string, oldValue?: string): TypeIndexRegistration;
-    // setInstanceContainerOfRegistration(registration: string | TypeIndexRegistration, instanceContainer: string, oldValue?: string): TypeIndexRegistration;
-    
-    // removeForClassOfRegistration(registration: string | TypeIndexRegistration, ...forClasses: string[]): TypeIndexRegistration;
-    // removeInstanceOfRegistration(registration: string | TypeIndexRegistration, ...instances: string[]): TypeIndexRegistration;
-    // removeInstanceContainerOfRegistration(registration: string | TypeIndexRegistration, ...instanceContainers: string[]): TypeIndexRegistration;
-    
-    // removeForClassAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration;
-    // removeInstanceAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration;
-    // removeInstanceContainerAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration; 
+// addForClassToRegistration(registration: string | TypeIndexRegistration, forClass: string): TypeIndexRegistration;
+// addInstanceToRegistration(registration: string | TypeIndexRegistration, instance: string): TypeIndexRegistration;
+// addInstanceContainerToRegistration(registration: string | TypeIndexRegistration, instanceContainer: string):  TypeIndexRegistration;
+
+// setForClassOfRegistration(registration: string | TypeIndexRegistration, forClass: string, oldValue?: string): TypeIndexRegistration;
+// setInstanceOfRegistration(registration: string | TypeIndexRegistration, instance: string, oldValue?: string): TypeIndexRegistration;
+// setInstanceContainerOfRegistration(registration: string | TypeIndexRegistration, instanceContainer: string, oldValue?: string): TypeIndexRegistration;
+
+// removeForClassOfRegistration(registration: string | TypeIndexRegistration, ...forClasses: string[]): TypeIndexRegistration;
+// removeInstanceOfRegistration(registration: string | TypeIndexRegistration, ...instances: string[]): TypeIndexRegistration;
+// removeInstanceContainerOfRegistration(registration: string | TypeIndexRegistration, ...instanceContainers: string[]): TypeIndexRegistration;
+
+// removeForClassAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration;
+// removeInstanceAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration;
+// removeInstanceContainerAllOfRegistration(registration: string | TypeIndexRegistration): TypeIndexRegistration; 
 // }
 
 // export interface TypeIndexRegistrationNonDestructiveOperations {
@@ -81,4 +85,4 @@ export interface TypeIndexNonDestructiveOperations {
 // export type TypeIndexRegistrationWithNonDestructiveOperations = ThingWithNonDestructiveOperations<TypeIndexStatement> & TypeIndexRegistrationNonDestructiveOperations;
 // export type TypeIndexRegistration = Thing<TypeIndexStatement> & TypeIndexRegistrationNonDestructiveOperations & TypeIndexRegistrationDestructiveOperations;
 // export type TypeIndexWithNonDestructiveOperations = DocumentWithNonDestructiveOperations<TypeIndexRegistrationWithNonDestructiveOperations> & TypeIndexNonDestructiveOperations;
-export type TypeIndex = DatasetSemantizer & TypeIndexNonDestructiveOperations; // & TypeIndexDestructiveOperations;
+// export type TypeIndex = DatasetSemantizer & TypeIndexNonDestructiveOperations; // & TypeIndexDestructiveOperations;

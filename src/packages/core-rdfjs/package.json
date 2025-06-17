@@ -1,10 +1,15 @@
 {
-  "name": "@semantizer/core-rdfjs",
-  "version": "1.0.0-beta.2.0.0",
-  "description": "A RDFJS dataset that can be used by other Semantizer packages and mixins (adapter)",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
   "type": "module",
+  "name": "@semantizer/core-rdfjs",
+  "description": "A RDFJS dataset that can be used by other Semantizer packages and mixins (adapter)",
+  "version": "1.0.0-2.1.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/semantizer/semantizer-typescript.git",
@@ -13,16 +18,14 @@
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
   },
-  "author": "Maxime Lecoq-Gaillard",
-  "license": "MIT",
   "dependencies": {
-    "@semantizer/rdfjs-dataset-impl": "^1.0.0-beta.2.0.0"
+    "@semantizer/rdfjs-dataset-impl": "*"
   },
   "devDependencies": {
-    "@semantizer/types": "^1.0.0-beta.2.1.0",
+    "@semantizer/types": "*",
     "typescript": "^5.5.2"
   }
 }

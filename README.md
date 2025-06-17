@@ -4,6 +4,31 @@ Semantizer is a TypeScript library to ease the development of applications worki
 
 Semantizer supports the RDF model out of the box, including blank nodes. The default implementation uses RDFJS but this can be changed. Semantizer can be used in replacement or with other libraries such as LDO or solid-client.
 
+## Funders and supporters
+
+A great thank to all our ongoing and past funders:
+
+|  | Name | Description |
+| -----------| --------| ----------- |
+| <img src="logos/logo-ademe.svg" alt="logo of ADEME" width="100"> | [ADEME](https://www.ademe.fr/) | The Environment and Energy Management Agency is a French public industrial and commercial establishment. As a player in sustainable development, Ademe participates in the implementation of public policies in terms of energy and environmental protection. Also named the Ecological Transition Agency. |
+| <img src="logos/logo-fondation-de-france.webp" alt="logo of Fondation de France"> | [Fondation de France](https://www.fondationdefrance.org/) | The Fondation de France is a private French organization, recognized as being of public utility and independent. As the leading philanthropy network in France, Fondation de France brings together donors, founders, volunteers and project leaders across the country. Its ambition: to contribute to building effective and sustainable solutions to meet the challenges of society. |
+| <img src="logos/logo-fondation-credit-cooperatif.svg" alt="logo of Fondation Crédit Coopératif"> | [Fondation Crédit Coopératif](https://fondation.credit-cooperatif.coop/) | The Crédit Coopératif Foundation is a French non-profit corporate foundation who supports projects that accelerate the transformations of the ESS and increase its influence, for a more just and united society, in harmony with the planet. |
+| <img src="logos/logo-inria.svg" alt="logo of INRIA"> | [INRIA](https://inria.fr/) | The National Institute for Research in Computer Science and Automation is a French public scientific and technological institution specializing in mathematics and computer science. Also called the National Institute for Research in Digital Science and Technology. |
+| <img src="logos/logo-startinblox.png" alt="logo of Startin’blox"> | [Startin'Blox](https://startinblox.com/) | Startin’blox is a company who develops an innovative and ethical technology based on interoperable standards. It goes against the multiplication of siloed proprietary platforms logic, and argues that a truly open web must be built now. |
+| <img src="logos/logo-alma-food.png" alt="logo of Alma Food"> | [Alma Food](https://almafood.fr/) | Alma Food is a Young Innovative Company recognized since 2021 by the French Ministry of Higher Education, Research and Innovation. Alma Food draws on in-depth knowledge of the product information and food processing business and provides a labeling service for short circuits. Alma Food thus improves the quality of nutritional information and transparency for better protection of the environment and support for farmers. |
+
+This library is also supported by these projects or organizations:
+
+|  | Name | Description |
+| -----------| --------| ----------- |
+| <img src="logos/logo-dfc.png" alt="logo of DFC" width="200"> | [Data Food Consortium](https://www.datafoodconsortium.org/) | Data Food Consortium is an international collective of actors working on a interoperability project between short food supply chain platforms in order to allow them to communicate. It aims to support, equip, and give more space to producers, independent distributors and short supply chain.  |
+| <img src="logos/logo-mycelium.svg" alt="logo of Mycelium" height="200"> | [Mycelium](https://mycelium-software.org) | Mycelium is a digital commons project for farmers. Its objective is to equip the farming world with management applications that are interoperable, free and ethical. Its scope extends to the management of farming activity as a whole: invoicing, production, planning, distribution, etc. |
+| <img src="logos/logo-av.png" alt="logo of AV" width="100" height="100"> | [Assemblée Virtuelle](https://assemblee-virtuelle.org/) | The Virtual Assembly is a French association who brings together an ecosystem of actors developing common resources together to serve the transition. The softwares developed or promoted within the Virtual Assembly are intended to promote the development of decentralized and federated information systems, serving the autonomy and networking of their user communities. |
+
+## History
+
+This library was initially writen for the [Data Food Consortium](https://datafoodconsortium.org) and [Mycelium](https://mycelium-software.org) projects which aims to provide interoperability between short food supply chain actors.
+
 ## Get started
 
 ```bash
@@ -30,7 +55,7 @@ const distantPerson = await semantizer.load("http://example.org/john-smith", foa
 console.log(distantPerson.getGivenName()); // shows "John Smith"
 ```
 
-## Available mixins
+## Available mixins and utils
 
 The base mixin is the "dataset" mixin. It offers basic methods such as `getObjectLiteral()`, `getObjectUri()` and so on. You can especially look at the `DatasetSemantizer` type defined in the [types package](./src/packages/types/) to list the available methods of the dataset mixin.
 
@@ -42,11 +67,22 @@ The documentation of each mixin is available into the mixin directory. Click on 
 | [dataset](./src/mixins/dataset/) | The base mixin. Provides essential methods. |
 | [foaf-person](./src/mixins/foaf/) | The [foaf:Person](http://xmlns.com/foaf/spec/#term_Person) mixin. |
 | [index](./src/mixins/index/) | A mixin to query indexes. |
+| [shacl](./src/mixins/shacl/) | A mixin to manipulate SHACL shapes. |
 | [solid-changelog-n3](./src/mixins/solid-changelog-n3/) | A mixin to serialize a dataset changelog into a N3 patch. |
 | [solid-container](./src/mixins/solid-container/) | A mixin to manipulate Solid containers. |
 | [solid-webid](./src/mixins/solid-webid/) | A mixin to manipulate [Solid WebId profiles](https://solid.github.io/webid-profile/). |
 | [typeindex](./src/mixins/typeindex/) | A mixin to manipulate [TypeIndexes](https://solid.github.io/type-indexes/). |
 | [webid](./src/mixins/webid/) | A mixin to manipulate [WebId](https://w3c.github.io/WebID/spec/identity/) profiles. |
+
+| Util      | Description |
+| -----------| ----------- |
+| [index-entry-stream-transformer](./src/utils/index-entry-stream-transformer) | Desc. |
+| [index-querying-strategy-shacl](./src/mixins/index-querying-strategy-shacl/) | Desc. |
+| [index-querying-strategy-shacl-comunica](./src/mixins/index-querying-strategy-shacl-comunica/) | Desc. |
+| [index-querying-strategy-shacl-conjunction](./src/mixins/index-querying-strategy-shacl-conjunction/) | Desc. |
+| [index-querying-strategy-shacl-final](./src/mixins/index-querying-strategy-shacl-final/) | Desc. |
+| [loader-base](./src/mixins/loader-base/) | Desc. |
+| [shacl-validator-default](./src/mixins/shacl-validator-default/) | Desc. |
 
 ## Development
 
@@ -67,28 +103,3 @@ TDB.
 | [loader-rdfjs](./src/packages/loader-rdfjs/) | Text |
 | [rdfjs-dataset-impl](./src/packages/rdfjs-dataset-impl/) | Text |
 | [types](./src/packages/types/) | Text |
-
-## Funders and supporters
-
-A great thank to all our ongoing and past funders:
-
-|  | Name | Description |
-| -----------| --------| ----------- |
-| <img src="logos/logo-ademe.svg" alt="logo of ADEME" width="100"> | [ADEME](https://www.ademe.fr/) | The Environment and Energy Management Agency is a French public industrial and commercial establishment. As a player in sustainable development, Ademe participates in the implementation of public policies in terms of energy and environmental protection. Also named the Ecological Transition Agency. |
-| <img src="logos/logo-fondation-de-france.webp" alt="logo of Fondation de France"> | [Fondation de France](https://www.fondationdefrance.org/) | The Fondation de France is a private French organization, recognized as being of public utility and independent. As the leading philanthropy network in France, Fondation de France brings together donors, founders, volunteers and project leaders across the country. Its ambition: to contribute to building effective and sustainable solutions to meet the challenges of society. |
-| <img src="logos/logo-fondation-credit-cooperatif.svg" alt="logo of Fondation Crédit Coopératif"> | [Fondation Crédit Coopératif](https://fondation.credit-cooperatif.coop/) | The Crédit Coopératif Foundation is a French non-profit corporate foundation who supports projects that accelerate the transformations of the ESS and increase its influence, for a more just and united society, in harmony with the planet. |
-| <img src="logos/logo-inria.svg" alt="logo of INRIA"> | [INRIA](https://inria.fr/) | The National Institute for Research in Computer Science and Automation is a French public scientific and technological institution specializing in mathematics and computer science. Also called the National Institute for Research in Digital Science and Technology. |
-| <img src="logos/logo-startinblox.png" alt="logo of Startin’blox"> | [Startin'Blox](https://startinblox.com/) | Startin’blox is a company who develops an innovative and ethical technology based on interoperable standards. It goes against the multiplication of siloed proprietary platforms logic, and argues that a truly open web must be built now. |
-| <img src="logos/logo-alma-food.png" alt="logo of Alma Food"> | [Alma Food](https://almafood.fr/) | Alma Food is a Young Innovative Company recognized since 2021 by the French Ministry of Higher Education, Research and Innovation. Alma Food draws on in-depth knowledge of the product information and food processing business and provides a labeling service for short circuits. Alma Food thus improves the quality of nutritional information and transparency for better protection of the environment and support for farmers. |
-
-This library is also supported by these projects or organizations:
-
-|  | Name | Description |
-| -----------| --------| ----------- |
-| <img src="logos/logo-dfc.png" alt="logo of DFC" width="200"> | [Data Food Consortium](https://www.datafoodconsortium.org/) | Data Food Consortium is an international collective of actors working on a interoperability project between short food supply chain platforms in order to allow them to communicate. It aims to support, equip, and give more space to producers, independent distributors and short supply chain.  |
-| <img src="logos/logo-mycelium.svg" alt="logo of Mycelium" height="200"> | [Mycelium](https://mycelium-software.org) | Mycelium is a digital commons project for farmers. Its objective is to equip the farming world with management applications that are interoperable, free and ethical. Its scope extends to the management of farming activity as a whole: invoicing, production, planning, distribution, etc. |
-| <img src="logos/logo-av.png" alt="logo of AV" width="100" height="100"> | [Assemblée Virtuelle](https://assemblee-virtuelle.org/) | The Virtual Assembly is a French association who brings together an ecosystem of actors developing common resources together to serve the transition. The softwares developed or promoted within the Virtual Assembly are intended to promote the development of decentralized and federated information systems, serving the autonomy and networking of their user communities. |
-
-## History
-
-This library was initially writen for the [Data Food Consortium](https://datafoodconsortium.org) and [Mycelium](https://mycelium-software.org) projects which aims to provide interoperability between short food supply chain actors.

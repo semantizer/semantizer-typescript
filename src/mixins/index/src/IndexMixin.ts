@@ -1,109 +1,125 @@
-import { DatasetSemantizer, DatasetSemantizerMixinConstructor, Quad, Semantizer } from "@semantizer/types";
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetRdfjs, DatasetSemantizerConstructor, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term, WithMixins } from "@semantizer/types";
 import { Readable, Transform } from "stream";
-import { indexEntryFactory } from "./IndexEntryMixin.js";
-import { Index, IndexEntry, IndexShape, IndexStrategy } from "./types";
+import { IDX, SHACL } from "./namespaces.js";
+import { EntryStreamTransformer, Index, IndexMixinNamespace, IndexMixinOperations, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 
 export function IndexMixin<
-    TBase extends DatasetSemantizerMixinConstructor
+    TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
 
-    return class IndexMixinImpl extends Base implements Index {
+    return class IndexMixinImpl extends Base implements WithMixins<TMixins & IndexMixinNamespace> {
 
-        /**
-         * Transforms the quad stream of this dataset into an IndexEntry stream.
-         * @returns A Readable stream of IndexEntry with their linked objects (shape and properties).
-         */
-        public async loadEntryStream(): Promise<Readable> {
-            const quadStream = await this.loadQuadStream();
+        public get mixins(): TMixins & IndexMixinNamespace {
+            const parentMixins = super.mixins as TMixins & Partial<{ index: Partial<IndexMixinOperations> }>;
 
-            const semantizer = this.getSemantizer();
-            const datasets: DatasetSemantizer[] = []; // stores the datasets of the parsed entry, shape or property
+            return {
+                ...parentMixins,
+                index: {
+                    ...(parentMixins.index ?? {}),
 
-            const indexEntryType = semantizer.getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#IndexEntry');
-            const hasShapePredicate = semantizer.getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#hasShape');
-            const hasTargetPredicate = semantizer.getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#hasTarget');
-            const hasSubIndexPredicate = semantizer.getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#hasSubIndex');
+                    /**
+                     * Transforms the quad stream of this dataset into an IndexEntry stream.
+                     * @returns A Readable stream of IndexEntry with their linked objects (shape and properties).
+                     */
+                    loadEntryStream: async (strategy: EntryStreamTransformer<any>): Promise<Readable> => {
+                        const quadStream = await this.mixins.dataset.loadQuadStream();
 
-            const entryStream = new Transform({
-                objectMode: true,
+                        const entryStream = new Transform({
+                            objectMode: true,
 
-                transform(quad: Quad, encoding, callback) {
-                    // TODO: move this into a Strategy?
-                    if (quad.subject.termType === 'NamedNode' || quad.subject.termType === 'BlankNode') {
-                        let dataset = datasets.find(d => d.getOrigin()?.equals(quad.subject));
-                        
-                        if (!dataset) {
-                            dataset= semantizer.build();
-                            dataset.setOrigin(quad.subject);
-                            datasets.push(dataset);
-                        }
-
-                        dataset.add(quad);
-
-                        const isEntry = dataset.isDefaultGraphRdfTypeOf(indexEntryType);
-                        const hasShape = isEntry && dataset.some(q => q.predicate.equals(hasShapePredicate));
-                        const hasSubIndex = hasShape && dataset.some(q => q.predicate.equals(hasSubIndexPredicate));
-                        const hasTarget = hasShape && !hasSubIndex && dataset.some(q => q.predicate.equals(hasTargetPredicate));
-
-                        // This loads the linked objects of the entry. This allows to include the shape and properties 
-                        // into the streamed entry dataset (we need it to compare).
-                        const addLinkedObjects = (d: DatasetSemantizer) => {
-                            for (const q of d) {
-                                const object = q.object;
-                                if (object.termType === 'NamedNode' || object.termType === "BlankNode") {
-                                    const objectDataset = datasets.find(d => d.getOrigin()?.equals(object));
-                                    if (objectDataset) {
-                                        dataset.addAll(objectDataset);
-                                        addLinkedObjects(objectDataset);
-                                    }
+                            transform(quad: Quad, encoding, callback) {
+                                const entry = strategy.transform(quad);
+                                if (entry) {
+                                    this.push(entry);
                                 }
+                                callback(); // not sure if this is necessary?
                             }
-                        }
+                        });
 
-                        // Here, if we think the entry is complete, we can stream it.
-                        // TODO: maybe we can also check the conformance to the targeted shape here?
-                        if (isEntry && hasShape && (hasSubIndex || hasTarget)) {
-                            // WARNING: in the next line we suppose (no check) we already have parsed the linked objects
-                            // (shape and properties)! Maybe we need to enforce the check expecially on the shape properties 
-                            // (because these quads could be parsed later - but they should not). 
-                            // If so, we need to check that we have a sh:hasValue for a shape of an entry having an hasTarget. 
-                            // For an entry with a hasSubIndex, we don't need to check we have something for sh:hasValue.
-                            addLinkedObjects(dataset); 
+                        // @ts-ignore
+                        return quadStream.pipe(entryStream);
+                        // WARNING: the pipe method comes from the implementation of the underlying used parser 
+                        // (it can comes from @rdfjs/common-formats if the package loader-rdfjs is used (which 
+                        // uses @rdfjs/fetch)).
+                        // TODO: ask @rdfjs/types why the Stream interface does not export a pipe method 
+                        // (and also other methods of streams like pause, resume and destroy).
+                    },
 
-                            const entry = semantizer.build(indexEntryFactory, dataset);
-                            this.push(entry);
+                    // public async forEachEntry(callbackfn: (value: NamedNode, index?: number, array?: NamedNode[]) => Promise<void>): Promise<void> {
+                    //     const indexEntryType = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#IndexEntry');
+                    //     this.forEachSubGraph(async (subGraph) => {
+                    //         if (subGraph.isDefaultGraphRdfTypeOf(indexEntryType)) {
+                    //             await callbackfn(this.getSemantizer().build(indexEntryFactory, subGraph));
+                    //         }
+                    //     });
+                    // }
 
-                            // TODO: here we might remove the already streamed dataset from the datasets array so we can 
-                            // enhance the next calls to the find() method on this array.
-                        }
-                    }
-                  callback(); // not sure if this is necessary?
+                    // getLoggingComponent: (): LoggingComponent => {
+                    //     return {
+                    //         type: 'MIXIN',
+                    //         name: 'index'
+                    //     }
+                    // },
+
+                    query: (strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable => {
+                        this.logInfo("Start querying...");
+                        strategy.setSemantizer(this.getSemantizer());
+                        return strategy.query(this, options);
+                    },
+
+                    // public createEntry()
+                    // public setEntryProperty
+                    // public addEntryShapeProperty(entry, property);
+
+                    hasEntrySubIndex: (entry: NamedNode | string): boolean => {
+                        return this.mixins.dataset.getObjectUri(entry, IDX.HAS_SUB_INDEX) !== undefined;
+                    },
+
+                    getEntryTarget: (entry: NamedNode | string): NamedNode | undefined => {
+                        return this.mixins.dataset.getObjectUri(entry, IDX.HAS_TARGET);
+                    },
+
+                    getEntrySubIndex: (entry: NamedNode | string): NamedNode | undefined => {
+                        return this.mixins.dataset.getObjectUri(entry, IDX.HAS_SUB_INDEX);
+                    },
+
+                    getEntryShape: (entry: NamedNode | string): NamedNode | BlankNode | undefined => {
+                        return this.mixins.dataset.getObjectLinked(entry, IDX.HAS_SHAPE);
+                    },
+
+                    doesEntryMatchShape: (entry: NamedNode | string, shape: DatasetRdfjs, shaclValidator: ShaclValidator): boolean => {
+                        throw new Error("Not implemented");
+                    },
+
+                    countEntryShapeProperties: (entry: NamedNode | string): number => {
+                        const properties = this.mixins.index.getEntryShapePropertiesAll(entry);
+                        return properties?.length ?? 0;
+                    },
+
+                    getEntryShapePropertiesAll: (entry: NamedNode | string): Term[] | undefined => {
+                        const shape = this.mixins.index.getEntryShape(entry);
+                        return shape ? this.mixins.dataset.getObjectLinkedAll(shape, SHACL.PROPERTY) : undefined;
+                    },
                 }
-            });
 
-            // @ts-ignore
-            return quadStream.pipe(entryStream); // WARNING: the pipe method comes from the implementation of the underlying used parser (it can comes from @rdfjs/common-formats if the package loader-rdfjs is used (which uses @rdfjs/fetch)).
-            // TODO: ask @rdfjs/types why the Stream interface does not export a pipe method (and also other methods of streams like pause, resume and destroy).
+            }
+
         }
 
-        public async forEachEntry(callbackfn: (value: IndexEntry, index?: number, array?: IndexEntry[]) => Promise<void>): Promise<void> {
-            const indexEntryType = this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode('https://ns.inria.fr/idx/terms#IndexEntry');
-            this.forEachSubGraph(async (subGraph) => {
-                if (subGraph.isDefaultGraphRdfTypeOf(indexEntryType)) {
-                    await callbackfn(this.getSemantizer().build(indexEntryFactory, subGraph));
-                }
-            });
-        }
-
-        public async findTargetsRecursively(strategy: IndexStrategy, callbackfn: (target: DatasetSemantizer) => void, limit?: number): Promise<void> {
-            strategy.setSemantizer(this.getSemantizer());
-            await strategy.execute(this, callbackfn, limit);
+        public getLoggingComponent(): LoggingComponent {
+            return {
+                type: 'MIXIN',
+                name: 'index'
+            }
         }
 
     }
-    
+
 }
 
 export function indexFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(IndexMixin);
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(IndexMixin, DatasetMixin(_DatasetImpl));
 }
