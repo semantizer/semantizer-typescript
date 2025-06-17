@@ -1,5 +1,5 @@
-import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
-import { BlankNode, DatasetRdfjs, DatasetSemantizer, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
 import { IDX } from "./namespaces.js";
 
 /**
@@ -8,7 +8,8 @@ import { IDX } from "./namespaces.js";
  * @returns 
  */
 export function IndexEntryMixin<
-    TBase extends DatasetMixinConstructor
+    TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
 
     return class IndexEntryMixinImpl extends Base { //implements IndexEntry {
@@ -42,7 +43,7 @@ export function IndexEntryMixin<
                 this.logError("No triple having the entry as subject and the idx:hasShape as predicate was found.", { subject: this.getBaseUri() });
                 throw new Error("Entry has no shape");
             }
-            
+
             let entryShapeDataset = this.mixins.dataset.getSubGraph(entryShapeTerm, this.mixins.dataset.getDefaultGraphTerm());
 
             if (!entryShapeDataset) {
@@ -102,5 +103,6 @@ export function IndexEntryMixin<
 }
 
 export function indexEntryFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(IndexEntryMixin);
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(IndexEntryMixin, DatasetMixin(_DatasetImpl));
 }

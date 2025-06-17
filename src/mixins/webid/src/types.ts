@@ -8,6 +8,3 @@ export interface WebIdProfileMixinOperations {
     getMaker(subject?: Term | string, graph?: Term | string): NamedNode | undefined;
     getPrimaryTopic(subject?: Term | string, graph?: Term | string): NamedNode | undefined;
 }
-
-// export type WebIdProfile = DatasetSemantizer & WebIdProfileMixinOperations;
-// export type WebIdProfileConstructor = new (...args: any[]) => WebIdProfile;

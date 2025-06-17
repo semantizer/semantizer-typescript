@@ -1,8 +1,8 @@
 {
   "type": "module",
-  "name": "@semantizer/mixin-changelog",
-  "description": "A Semantizer mixin to keep track of added and deleted quads in a dataset.",
-  "version": "1.0.0-1.1.0",
+  "name": "@semantizer/mixin-sparql-comunica",
+  "description": "",
+  "version": "1.0.0",
   "license": "MIT",
   "author": "Maxime Lecoq-Gaillard",
   "main": "./dist/index.js",
@@ -10,11 +10,6 @@
   "files": [
     "dist/**"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
-    "directory": "src/mixins/changelog"
-  },
   "scripts": {
     "build": "tsc -p .",
     "dev": "tsc -w",
@@ -22,7 +17,13 @@
     "nx-release-publish": "npm publish"
   },
   "devDependencies": {
+    "@comunica/types": "^3.2.1",
     "@semantizer/types": "*",
+    "@types/n3": "^1.26.0",
     "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "@comunica/query-sparql-rdfjs": "^3.2.3",
+    "n3": "^1.26.0"
   }
 }

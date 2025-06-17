@@ -1,14 +1,10 @@
-import { BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject } from "@semantizer/types";
+import { DatasetSemantizer, BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject } from "@semantizer/types";
+import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 
-declare module "@semantizer/types" {
-    interface MixinNamespace {
-        shacl: {
-            shape: ShaclShapeOperations;
-        }
-    }
-}
+export type ShaclShape = DatasetSemantizer<ShaclShapeMixinNamespace>;
+export type ShaclShapeMixinNamespace = DatasetMixinNamespace & { shacl: ShaclShapeMixinOperations };
 
-export interface ShaclShapeOperations {
+export interface ShaclShapeMixinOperations {
     getPath(property: NamedNode | BlankNode | string, graph?: Quad_Graph | string): NamedNode | undefined;
 
     isClosed(shape: Quad_Subject | string, graph?: Quad_Graph | string): boolean | undefined;

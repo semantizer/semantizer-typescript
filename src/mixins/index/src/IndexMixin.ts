@@ -1,20 +1,23 @@
-import { datasetFactory, DatasetMixinConstructor } from "@semantizer/mixin-dataset";
-import { BlankNode, DatasetRdfjs, DatasetSemantizerConstructor, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term } from "@semantizer/types";
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetRdfjs, DatasetSemantizerConstructor, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term, WithMixins } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformer, Index, IndexMixinNamespace, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
+import { EntryStreamTransformer, Index, IndexMixinNamespace, IndexMixinOperations, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 
 export function IndexMixin<
-    TBase extends DatasetMixinConstructor // new (...args: any[]) => DatasetSemantizer & DatasetMixinNamespace
+    TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
 
-    return class IndexMixinImpl extends Base implements IndexMixinNamespace {
+    return class IndexMixinImpl extends Base implements WithMixins<TMixins & IndexMixinNamespace> {
 
-        public get mixins() {
+        public get mixins(): TMixins & IndexMixinNamespace {
+            const parentMixins = super.mixins as TMixins & Partial<{ index: Partial<IndexMixinOperations> }>;
+
             return {
-                ...(super.mixins),
-                // ...(this.mixins.index ?? {}),
+                ...parentMixins,
                 index: {
+                    ...(parentMixins.index ?? {}),
 
                     /**
                      * Transforms the quad stream of this dataset into an IndexEntry stream.
@@ -117,10 +120,6 @@ export function IndexMixin<
 }
 
 export function indexFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory2<Index, IndexMixinNamespace>(IndexMixin);
-}
-
-function test(semantizer: Semantizer) {
-    const ds: Index = semantizer.build(indexFactory);
-    ds.mixins.index.query
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(IndexMixin, DatasetMixin(_DatasetImpl));
 }

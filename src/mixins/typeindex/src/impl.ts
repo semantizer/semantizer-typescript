@@ -1,16 +1,21 @@
-import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
-import { NamedNode, Semantizer, Term } from "@semantizer/types";
-import { TypeIndex } from "./types.js";
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { DatasetSemantizerConstructor, NamedNode, Semantizer, Term, WithMixins } from "@semantizer/types";
+import { TypeIndex, TypeIndexMixinNamespace, TypeIndexMixinOperations } from "./types.js";
 import { RDF, TYPE_INDEX } from "./voc.js";
 
 export function TypeIndexMixin<
-    TBase extends DatasetMixinConstructor
+TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
-    return class TypeIndexImpl extends Base implements TypeIndex {
+    return class TypeIndexImpl extends Base implements WithMixins<TMixins & TypeIndexMixinNamespace> {
 
-        public get typeindex() {
+        public get mixins(): TMixins & TypeIndexMixinNamespace {
+            const parentMixins = super.mixins as TMixins & Partial<{ typeindex: Partial<TypeIndexMixinOperations> }>;
 
             return {
+                ...parentMixins,
+                typeindex: {
+                    ...(parentMixins.typeindex ?? {}),
 
                 registerInstanceForClass: (registration: NamedNode | string, instance: NamedNode | string, forClass: NamedNode | string, graph?: Term | string): void => {
                     this.mixins.dataset.addObjectUri(registration, RDF.TYPE, TYPE_INDEX.TypeRegistration, this.mixins.dataset.getDefaultGraphTerm());
@@ -37,7 +42,7 @@ export function TypeIndexMixin<
                 },
                 
                 getRegisteredInstanceForClass: (forClass: NamedNode | string, graph?: Term | string): NamedNode | undefined => {
-                    const registrations = this.typeindex.getRegisteredInstanceForClassAll(forClass);
+                    const registrations = this.mixins.typeindex.getRegisteredInstanceForClassAll(forClass);
                     return registrations && registrations[0] ? registrations[0] : undefined;
                 },
 
@@ -45,7 +50,7 @@ export function TypeIndexMixin<
                     const results: NamedNode[] = [];
                     const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                     const namedGraph = graph ? (typeof graph === 'string') ? dataFactory.namedNode(graph) : graph : undefined;
-                    const registrations = this.typeindex.getRegistrationForClassAll(forClass, graph);
+                    const registrations = this.mixins.typeindex.getRegistrationForClassAll(forClass, graph);
                     if (registrations) {
                         for (const registration of registrations) {
                             const instances = this.match(
@@ -66,13 +71,16 @@ export function TypeIndexMixin<
 
             }
 
+            }
+
         }
         
     }
 }
 
 export function typeIndexFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(TypeIndexMixin);
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(TypeIndexMixin, DatasetMixin(_DatasetImpl));
 }
 
 export function createPublicTypeIndex(semantizer: Semantizer): TypeIndex {

@@ -4,7 +4,7 @@ import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromT
 
 export function DatasetMixin<
     TMixins extends object,
-    TBase extends DatasetSemantizerConstructor<TMixins> // PB: can be impl other than rdfjs
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
 
     return class DatasetMixinImpl extends Base implements WithMixins<TMixins & DatasetMixinNamespace> {

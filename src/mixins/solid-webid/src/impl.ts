@@ -95,12 +95,12 @@ export function SolidWebIdMixin<
 
                     getPrivateTypeIndex: async (): Promise<NamedNode | undefined> => {
                         let privateTypeIndexUri: NamedNode | undefined = undefined;
-                        const preferencesFileUri = this.mixins.solid?.getPreferencesDocument();
+                        const preferencesFileUri = this.mixins.webid.getPreferencesDocument();
                         if (preferencesFileUri) {
-                            const preferencesFile: SolidPreferences = await this.getSemantizer().load(preferencesFileUri.value, solidPreferencesFactory);
+                            const preferencesFile = await this.getSemantizer().load(preferencesFileUri.value, solidPreferencesFactory);
                             const webId = this.mixins.webid.getPrimaryTopic();
                             if (webId) {
-                                privateTypeIndexUri = preferencesFile.solid.getPrivateTypeIndex(webId);
+                                privateTypeIndexUri = preferencesFile.mixins.webid.getPrivateTypeIndex(webId);
                             }
                         }
                         return privateTypeIndexUri;
@@ -170,7 +170,7 @@ export function solidPreferencesFactory(semantizer: Semantizer) {
     return semantizer.getMixinFactory(SolidPreferencesMixin, DatasetMixin(_DatasetImpl));
 }
 
-export function createSolidPreferencesDocument(semantizer: Semantizer, params?: SolidPreferencesCreateParams): SolidPreferences {
+export function createSolidPreferencesDocument(semantizer: Semantizer, params?: SolidPreferencesCreateParams) {
     const solidPreferencesDocument = semantizer.build(solidPreferencesFactory);
     solidPreferencesDocument.mixins.dataset.addObjectUri(solidPreferencesDocument.getBaseUri(), ns.rdf + 'type', ns.pim + 'ConfigurationFile', solidPreferencesDocument.mixins.dataset.getDefaultGraphTerm());
     params?.seeAlso?.forEach(seeAlso => solidPreferencesDocument.mixins.dataset.addObjectUri(solidPreferencesDocument.getBaseUri(), ns.rdfs + 'seeAlso', seeAlso, solidPreferencesDocument.mixins.dataset.getDefaultGraphTerm()));

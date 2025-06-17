@@ -1,23 +1,24 @@
 
-import { DatasetMixinConstructor } from "@semantizer/mixin-dataset";
-import { BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer } from "@semantizer/types";
+import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetSemantizerConstructor, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer, WithMixins } from "@semantizer/types";
 import { RDF, SHACL } from "./ns";
+import { ShaclShapeMixinNamespace, ShaclShapeMixinOperations } from "./types";
 
 export function ShaclShapeMixin<
-    TBase extends DatasetMixinConstructor
+    TMixins extends DatasetMixinNamespace,
+    TBase extends DatasetSemantizerConstructor<TMixins>
 >(Base: TBase) {
 
-    return class ShaclShapeMixinImpl extends Base {
+    return class ShaclShapeMixinImpl extends Base implements WithMixins<TMixins & ShaclShapeMixinNamespace> {
 
-        public constructor(...args: any[]) {
-            super(...args);
+        public get mixins(): TMixins & ShaclShapeMixinNamespace {
+            const parentMixins = super.mixins as TMixins & Partial<{ shacl: Partial<ShaclShapeMixinOperations> }>;
 
-            this.mixins.shacl = {
-                ...(this.mixins.shacl ?? {}),
+            return {
+                ...parentMixins,
 
-                shape: {
-
-                    ...(this.mixins.shacl?.shape ?? {}), // could be removed as we want to override any existing shape methods?
+                shacl: {
+                    ...(parentMixins.shacl ?? {}),
 
                     getPath: (property: NamedNode | BlankNode | string, graph?: Quad_Graph | string): NamedNode | undefined => {
                         return this.mixins.dataset.getObjectUri(property, SHACL.PATH, graph);
@@ -85,5 +86,6 @@ export function ShaclShapeMixin<
 }
 
 export function shaclShapeFactory(semantizer: Semantizer) {
-    return semantizer.getMixinFactory(ShaclShapeMixin);
+    const _DatasetImpl = semantizer.getConfiguration().getDatasetImpl();
+    return semantizer.getMixinFactory(ShaclShapeMixin, DatasetMixin(_DatasetImpl));
 }
