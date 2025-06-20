@@ -1,9 +1,13 @@
 import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { ShaclShapeMixinNamespace } from "@semantizer/mixin-shacl";
 import { BlankNode, DatasetRdfjs, DatasetSemantizer, NamedNode, Quad, ShaclValidator, Term, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
 
 export type Index = DatasetSemantizer<IndexMixinNamespace>;
+export type IndexEntry = DatasetSemantizer & IndexEntryOperations;
 export type IndexMixinNamespace = DatasetMixinNamespace & { index: IndexMixinOperations };
+export type IndexEntryShape = DatasetSemantizer<IndexIntryShapeMixinNamespace>;
+export type IndexIntryShapeMixinNamespace = ShaclShapeMixinNamespace & { entry: IndexEntryShapeMixinOperations };
 
 export interface IndexQueryingOptions {
     limit?: number;
@@ -39,4 +43,17 @@ export interface EntryStreamTransformer<Entry> {
     transform(quad: Quad): Entry | undefined;
 }
 
-export type IndexEntry = DatasetSemantizer & IndexEntryOperations;
+export interface IndexEntryShapeMixinOperations {
+
+    /**
+     * This will add the following property to the shape:
+     * ```
+     * sh:property [
+     *   sh:path idx:hasTarget;
+     *   sh:minCount 1;
+     * ];
+     * ```
+     * @param shape The shape to add the property to. Default is `<https://ns.inria.fr/idx/terms#IndexEntry>`.
+     */
+    addPropertyToTargetFinalResult(shape?: NamedNode | string): void;
+}

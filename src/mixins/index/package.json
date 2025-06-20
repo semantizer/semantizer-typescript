@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@semantizer/mixin-dataset": "*",
+    "@semantizer/mixin-shacl": "*",
     "@semantizer/http-error": "*"
   },
   "devDependencies": {

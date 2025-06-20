@@ -84,9 +84,10 @@ export interface DatasetMixinOperations extends Countable {
     getObjectTimeAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined;
 
     addObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string, graph?: Quad_Graph | string): void;
+    addObjectUriOrBlankNode(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string | BlankNode, graph?: Quad_Graph | string): void;
     addObjectBlankNode(subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNode: BlankNode, graph?: Quad_Graph | string): void;
     addObjectBlankNodeEmpty(subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNodeName: string, graph?: Quad_Graph | string): BlankNode;
-    addObjectBoolean(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void;
+    addObjectBoolean(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: boolean, graph?: Quad_Graph | string): void;
     addObjectDate(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void;
     addObjectDatetime(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void;
     addObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void;
@@ -99,10 +100,14 @@ export interface DatasetMixinOperations extends Countable {
     deleteObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void;
     deleteObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string | NamedNode, graph?: Quad_Graph | string): void;
     deleteObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void;
+    deleteObjectInteger(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void;
+    deleteObjectBoolean(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: boolean, graph?: Quad_Graph | string): void;
 
     setObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | undefined, oldValue?: string, graph?: Quad_Graph | string): void;
     setObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | NamedNode | undefined, oldValue?: string | NamedNode, graph?: Quad_Graph | string): void;
     setObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void;
+    setObjectInteger(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void;
+    setObjectBoolean(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: boolean | undefined, oldValue?: boolean, graph?: Quad_Graph | string): void;
 
     setObjectStringNoLocaleAll(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: string[] | undefined, graph?: Quad_Graph | string): void;
     setObjectUriAll(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: string[] | NamedNode[] | undefined, graph?: Quad_Graph | string): void;

@@ -1,7 +1,7 @@
 
 import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 import { BlankNode, DatasetSemantizerConstructor, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer, WithMixins } from "@semantizer/types";
-import { RDF, SHACL } from "./ns";
+import { RDF, SHACL } from "./ns.js";
 import { ShaclShapeMixinNamespace, ShaclShapeMixinOperations } from "./types";
 
 export function ShaclShapeMixin<
@@ -28,8 +28,8 @@ export function ShaclShapeMixin<
                         return this.mixins.dataset.getObjectBoolean(shape, SHACL.CLOSED, graph);
                     },
 
-                    setIsClosed: (shape: Quad_Subject | string, closed: boolean, graph?: Quad_Graph | string): void => {
-                        throw new Error("Method not implemented.");
+                    setIsClosed: (shape: Quad_Subject | string, closed: boolean, oldClosed?: boolean, graph?: Quad_Graph | string): void => {
+                        this.mixins.dataset.setObjectBoolean(shape, SHACL.CLOSED, closed, oldClosed, graph);
                     },
 
                     createShapeAsNamedNode: (uri: NamedNode | string, graph?: Quad_Graph | string): NamedNode => {
@@ -51,20 +51,20 @@ export function ShaclShapeMixin<
                         return property;
                     },
 
-                    setPath: (property: NamedNode | BlankNode | string, path: NamedNode, oldPath?: NamedNode, graph?: Quad_Graph | string): void => {
+                    setPath: (property: NamedNode | BlankNode | string, path: NamedNode | string, oldPath?: NamedNode, graph?: Quad_Graph | string): void => {
                         this.mixins.dataset.setObjectUri(property, SHACL.PATH, path, oldPath, graph);
                     },
 
-                    addHasValue: (property: NamedNode | BlankNode | string, value: Quad_Object, graph?: Quad_Graph | string): void => {
-                        throw new Error("Method not implemented.");
+                    addHasValue: (subject: NamedNode | BlankNode | string, value: NamedNode | BlankNode | string, graph?: Quad_Graph | string): void => {
+                        this.mixins.dataset.addObjectUriOrBlankNode(subject, SHACL.HAS_VALUE, value, graph);
                     },
 
                     setMinCount: (property: NamedNode | BlankNode | string, minCount: number, oldMinCount?: number, graph?: Quad_Graph | string): void => {
-                        throw new Error("Method not implemented.");
+                        this.mixins.dataset.setObjectInteger(property, SHACL.MIN_COUNT, minCount, oldMinCount, graph);
                     },
 
                     setMaxCount: (property: NamedNode | BlankNode | string, minCount: number, oldMaxCount?: number, graph?: Quad_Graph | string): void => {
-                        throw new Error("Method not implemented.");
+                        this.mixins.dataset.setObjectInteger(property, SHACL.MAX_COUNT, minCount, oldMaxCount, graph);
                     },
 
                     addQualifiedValueShape: (property: NamedNode | BlankNode | string, shape: NamedNode | BlankNode, graph?: Quad_Graph | string): void => {
@@ -72,7 +72,7 @@ export function ShaclShapeMixin<
                     },
 
                     setQualifiedMinCount: (property: NamedNode | BlankNode | string, qualifiedMinCount: number, oldQualifiedMinCount?: number, graph?: Quad_Graph | string): void => {
-                        throw new Error("Method not implemented.");
+                        this.mixins.dataset.setObjectInteger(property, SHACL.QUALIFIED_MIN_COUNT, qualifiedMinCount, oldQualifiedMinCount, graph);
                     }
 
                 }

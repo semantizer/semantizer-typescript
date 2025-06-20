@@ -1,6 +1,7 @@
 const idx = 'https://ns.inria.fr/idx/terms#';
 const shacl = 'https://www.w3.org/ns/shacl#';
 const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+const rdfjs = 'http://www.w3.org/2000/01/rdf-schema#';
 
 export const IDX = {
     namespace: idx,
@@ -22,4 +23,9 @@ export const SHACL = {
 export const RDF = {
     namespace: rdf,
     TYPE: rdf + 'type',
+}
+
+export const RDFJS = {
+    namespace: rdfjs,
+    CLASS: rdfjs + 'Class',
 }
