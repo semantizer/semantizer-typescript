@@ -1,4 +1,4 @@
-import { BlankNode, Countable, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetSemantizer, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Predicate, Quad_Subject, Resource, Stream, Term } from "@semantizer/types";
+import { BlankNode, Countable, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetSemantizer, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Object, Quad_Predicate, Quad_Subject, Resource, Stream, Term } from "@semantizer/types";
 
 export type Dataset = DatasetSemantizer<DatasetMixinNamespace>;
 export type DatasetMixinNamespace = { dataset: DatasetMixinOperations };
@@ -59,7 +59,7 @@ export interface DatasetMixinOperations extends Countable {
     load(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetLoadOptions): Promise<void>;
     loadQuadStream(resource?: string | DatasetSemantizer | NamedNode, options?: DatasetQuadStreamOptions): Promise<Stream<Quad>>;
 
-    getObjectLinked(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode | BlankNode | undefined;
+    getObjectLinked(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Quad_Object | undefined;
     getObjectUri(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode | undefined;
     getObjectBoolean(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): boolean | undefined;
     getObjectDate(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined;
@@ -71,7 +71,7 @@ export interface DatasetMixinOperations extends Countable {
     getObjectStringWithLocale(subject: Term | string | null, predicate: Term | string | null, locale: string, graph?: Term | string | null): string | undefined;
     getObjectTime(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined;
 
-    getObjectLinkedAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Term[] | undefined
+    getObjectLinkedAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Quad_Object[] | undefined
     getObjectUriAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode[] | undefined;
     getObjectBooleanAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): boolean[] | undefined;
     getObjectDateAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined;
@@ -84,6 +84,7 @@ export interface DatasetMixinOperations extends Countable {
     getObjectTimeAll(subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined;
 
     addObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string, graph?: Quad_Graph | string): void;
+    addObjectLinked(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Quad_Object | string, graph?: Quad_Graph | string): void;
     addObjectUriOrBlankNode(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string | BlankNode, graph?: Quad_Graph | string): void;
     addObjectBlankNode(subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNode: BlankNode, graph?: Quad_Graph | string): void;
     addObjectBlankNodeEmpty(subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNodeName: string, graph?: Quad_Graph | string): BlankNode;
@@ -99,12 +100,16 @@ export interface DatasetMixinOperations extends Countable {
 
     deleteObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void;
     deleteObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string | NamedNode, graph?: Quad_Graph | string): void;
+    deleteObjectDatetime(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void;
     deleteObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void;
     deleteObjectInteger(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void;
     deleteObjectBoolean(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: boolean, graph?: Quad_Graph | string): void;
+    deleteObjectLinked(subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Quad_Object | string, graph?: Quad_Graph | string): void;
 
     setObjectStringNoLocale(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | undefined, oldValue?: string, graph?: Quad_Graph | string): void;
     setObjectUri(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | NamedNode | undefined, oldValue?: string | NamedNode, graph?: Quad_Graph | string): void;
+    setObjectLinked(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: Quad_Object | string | undefined, oldValue?: Quad_Object | string, graph?: Quad_Graph | string): void;
+    setObjectDatetime(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: Date | undefined, oldValue?: Date, graph?: Quad_Graph | string): void;
     setObjectDecimal(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void;
     setObjectInteger(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void;
     setObjectBoolean(subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: boolean | undefined, oldValue?: boolean, graph?: Quad_Graph | string): void;

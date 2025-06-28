@@ -1,4 +1,4 @@
-import { BlankNode, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Predicate, Quad_Subject, Resource, Semantizer, Stream, Term, WithMixins } from '@semantizer/types';
+import { BlankNode, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Object, Quad_Predicate, Quad_Subject, Resource, Semantizer, Stream, Term, WithMixins } from '@semantizer/types';
 import { Dataset, DatasetMixinNamespace, DatasetMixinOperations } from './types.js';
 import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromTermOrStringOrNull, isUrlAbsolute } from './utils.js';
 
@@ -231,6 +231,13 @@ export function DatasetMixin<
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, valueNamedNode, graphTerm));
                     },
 
+                    addObjectLinked: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Quad_Object | string, graph?: Quad_Graph | string): void => {
+                        const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+                        const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+                        const quadObject: Quad_Object = typeof value === 'string' ? dataFactory.namedNode(value) : value;
+                        this.add(dataFactory.quad(subjectTerm, predicateTerm, quadObject, graphTerm));
+                    },
+
                     addObjectUriOrBlankNode: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string | BlankNode, graph?: Quad_Graph | string): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
@@ -358,7 +365,7 @@ export function DatasetMixin<
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectLinked: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode | BlankNode | undefined => {
+                    getObjectLinked: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Quad_Object | undefined => {
                         let result: NamedNode | BlankNode | undefined = undefined;
                         const results = this.mixins.dataset.getObjectLinkedAll(subject, predicate, graph);
 
@@ -373,8 +380,8 @@ export function DatasetMixin<
                         return result;
                     },
 
-                    getObjectLinkedAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Term[] | undefined => {
-                        let results: Term[] | undefined = undefined;
+                    getObjectLinkedAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Quad_Object[] | undefined => {
+                        let results: Quad_Object[] | undefined = undefined;
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
                         const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);
                         if (matched.size > 0) {
@@ -483,6 +490,21 @@ export function DatasetMixin<
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
+                    deleteObjectLinked: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Quad_Object | string, graph?: Quad_Graph | string): void => {
+                        const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+                        const quadObject = typeof value === 'string' ? dataFactory.namedNode(value) : value;
+                        const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+                        this.delete(dataFactory.quad(subjectTerm, predicateTerm, quadObject, graphTerm));
+                    },
+
+                    deleteObjectDatetime: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void => {
+                        const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+                        const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
+                        const literal = dataFactory.literal(value.toString(), namedNode('http://www.w3.org/2001/XMLSchema#date'));
+                        const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
+                        this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
+                    },
+
                     setObjectDecimal: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
@@ -534,6 +556,28 @@ export function DatasetMixin<
                             }
                             if (newValue) {
                                 this.mixins.dataset.addObjectUri(subject, predicate, newValue, graph);
+                            }
+                        }
+                    },
+
+                    setObjectLinked: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: Quad_Object | string | undefined, oldValue?: Quad_Object | string, graph?: Quad_Graph | string): void => {
+                        if (oldValue !== newValue) {
+                            if (oldValue) {
+                                this.mixins.dataset.deleteObjectLinked(subject, predicate, oldValue, graph);
+                            }
+                            if (newValue) {
+                                this.mixins.dataset.addObjectLinked(subject, predicate, newValue, graph);
+                            }
+                        }
+                    },
+
+                    setObjectDatetime: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: Date | undefined, oldValue?: Date, graph?: Quad_Graph | string): void => {
+                        if (oldValue !== newValue) {
+                            if (oldValue) {
+                                this.mixins.dataset.deleteObjectDatetime(subject, predicate, oldValue, graph);
+                            }
+                            if (newValue) {
+                                this.mixins.dataset.addObjectDatetime(subject, predicate, newValue, graph);
                             }
                         }
                     },

@@ -1,11 +1,17 @@
-import { DatasetSemantizer, BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject } from "@semantizer/types";
+import { DatasetSemantizer, BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Term } from "@semantizer/types";
 import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 
 export type ShaclShape = DatasetSemantizer<ShaclShapeMixinNamespace>;
 export type ShaclShapeMixinNamespace = DatasetMixinNamespace & { shacl: ShaclShapeMixinOperations };
 
 export interface ShaclShapeMixinOperations {
-    getPath(property: NamedNode | BlankNode | string, graph?: Quad_Graph | string): NamedNode | undefined;
+    getDatatype(property: Term | string, graph?: Quad_Graph | string): NamedNode | undefined;
+    getPath(property: Term | string, graph?: Quad_Graph | string): NamedNode | undefined;
+    getPropertiesAll(shape: Quad_Subject | string, graph?: Quad_Graph | string): Term[] | undefined;
+    getMinCount(property: Term | string, graph?: Quad_Graph | string): number | undefined;
+    getMaxCount(property: Term | string, graph?: Quad_Graph | string): number | undefined;
+    isMandatory(property: Term | string, graph?: Quad_Graph | string): boolean;
+    isMultiple(property: Term | string, graph?: Quad_Graph | string): boolean;
 
     isClosed(shape: Quad_Subject | string, graph?: Quad_Graph | string): boolean | undefined;
     setIsClosed(shape: Quad_Subject | string, closed: boolean, oldClosed?: boolean, graph?: Quad_Graph | string): void;

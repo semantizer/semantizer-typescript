@@ -10,6 +10,7 @@ export const SHACL = {
     namespace: shaclNamespace,
     NODE_SHAPE: shaclNamespace + 'NodeShape',
     CLOSED: shaclNamespace + 'closed',
+    DATATYPE: shaclNamespace + 'datatype',
     HAS_VALUE: shaclNamespace + 'hasValue',
     PATH: shaclNamespace + 'path',
     PATTERN: shaclNamespace + 'pattern',

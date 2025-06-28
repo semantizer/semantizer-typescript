@@ -1,6 +1,6 @@
 
 import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
-import { BlankNode, DatasetSemantizerConstructor, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer, WithMixins } from "@semantizer/types";
+import { BlankNode, DatasetSemantizerConstructor, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer, Term, WithMixins } from "@semantizer/types";
 import { RDF, SHACL } from "./ns.js";
 import { ShaclShapeMixinNamespace, ShaclShapeMixinOperations } from "./types";
 
@@ -20,12 +20,38 @@ export function ShaclShapeMixin<
                 shacl: {
                     ...(parentMixins.shacl ?? {}),
 
-                    getPath: (property: NamedNode | BlankNode | string, graph?: Quad_Graph | string): NamedNode | undefined => {
+                    getDatatype: (property: Term | string, graph?: Quad_Graph | string): NamedNode | undefined => {
+                        return this.mixins.dataset.getObjectUri(property, SHACL.DATATYPE, graph);
+                    },
+
+                    getPath: (property: Term | string, graph?: Quad_Graph | string): NamedNode | undefined => {
                         return this.mixins.dataset.getObjectUri(property, SHACL.PATH, graph);
+                    },
+
+                    getPropertiesAll: (shape: Quad_Subject | string, graph?: Quad_Graph | string): Term[] | undefined => {
+                        return this.mixins.dataset.getObjectLinkedAll(shape, SHACL.PROPERTY, graph);
+                    },
+
+                    getMinCount: (property: Term | string, graph?: Quad_Graph | string): number | undefined => {
+                        return this.mixins.dataset.getObjectInteger(property, SHACL.MIN_COUNT, graph);
+                    },
+                    
+                    getMaxCount: (property: Term | string, graph?: Quad_Graph | string): number | undefined => {
+                        return this.mixins.dataset.getObjectInteger(property, SHACL.MAX_COUNT, graph);
                     },
 
                     isClosed: (shape: Quad_Subject | string, graph?: Quad_Graph | string): boolean | undefined => {
                         return this.mixins.dataset.getObjectBoolean(shape, SHACL.CLOSED, graph);
+                    },
+
+                    isMandatory: (property: Term | string, graph?: Quad_Graph | string): boolean => {
+                        const minCount = this.mixins.shacl.getMinCount(property, graph);
+                        return (minCount !== undefined && minCount > 0);
+                    },
+
+                    isMultiple: (property: Term | string, graph?: Quad_Graph | string): boolean => {
+                        const maxCount = this.mixins.shacl.getMaxCount(property, graph);
+                        return (maxCount === undefined || maxCount > 1);
                     },
 
                     setIsClosed: (shape: Quad_Subject | string, closed: boolean, oldClosed?: boolean, graph?: Quad_Graph | string): void => {
