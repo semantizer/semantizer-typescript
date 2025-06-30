@@ -1,6 +1,6 @@
-import { WebIdProfileMixin, WebIdProfileMixinNamespace } from "@semantizer/mixin-webid";
-import { DatasetSemantizerConstructor, Loader, NamedNode, Semantizer, WithMixins } from "@semantizer/types";
-import { SolidPreferences, SolidPreferencesCreateParams, SolidPreferencesMixinNamespace, SolidPreferencesMixinOperations, SolidWebIdMixinNamespace, SolidWebIdProfileMixinNamespace, SolidWebIdProfileMixinOperations } from "./types";
+import { WebIdProfileMixin, WebIdProfileMixinNamespace, WebIdProfileMixinOperations } from "@semantizer/mixin-webid";
+import { DatasetSemantizerConstructor, Loader, NamedNode, QuadSubject, Semantizer, WithMixins } from "@semantizer/types";
+import { SolidPreferences, SolidPreferencesCreateParams, SolidPreferencesMixinNamespace, SolidPreferencesMixinOperations, SolidWebIdMixinNamespace, SolidWebIdMixinOperations, SolidWebIdProfileMixinNamespace, SolidWebIdProfileMixinOperations } from "./types";
 import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 
 const ns = {
@@ -25,6 +25,7 @@ export function SolidWebIdProfileMixin<
                 ...parentMixins,
                 webid: {
                     ...(parentMixins.webid ?? {}),
+                    
                     loadExtendedProfile: async (loader?: Loader): Promise<void> => {
                         const primaryTopicUri = this.mixins.webid.getPrimaryTopic();
                         if (primaryTopicUri) {
@@ -51,7 +52,7 @@ export function SolidWebIdMixin<
     return class SolidWebIdMixinImpl extends Base implements WithMixins<TMixins & SolidWebIdMixinNamespace> {
 
         public get mixins(): TMixins & SolidWebIdMixinNamespace {
-            const parentMixins = super.mixins as TMixins & Partial<{ webid: Partial<SolidWebIdProfileMixinOperations> }>;
+            const parentMixins = super.mixins as TMixins & Partial<{ webid: Partial<SolidWebIdMixinOperations> }>;
 
             return {
                 ...parentMixins,
@@ -65,8 +66,8 @@ export function SolidWebIdMixin<
                         }
                     },
 
-                    getPreferencesDocument: (): NamedNode | undefined => {
-                        const webId = this.mixins.webid.getPrimaryTopic();
+                    getPreferencesDocument: (subject?: QuadSubject): NamedNode | undefined => {
+                        const webId = this.mixins.webid.getPrimaryTopic(subject);
                         if (webId) {
                             return this.mixins.dataset.getObjectUri(webId, ns.pim + 'preferencesFile', this.mixins.dataset.getDefaultGraphTerm());
                         }
