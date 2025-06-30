@@ -1,6 +1,6 @@
 
 import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
-import { BlankNode, DatasetSemantizerConstructor, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, QuadGraph, QuadSubject, Semantizer, Term, WithMixins } from "@semantizer/types";
+import { BlankNode, DatasetSemantizerConstructor, NamedNode, Quad_Subject, QuadGraph, QuadSubject, Semantizer, WithMixins } from "@semantizer/types";
 import { RDF, SHACL } from "./ns.js";
 import { ShaclShapeMixinNamespace, ShaclShapeMixinOperations } from "./types";
 
@@ -28,7 +28,7 @@ export function ShaclShapeMixin<
                         return this.mixins.dataset.getObjectUri(property, SHACL.PATH, graph);
                     },
 
-                    getPropertiesAll: (shape: Quad_Subject | string, graph?: QuadGraph): Term[] | undefined => {
+                    getPropertiesAll: (shape: Quad_Subject | string, graph?: QuadGraph): Quad_Subject[] | undefined => {
                         return this.mixins.dataset.getObjectLinkedAll(shape, SHACL.PROPERTY, graph);
                     },
 

@@ -1,5 +1,5 @@
-import { DatasetSemantizer, BlankNode, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Term, QuadSubject, QuadGraph, QuadPredicate } from "@semantizer/types";
 import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
+import { BlankNode, DatasetSemantizer, NamedNode, Quad_Subject, QuadGraph, QuadPredicate, QuadSubject } from "@semantizer/types";
 
 export type ShaclShape = DatasetSemantizer<ShaclShapeMixinNamespace>;
 export type ShaclShapeMixinNamespace = DatasetMixinNamespace & { shacl: ShaclShapeMixinOperations };
@@ -7,7 +7,7 @@ export type ShaclShapeMixinNamespace = DatasetMixinNamespace & { shacl: ShaclSha
 export interface ShaclShapeMixinOperations {
     getDatatype(property: QuadSubject, graph?: QuadGraph): NamedNode | undefined;
     getPath(property: QuadSubject, graph?: QuadGraph): NamedNode | undefined;
-    getPropertiesAll(shape: QuadSubject, graph?: QuadGraph): Term[] | undefined;
+    getPropertiesAll(shape: QuadSubject, graph?: QuadGraph): Quad_Subject[] | undefined;
     getMinCount(property: QuadSubject, graph?: QuadGraph): number | undefined;
     getMaxCount(property: QuadSubject, graph?: QuadGraph): number | undefined;
     isMandatory(property: QuadSubject, graph?: QuadGraph): boolean;
