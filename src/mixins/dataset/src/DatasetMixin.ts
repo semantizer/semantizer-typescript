@@ -1,4 +1,4 @@
-import { BlankNode, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Object, Quad_Predicate, Quad_Subject, Resource, Semantizer, Stream, Term, WithMixins } from '@semantizer/types';
+import { BlankNode, DatasetLoadOptions, DatasetQuadStreamOptions, DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Object, Quad_Predicate, Quad_Subject, Resource, Semantizer, Stream, Term, WithMixins, MixinConstructor, MixinFactoryFunction, QuadSubject, QuadPredicate, QuadGraph } from '@semantizer/types';
 import { Dataset, DatasetMixinNamespace, DatasetMixinOperations } from './types.js';
 import { getRelativeUrl, getTermsFromQuadSubjectPredicateAndGraph, getTermsFromTermOrStringOrNull, isUrlAbsolute } from './utils.js';
 
@@ -16,6 +16,18 @@ export function DatasetMixin<
                 ...parentMixins,
                 dataset: {
                     ...(parentMixins.dataset ?? {}),
+
+                    loadObjectLinked: async <TBase extends MixinConstructor, TMixin extends DatasetSemantizer>(subject: Quad_Subject | undefined, mixinFactoryFunction: MixinFactoryFunction<TBase, TMixin>): Promise<TMixin | undefined> => {
+                        if (subject) {
+                            if (subject.termType === 'BlankNode') {
+                                throw new Error("Not implemented");
+                            }
+                            if (subject.termType === 'NamedNode') {
+                                return this.getSemantizer().load(subject, mixinFactoryFunction);
+                            }
+                            throw new Error();
+                        } else return undefined;
+                    },
 
                     transformAllSubjectAndObjectAbsoluteUrisToRelativeUris: (baseUri?: string): void => {
                         if (baseUri || (this.getBaseUri() && this.getBaseUri()!.value !== '')) {
@@ -69,7 +81,7 @@ export function DatasetMixin<
                         return true;
                     },
 
-                    getNamedGraphAll: (namedGraph: NamedNode): DatasetSemantizer[] => {
+                    getNamedGraphAll: (namedGraph: QuadSubject): DatasetSemantizer[] => {
                         throw new Error('Method not implemented.');
                     },
 
@@ -94,7 +106,7 @@ export function DatasetMixin<
                         throw new Error('Method not implemented.');
                     },
 
-                    getNamedGraph: (namedGraph: NamedNode): DatasetSemantizer | undefined => {
+                    getNamedGraph: (namedGraph: QuadSubject): DatasetSemantizer | undefined => {
                         const matchedDataset = this.matchDatasetSemantizerWithLinkedObjects(namedGraph);
                         if (matchedDataset.size <= 0) {
                             return undefined
@@ -127,19 +139,31 @@ export function DatasetMixin<
                         throw new Error('Method not implemented.');
                     },
 
-                    getSubGraph: (subject: BlankNode | NamedNode | string, parentGraph: NamedNode | DefaultGraph): DatasetSemantizer | undefined => {
+                    getSubGraph: (subject: QuadSubject, parentGraph: QuadGraph): DatasetSemantizer | undefined => {
+                        const targetParentGraph = typeof parentGraph === 'string' ? this.getSemantizer().createNamedNode(parentGraph) : parentGraph;
                         const termSubject = typeof subject === 'string' ? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(subject) : subject;
-                        const datasetRdfjs = this.matchDatasetSemantizerWithLinkedObjects(termSubject, undefined, undefined, parentGraph);
+                        const datasetRdfjs = this.matchDatasetSemantizerWithLinkedObjects(termSubject, undefined, undefined, targetParentGraph);
                         const dataset = this.getSemantizer().build();
                         return dataset.addAll(datasetRdfjs);
                     },
 
-                    getSubGraphAll: (parentGraph: NamedNode | DefaultGraph | string): DatasetSemantizer[] => {
+                    getSubGraphAll: (parentGraph: QuadGraph): DatasetSemantizer[] => {
                         throw new Error('Method not implemented.');
                     },
 
-                    getLiteral: (thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal | undefined => {
-                        const literal = this.match(thing, predicate, graph);
+                    // getLiteral: (thing: Resource | DefaultGraph | undefined, predicate: Resource, graph: QuadGraph | null, language?: string): Literal | undefined => {
+                    //     const targetGraph = typeof graph === 'string' ? this.getSemantizer().createNamedNode(graph) : graph;
+                    //     const literal = this.match(thing, predicate, targetGraph);
+                    //     for (const q of literal) {
+                    //         if (q.object.termType === "Literal")
+                    //             return q.object;
+                    //     }
+                    //     return undefined;
+                    // },
+
+                    getObjectLiteral: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph?: QuadGraph | null): Literal | undefined => {
+                        const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
+                        const literal = this.match(subjectTerm, predicateTerm, graphTerm);
                         for (const q of literal) {
                             if (q.object.termType === "Literal")
                                 return q.object;
@@ -147,7 +171,11 @@ export function DatasetMixin<
                         return undefined;
                     },
 
-                    getLiteralAll: (thing: Resource | DefaultGraph | undefined, predicate: Resource, graph?: NamedNode | DefaultGraph, language?: string): Literal[] => {
+                    // getLiteralAll: (thing: Resource | DefaultGraph | undefined, predicate: Resource, graph: QuadGraph | null, language?: string): Literal[] => {
+                    //     throw new Error('Method not implemented.');
+                    // },
+
+                    getObjectLiteralAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph?: QuadGraph | null): Literal[] | undefined => {
                         throw new Error('Method not implemented.');
                     },
 
@@ -159,7 +187,7 @@ export function DatasetMixin<
                     },
 
                     // TODO: include related blank node into returned dataset
-                    forEachSubGraph: async (callbackfn: (value: DatasetSemantizer, index?: number, array?: DatasetSemantizer[]) => Promise<void>, graph?: NamedNode | DefaultGraph): Promise<void> => {
+                    forEachSubGraph: async (callbackfn: (value: DatasetSemantizer, index?: number, array?: DatasetSemantizer[]) => Promise<void>, graph: QuadGraph | null): Promise<void> => {
                         let index = 0;
                         const subjects: string[] = [];
 
@@ -179,7 +207,8 @@ export function DatasetMixin<
                         }
 
                         if (graph) {
-                            const graphDataset = graph.termType === 'DefaultGraph' ? this.mixins.dataset.getDefaultGraph() : this.mixins.dataset.getNamedGraph(graph);
+                            const targetGraph = typeof graph === 'string' ? this.getSemantizer().createNamedNode(graph) : graph;
+                            const graphDataset = targetGraph.termType === 'DefaultGraph' ? this.mixins.dataset.getDefaultGraph() : this.mixins.dataset.getNamedGraph(targetGraph);
                             if (graphDataset) {
                                 await processGraph(graphDataset);
                             }
@@ -224,34 +253,34 @@ export function DatasetMixin<
                         }
                     },
 
-                    addObjectUri: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string, graph?: Quad_Graph | string): void => {
+                    addObjectUri: (subject: QuadSubject, predicate: QuadPredicate , value: NamedNode | string, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         const valueNamedNode = typeof value === 'string' ? dataFactory.namedNode(value) : value;
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, valueNamedNode, graphTerm));
                     },
 
-                    addObjectLinked: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Quad_Object | string, graph?: Quad_Graph | string): void => {
+                    addObjectLinked: (subject: QuadSubject, predicate: QuadPredicate , value: Term | string, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
-                        const quadObject: Quad_Object = typeof value === 'string' ? dataFactory.namedNode(value) : value;
+                        const quadObject: Quad_Object = typeof value === 'string' ? dataFactory.namedNode(value) : value as Quad_Object;
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, quadObject, graphTerm));
                     },
 
-                    addObjectUriOrBlankNode: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: NamedNode | string | BlankNode, graph?: Quad_Graph | string): void => {
+                    addObjectUriOrBlankNode: (subject: QuadSubject, predicate: QuadPredicate , value: NamedNode | string | BlankNode, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         const valueNamedNode = typeof value === 'string' ? dataFactory.namedNode(value) : value;
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, valueNamedNode, graphTerm));
                     },
 
-                    addObjectBlankNode: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNode: BlankNode, graph?: Quad_Graph | string): void => {
+                    addObjectBlankNode: (subject: QuadSubject, predicate: QuadPredicate , blankNode: BlankNode, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, blankNode, graphTerm));
                     },
 
-                    addObjectBlankNodeEmpty: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, blankNodeName: string, graph?: Quad_Graph | string): BlankNode => {
+                    addObjectBlankNodeEmpty: (subject: QuadSubject, predicate: QuadPredicate , blankNodeName: string, graph?: QuadGraph): BlankNode => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const blankNode = dataFactory.blankNode(blankNodeName);
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
@@ -259,113 +288,131 @@ export function DatasetMixin<
                         return blankNode;
                     },
 
-                    addObjectBoolean: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: boolean, graph?: Quad_Graph | string): void => {
+                    addObjectBoolean: (subject: QuadSubject, predicate: QuadPredicate , value: boolean, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#boolean'));
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    addObjectDate: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void => {
+                    addObjectDate: (subject: QuadSubject, predicate: QuadPredicate , value: Date, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#date'));
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    addObjectDatetime: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void => {
+                    addObjectDatetime: (subject: QuadSubject, predicate: QuadPredicate , value: Date, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#datetime'));
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    addObjectDecimal: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void => {
+                    addObjectDecimal: (subject: QuadSubject, predicate: QuadPredicate , value: number, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#decimal'));
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    addObjectInteger: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void => {
+                    addObjectInteger: (subject: QuadSubject, predicate: QuadPredicate , value: number, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString(), dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    addObjectStringEnglish: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void => {
+                    addObjectStringEnglish: (subject: QuadSubject, predicate: QuadPredicate , value: string, graph?: QuadGraph): void => {
                         throw new Error("Method not implemented.");
                     },
 
-                    addObjectStringNoLocale: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void => {
+                    addObjectStringNoLocale: (subject: QuadSubject, predicate: QuadPredicate , value: string, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value);
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.add(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    addObjectStringWithLocale: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, locale: string, graph?: Quad_Graph | string): void => {
+                    addObjectStringWithLocale: (subject: QuadSubject, predicate: QuadPredicate , value: string, locale: string, graph?: QuadGraph): void => {
                         throw new Error("Method not implemented.");
                     },
 
-                    addObjectTime: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void => {
+                    addObjectTime: (subject: QuadSubject, predicate: QuadPredicate , value: Date, graph?: QuadGraph): void => {
                         throw new Error("Method not implemented.");
                     },
 
                     // TODO: don't call getObjectUriAll but call match directly or even better use the datasetCore internal attributes 
                     // to be faster.
-                    getObjectUri: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode | undefined => {
+                    getObjectUri: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): NamedNode | undefined => {
                         const results = this.mixins.dataset.getObjectUriAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectBoolean: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): boolean | undefined => {
+                    getObjectBoolean: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): boolean | undefined => {
                         const results = this.mixins.dataset.getObjectBooleanAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectDate: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined => {
+                    getObjectDate: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Date | undefined => {
                         const results = this.mixins.dataset.getObjectDateAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectDatetime: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined => {
+                    getObjectDatetime: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Date | undefined => {
                         const results = this.mixins.dataset.getObjectDatetimeAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectDecimal: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number | undefined => {
+                    getObjectDecimal: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): number | undefined => {
                         const results = this.mixins.dataset.getObjectDecimalAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectInteger: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number | undefined => {
+                    getObjectInteger: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): number | undefined => {
                         const results = this.mixins.dataset.getObjectIntegerAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectStringEnglish: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string | undefined => {
+                    getObjectStringEnglish: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): string | undefined => {
                         const results = this.mixins.dataset.getObjectStringEnglishAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectStringNoLocale: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string | undefined => {
+                    getObjectStringNoLocale: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): string | undefined => {
                         const results = this.mixins.dataset.getObjectStringNoLocaleAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectStringWithLocale: (subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string | undefined => {
+                    getObjectStringWithLocale: (subject: QuadSubject, predicate: QuadPredicate, locale: string, graph: QuadGraph | null | null): string | undefined => {
                         const results = this.mixins.dataset.getObjectStringWithLocaleAll(subject, predicate, locale, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectTime: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date | undefined => {
+                    getObjectTime: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Date | undefined => {
                         const results = this.mixins.dataset.getObjectTimeAll(subject, predicate, graph);
                         return results && results[0] ? results[0] : undefined;
                     },
 
-                    getObjectLinked: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Quad_Object | undefined => {
+                    getObject: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph?: QuadGraph | null): Quad_Object | undefined => {
+                        const results = this.mixins.dataset.getObjectAll(subject, predicate, graph);
+                        return (results && results.length > 0) ? results[0] : undefined;
+                    },
+
+                    getObjectAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph?: QuadGraph | null): Quad_Object[] | undefined => {
+                        let results: Quad_Object[] | undefined = undefined;
+                        const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
+                        const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);
+                        if (matched.size > 0) {
+                            results = [];
+                            for (const q of matched) {
+                                results.push(q.object);
+                            }
+                        }
+                        return results;
+                    },
+
+                    getObjectLinked: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Quad_Subject | undefined => {
                         let result: NamedNode | BlankNode | undefined = undefined;
                         const results = this.mixins.dataset.getObjectLinkedAll(subject, predicate, graph);
 
@@ -380,8 +427,8 @@ export function DatasetMixin<
                         return result;
                     },
 
-                    getObjectLinkedAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Quad_Object[] | undefined => {
-                        let results: Quad_Object[] | undefined = undefined;
+                    getObjectLinkedAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Quad_Subject[] | undefined => {
+                        let results: Quad_Subject[] | undefined = undefined;
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
                         const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);
                         if (matched.size > 0) {
@@ -397,7 +444,7 @@ export function DatasetMixin<
                         return results;
                     },
 
-                    getObjectUriAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): NamedNode[] | undefined => {
+                    getObjectUriAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): NamedNode[] | undefined => {
                         let results: NamedNode[] | undefined = undefined;
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
                         const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);
@@ -414,90 +461,90 @@ export function DatasetMixin<
                         return results;
                     },
 
-                    getObjectBooleanAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): boolean[] | undefined => {
+                    getObjectBooleanAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): boolean[] | undefined => {
                         const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#boolean'), (value: string) => Boolean(value), subject, predicate, graph);
                     },
 
-                    getObjectDateAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined => {
+                    getObjectDateAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Date[] | undefined => {
                         const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#date'), (value: string) => new Date(value), subject, predicate, graph);
                     },
 
-                    getObjectDatetimeAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined => {
+                    getObjectDatetimeAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Date[] | undefined => {
                         throw new Error('Method not implemented.');
                     },
 
-                    getObjectDecimalAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number[] | undefined => {
+                    getObjectDecimalAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): number[] | undefined => {
                         const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#decimal'), (value: string) => Number.parseFloat(value), subject, predicate, graph);
                     },
 
-                    getObjectIntegerAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): number[] | undefined => {
+                    getObjectIntegerAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): number[] | undefined => {
                         const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#integer'), (value: string) => Number.parseInt(value), subject, predicate, graph);
                     },
 
-                    getObjectStringEnglishAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string[] | undefined => {
+                    getObjectStringEnglishAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): string[] | undefined => {
                         throw new Error('Method not implemented.');
                     },
 
-                    getObjectStringNoLocaleAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): string[] | undefined => {
+                    getObjectStringNoLocaleAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): string[] | undefined => {
                         const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         return this.getObjectAll(namedNode('http://www.w3.org/2001/XMLSchema#string'), (value: string) => value, subject, predicate, graph);
                     },
 
-                    getObjectStringWithLocaleAll: (subject: NamedNode | BlankNode, predicate: NamedNode, locale: string, graph?: NamedNode): string[] | undefined => {
+                    getObjectStringWithLocaleAll: (subject: QuadSubject, predicate: QuadPredicate, locale: string, graph: QuadGraph | null | null): string[] | undefined => {
                         throw new Error('Method not implemented.');
                     },
 
-                    getObjectTimeAll: (subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): Date[] | undefined => {
+                    getObjectTimeAll: (subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): Date[] | undefined => {
                         throw new Error('Method not implemented.');
                     },
 
-                    deleteObjectStringNoLocale: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string, graph?: Quad_Graph | string): void => {
+                    deleteObjectStringNoLocale: (subject: QuadSubject, predicate: QuadPredicate , value: string, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value);
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    deleteObjectUri: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: string | NamedNode, graph?: Quad_Graph | string): void => {
+                    deleteObjectUri: (subject: QuadSubject, predicate: QuadPredicate , value: string | NamedNode, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const namedNode = typeof value === 'string' ? dataFactory.namedNode(value) : value;
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, namedNode, graphTerm));
                     },
 
-                    deleteObjectDecimal: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void => {
+                    deleteObjectDecimal: (subject: QuadSubject, predicate: QuadPredicate , value: number, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString());
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    deleteObjectInteger: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: number, graph?: Quad_Graph | string): void => {
+                    deleteObjectInteger: (subject: QuadSubject, predicate: QuadPredicate , value: number, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString());
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    deleteObjectBoolean: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: boolean, graph?: Quad_Graph | string): void => {
+                    deleteObjectBoolean: (subject: QuadSubject, predicate: QuadPredicate , value: boolean, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString());
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    deleteObjectLinked: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Quad_Object | string, graph?: Quad_Graph | string): void => {
+                    deleteObjectLinked: (subject: QuadSubject, predicate: QuadPredicate , value: Quad_Subject | string, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
-                        const quadObject = typeof value === 'string' ? dataFactory.namedNode(value) : value;
+                        const quadObject = typeof value === 'string' ? dataFactory.namedNode(value) : value as Quad_Object;
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, quadObject, graphTerm));
                     },
 
-                    deleteObjectDatetime: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, value: Date, graph?: Quad_Graph | string): void => {
+                    deleteObjectDatetime: (subject: QuadSubject, predicate: QuadPredicate , value: Date, graph?: QuadGraph): void => {
                         const dataFactory = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const { namedNode } = this.getSemantizer().getConfiguration().getRdfDataModelFactory();
                         const literal = dataFactory.literal(value.toString(), namedNode('http://www.w3.org/2001/XMLSchema#date'));
@@ -505,7 +552,7 @@ export function DatasetMixin<
                         this.delete(dataFactory.quad(subjectTerm, predicateTerm, literal, graphTerm));
                     },
 
-                    setObjectDecimal: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void => {
+                    setObjectDecimal: (subject: QuadSubject, predicate: QuadPredicate , newValue: number | undefined, oldValue?: number, graph?: QuadGraph): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
                                 this.mixins.dataset.deleteObjectDecimal(subject, predicate, oldValue, graph);
@@ -516,7 +563,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectInteger: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: number | undefined, oldValue?: number, graph?: Quad_Graph | string): void => {
+                    setObjectInteger: (subject: QuadSubject, predicate: QuadPredicate , newValue: number | undefined, oldValue?: number, graph?: QuadGraph): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
                                 this.mixins.dataset.deleteObjectInteger(subject, predicate, oldValue, graph);
@@ -527,7 +574,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectBoolean: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: boolean | undefined, oldValue?: boolean, graph?: Quad_Graph | string): void => {
+                    setObjectBoolean: (subject: QuadSubject, predicate: QuadPredicate , newValue: boolean | undefined, oldValue?: boolean, graph?: QuadGraph): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
                                 this.mixins.dataset.deleteObjectBoolean(subject, predicate, oldValue, graph);
@@ -538,7 +585,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectStringNoLocale: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | undefined, oldValue?: string, graph?: Quad_Graph | string): void => {
+                    setObjectStringNoLocale: (subject: QuadSubject, predicate: QuadPredicate , newValue: string | undefined, oldValue?: string, graph?: QuadGraph): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
                                 this.mixins.dataset.deleteObjectStringNoLocale(subject, predicate, oldValue, graph);
@@ -549,7 +596,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectUri: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: string | NamedNode | undefined, oldValue?: string | NamedNode, graph?: Quad_Graph | string): void => {
+                    setObjectUri: (subject: QuadSubject, predicate: QuadPredicate , newValue: string | NamedNode | undefined, oldValue?: string | NamedNode, graph?: QuadGraph): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
                                 this.mixins.dataset.deleteObjectUri(subject, predicate, oldValue, graph);
@@ -560,7 +607,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectLinked: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: Quad_Object | string | undefined, oldValue?: Quad_Object | string, graph?: Quad_Graph | string): void => {
+                    setObjectLinked: (subject: QuadSubject, predicate: QuadPredicate , newValue: Quad_Subject | string | undefined, oldValue?: Quad_Subject | string, graph?: QuadGraph): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
                                 this.mixins.dataset.deleteObjectLinked(subject, predicate, oldValue, graph);
@@ -571,7 +618,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectDatetime: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValue: Date | undefined, oldValue?: Date, graph?: Quad_Graph | string): void => {
+                    setObjectDatetime: (subject: QuadSubject, predicate: QuadPredicate , newValue: Date | undefined, oldValue?: Date, graph?: QuadGraph): void => {
                         if (oldValue !== newValue) {
                             if (oldValue) {
                                 this.mixins.dataset.deleteObjectDatetime(subject, predicate, oldValue, graph);
@@ -582,7 +629,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectStringNoLocaleAll: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: string[] | undefined, graph?: Quad_Graph | string): void => {
+                    setObjectStringNoLocaleAll: (subject: QuadSubject, predicate: QuadPredicate , newValues: string[] | undefined, graph?: QuadGraph): void => {
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.deleteMatches(subjectTerm, predicateTerm, undefined, graphTerm);
                         if (newValues) {
@@ -592,7 +639,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectUriAll: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: string[] | NamedNode[] | undefined, graph?: Quad_Graph | string): void => {
+                    setObjectUriAll: (subject: QuadSubject, predicate: QuadPredicate , newValues: string[] | NamedNode[] | undefined, graph?: QuadGraph): void => {
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.deleteMatches(subjectTerm, predicateTerm, undefined, graphTerm);
                         if (newValues) {
@@ -602,7 +649,7 @@ export function DatasetMixin<
                         }
                     },
 
-                    setObjectDecimalAll: (subject: Quad_Subject | string, predicate: Quad_Predicate | string, newValues: number[] | undefined, graph?: Quad_Graph | string): void => {
+                    setObjectDecimalAll: (subject: QuadSubject, predicate: QuadPredicate , newValues: number[] | undefined, graph?: QuadGraph): void => {
                         const { subjectTerm, predicateTerm, graphTerm } = getTermsFromQuadSubjectPredicateAndGraph(this.getSemantizer(), subject, predicate, graph);
                         this.deleteMatches(subjectTerm, predicateTerm, undefined, graphTerm);
                         if (newValues) {
@@ -627,9 +674,10 @@ export function DatasetMixin<
         * @param graph 
         * @returns 
         */
-        public matchDatasetSemantizerWithLinkedObjects(subject?: Term, predicate?: Term, object?: Term, graph?: Term): DatasetSemantizer {
+        public matchDatasetSemantizerWithLinkedObjects(subject?: QuadSubject, predicate?: Term, object?: Term, graph?: Term): DatasetSemantizer {
+            const targetSubject = typeof subject === 'string' ? this.getSemantizer().createNamedNode(subject) : subject;
             const dataset = this.getSemantizer().getConfiguration().getDatasetBaseFactory().build(this.getSemantizer());
-            const matchedDataset = this.match(subject, predicate, object, graph);
+            const matchedDataset = this.match(targetSubject, predicate, object, graph);
             const addQuadWithLinkedObjectsRecursively = (matchedDataset: DatasetRdfjs) => {
                 for (const quad of matchedDataset) {
                     dataset.add(quad);
@@ -660,7 +708,7 @@ export function DatasetMixin<
             throw new Error("Can't find the uri of the resource.");
         }
 
-        public getObjectAll<ObjectType, Datatype extends NamedNode, Constructor extends (value: string) => ObjectType>(datatype: Datatype, constructor: Constructor, subject: Term | string | null, predicate: Term | string | null, graph?: Term | string | null): ObjectType[] | undefined {
+        public getObjectAll<ObjectType, Datatype extends NamedNode, Constructor extends (value: string) => ObjectType>(datatype: Datatype, constructor: Constructor, subject: QuadSubject | null, predicate: QuadPredicate | null, graph: QuadGraph | null): ObjectType[] | undefined {
             let results: ObjectType[] | undefined = undefined;
             const { subjectTerm, predicateTerm, graphTerm } = getTermsFromTermOrStringOrNull(this.getSemantizer(), subject, predicate, graph);
             const matched = this.match(subjectTerm, predicateTerm, null, graphTerm);

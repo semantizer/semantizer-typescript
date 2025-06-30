@@ -1,10 +1,10 @@
 import { BlankNode, DataFactory, DefaultGraph, Literal, NamedNode, Quad, Quad_Graph, Quad_Object, Quad_Predicate, Quad_Subject } from "@rdfjs/types";
-import { LoggingEntryCallback, LoggingLevel, QuadIterableSemantizer, WithLogging, WithLoggingOptions } from "./Common";
+import { LoggingEntryCallback, LoggingLevel, QuadIterableSemantizer, QuadSubject, WithLogging, WithLoggingOptions } from "./Common";
 import { DatasetBaseFactory, DatasetSemantizer } from "./Datasets";
 import { Fetch, Loader, LoaderQuadStream } from "./Loader";
 
 export type MixinConstructor<T = {}> = new (...args: any[]) => T;
-export type DatasetImplConstructor<T extends object = {}> = new (semantizer: Semantizer, baseUri?: NamedNode | string, quads?: Iterable<Quad>) => DatasetSemantizer<T>;
+export type DatasetImplConstructor<T extends object = {}> = new (semantizer: Semantizer, baseUri?: QuadSubject, quads?: Iterable<Quad>) => DatasetSemantizer<T>;
 
 export type DatasetFactoryFunction<
     DatasetImpl extends DatasetImplConstructor,

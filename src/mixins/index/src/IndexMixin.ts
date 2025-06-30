@@ -1,8 +1,8 @@
 import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
-import { BlankNode, DatasetRdfjs, DatasetSemantizerConstructor, LoggingComponent, NamedNode, Quad, Semantizer, ShaclValidator, Term, WithMixins } from "@semantizer/types";
+import { DatasetRdfjs, DatasetSemantizerConstructor, LoggingComponent, NamedNode, Quad, Quad_Subject, Semantizer, ShaclValidator, Term, WithMixins } from "@semantizer/types";
 import { Readable, Transform } from "stream";
 import { IDX, SHACL } from "./namespaces.js";
-import { EntryStreamTransformer, Index, IndexMixinNamespace, IndexMixinOperations, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
+import { EntryStreamTransformer, IndexMixinNamespace, IndexMixinOperations, IndexQueryingOptions, IndexQueryingStrategy } from "./types";
 
 export function IndexMixin<
     TMixins extends DatasetMixinNamespace,
@@ -85,7 +85,7 @@ export function IndexMixin<
                         return this.mixins.dataset.getObjectUri(entry, IDX.HAS_SUB_INDEX);
                     },
 
-                    getEntryShape: (entry: NamedNode | string): NamedNode | BlankNode | undefined => {
+                    getEntryShape: (entry: NamedNode | string): Quad_Subject | undefined => {
                         return this.mixins.dataset.getObjectLinked(entry, IDX.HAS_SHAPE);
                     },
 

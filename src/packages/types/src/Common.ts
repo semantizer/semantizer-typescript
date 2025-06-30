@@ -1,7 +1,11 @@
-import { BlankNode, NamedNode, Quad, Term } from "@rdfjs/types";
+import { BlankNode, NamedNode, Quad, Quad_Graph, Quad_Predicate, Quad_Subject, Term } from "@rdfjs/types";
 import { Semantizer } from "./Semantizer";
 
 export type Resource = NamedNode | BlankNode;
+
+export type QuadSubject = Quad_Subject | string;
+export type QuadPredicate = Quad_Predicate | string;
+export type QuadGraph = Quad_Graph | string;
 
 export interface WithMixins<T extends object = {}> {
     mixins: T;
@@ -13,8 +17,8 @@ export interface WithSemantizer extends WithLogging {
 }
 
 export interface WithBaseUri {
-    getBaseUri(): NamedNode;
-    setBaseUri(baseUri: NamedNode | string): void;
+    getBaseUri(): Quad_Subject;
+    setBaseUri(baseUri: QuadSubject): void;
 }
 
 export type LoggingLevel = 'INFO' | 'WARN' | 'ERROR';

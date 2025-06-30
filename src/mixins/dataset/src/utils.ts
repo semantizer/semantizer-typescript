@@ -1,4 +1,4 @@
-import { Quad_Graph, Quad_Predicate, Quad_Subject, Semantizer, Term } from "@semantizer/types";
+import { Quad_Graph, Quad_Predicate, Quad_Subject, QuadGraph, QuadPredicate, QuadSubject, Semantizer, Term } from "@semantizer/types";
 
 export function isUrlAbsolute(url: string) {
     try {
@@ -85,7 +85,7 @@ export function getRelativeUrl(url: string, baseUrl: string): string {
     return relativeSegments || './';
 }
 
-export function getTermsFromQuadSubjectPredicateAndGraph(semantizer: Semantizer, subject: Quad_Subject | string, predicate: Quad_Predicate | string, graph?: Quad_Graph | string): { subjectTerm: Quad_Subject, predicateTerm: Quad_Predicate, graphTerm?: Quad_Graph } {
+export function getTermsFromQuadSubjectPredicateAndGraph(semantizer: Semantizer, subject: QuadSubject, predicate: QuadPredicate, graph?: QuadGraph): { subjectTerm: Quad_Subject, predicateTerm: Quad_Predicate, graphTerm?: Quad_Graph } {
     const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
     const subjectTerm = typeof subject === 'string' ? namedNode(subject) : subject;
     const predicateTerm = typeof predicate === 'string' ? namedNode(predicate) : predicate;
@@ -97,7 +97,7 @@ export function getTermsFromQuadSubjectPredicateAndGraph(semantizer: Semantizer,
     }
 }
 
-export function getTermsFromTermOrStringOrNull(semantizer: Semantizer, subject: Term | null | string, predicate: Term | null | string, graph?: Term | null | string): { subjectTerm: Term | null, predicateTerm: Term | null, graphTerm?: Term | null } {
+export function getTermsFromTermOrStringOrNull(semantizer: Semantizer, subject: QuadSubject | null, predicate: QuadPredicate | null, graph?: QuadGraph | null): { subjectTerm: Quad_Subject | null, predicateTerm: Quad_Predicate | null, graphTerm?: Quad_Graph | null } {
     const { namedNode } = semantizer.getConfiguration().getRdfDataModelFactory();
     const subjectTerm = typeof subject === 'string' ? namedNode(subject) : subject;
     const predicateTerm = typeof predicate === 'string' ? namedNode(predicate) : predicate;

@@ -1,9 +1,9 @@
 
-import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
-import { BlankNode, DatasetSemantizerConstructor, NamedNode, Quad_Graph, Quad_Object, Quad_Subject, Semantizer, WithMixins } from "@semantizer/types";
-import { IndexIntryShapeMixinNamespace, IndexEntryShapeMixinOperations } from "./types.js";
-import { ShaclShapeMixinNamespace, ShaclShapeMixin } from "@semantizer/mixin-shacl";
+import { DatasetMixin } from "@semantizer/mixin-dataset";
+import { ShaclShapeMixin, ShaclShapeMixinNamespace } from "@semantizer/mixin-shacl";
+import { DatasetSemantizerConstructor, NamedNode, Semantizer, WithMixins } from "@semantizer/types";
 import { IDX, RDF, RDFJS } from "./namespaces.js";
+import { IndexEntryShapeMixinOperations, IndexIntryShapeMixinNamespace } from "./types.js";
 
 export function IndexEntryShapeMixin<
     TMixins extends ShaclShapeMixinNamespace,

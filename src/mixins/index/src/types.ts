@@ -1,6 +1,6 @@
 import { DatasetMixinNamespace } from "@semantizer/mixin-dataset";
 import { ShaclShapeMixinNamespace } from "@semantizer/mixin-shacl";
-import { BlankNode, DatasetRdfjs, DatasetSemantizer, NamedNode, Quad, ShaclValidator, Term, WithSemantizer } from "@semantizer/types";
+import { BlankNode, DatasetRdfjs, DatasetSemantizer, NamedNode, Quad, Quad_Subject, QuadSubject, ShaclValidator, Term, WithSemantizer } from "@semantizer/types";
 import { Readable } from "stream";
 
 export type Index = DatasetSemantizer<IndexMixinNamespace>;
@@ -21,7 +21,7 @@ export interface IndexMixinOperations {
     hasEntrySubIndex(entry: NamedNode | string): boolean;
     getEntryTarget(entry: NamedNode | string): NamedNode | undefined;
     getEntrySubIndex(entry: NamedNode | string): NamedNode | undefined;
-    getEntryShape(entry: NamedNode | string): NamedNode | BlankNode | undefined;
+    getEntryShape(entry: NamedNode | string): Quad_Subject | undefined;
 
     query(strategy: IndexQueryingStrategy, options?: IndexQueryingOptions): Readable;
 }
@@ -29,9 +29,9 @@ export interface IndexMixinOperations {
 export interface IndexEntryOperations {
     doesMatchShape(shapeToMatch: DatasetRdfjs, shaclValidator: ShaclValidator): boolean;
     hasSubIndex(): boolean;
-    getShape(): NamedNode | BlankNode | undefined;
+    getShape(): Quad_Subject | undefined;
     getShapeDataset(): DatasetRdfjs;
-    getTarget(): NamedNode | BlankNode | undefined;
+    getTarget(): Quad_Subject | undefined;
     getSubIndex(): NamedNode | undefined;
 }
 

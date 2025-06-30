@@ -1,5 +1,5 @@
 import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
-import { DatasetSemantizerConstructor, NamedNode, Semantizer, Term, WithMixins } from "@semantizer/types";
+import { DatasetSemantizerConstructor, NamedNode, QuadGraph, QuadSubject, Semantizer, Term, WithMixins } from "@semantizer/types";
 import { WebIdProfileMixinNamespace, WebIdProfileMixinOperations } from "./types";
 
 export function WebIdProfileMixin<
@@ -15,11 +15,11 @@ export function WebIdProfileMixin<
                 ...parentMixins,
                 webid: {
                     ...(parentMixins.webid ?? {}),
-                    getMaker: (subject?: Term | string, graph?: Term | string): NamedNode | undefined => {
+                    getMaker: (subject?: QuadSubject, graph?: QuadGraph): NamedNode | undefined => {
                         return this.mixins.dataset.getObjectUri(subject ?? this.getBaseUri(), 'http://xmlns.com/foaf/0.1/maker', graph ?? this.mixins.dataset.getDefaultGraphTerm());
                     },
 
-                    getPrimaryTopic: (subject?: Term | string, graph?: Term | string): NamedNode | undefined => {
+                    getPrimaryTopic: (subject?: QuadSubject, graph?: QuadGraph): NamedNode | undefined => {
                         return this.mixins.dataset.getObjectUri(subject ?? this.getBaseUri(), 'http://xmlns.com/foaf/0.1/primaryTopic', graph ?? this.mixins.dataset.getDefaultGraphTerm());
                     }
                 }

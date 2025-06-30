@@ -1,12 +1,12 @@
 import RdfjsDatasetImpl from "@semantizer/rdfjs-dataset-impl";
-import { BlankNode, LoggingComponent, LoggingLevel, NamedNode, Quad, Semantizer, WithBaseUri, WithLoggingOptions, WithMixins, WithSemantizer } from '@semantizer/types';
+import { BlankNode, LoggingComponent, LoggingLevel, NamedNode, Quad, Quad_Subject, QuadSubject, Semantizer, WithBaseUri, WithLoggingOptions, WithMixins, WithSemantizer } from '@semantizer/types';
 
 export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemantizer, WithBaseUri, WithMixins {
 
     private _semantizer: Semantizer;
-    private _baseUri: NamedNode;
+    private _baseUri: Quad_Subject;
 
-    public constructor(semantizer: Semantizer, baseUri?: NamedNode | string, quads?: Iterable<Quad>) {
+    public constructor(semantizer: Semantizer, baseUri?: QuadSubject, quads?: Iterable<Quad>) {
         super(quads);
         this._semantizer = semantizer;
         const { namedNode } = this._semantizer.getConfiguration().getRdfDataModelFactory();
@@ -46,11 +46,11 @@ export class DatasetCoreRdfjsImpl extends RdfjsDatasetImpl implements WithSemant
         this.getSemantizer().logError(this, message, options);
     }
 
-    public getBaseUri(): NamedNode {
+    public getBaseUri(): Quad_Subject {
         return this._baseUri;
     }
 
-    public setBaseUri(baseUri: NamedNode | string): void {
+    public setBaseUri(baseUri: QuadSubject): void {
         const base = typeof baseUri === 'string'
             ? this.getSemantizer().getConfiguration().getRdfDataModelFactory().namedNode(baseUri)
             : baseUri;

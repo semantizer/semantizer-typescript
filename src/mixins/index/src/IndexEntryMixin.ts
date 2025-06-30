@@ -1,5 +1,5 @@
 import { DatasetMixin, DatasetMixinNamespace } from "@semantizer/mixin-dataset";
-import { BlankNode, DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, NamedNode, Semantizer, ShaclValidator } from "@semantizer/types";
+import { DatasetRdfjs, DatasetSemantizer, DatasetSemantizerConstructor, NamedNode, Quad_Subject, Semantizer, ShaclValidator } from "@semantizer/types";
 import { IDX } from "./namespaces.js";
 
 /**
@@ -22,7 +22,7 @@ export function IndexEntryMixin<
             return this.mixins.dataset.getObjectUri(this.getBaseUri(), IDX.HAS_SUB_INDEX) !== undefined;
         }
 
-        public getTarget(): NamedNode | BlankNode | undefined {
+        public getTarget(): Quad_Subject | undefined {
             return this.mixins.dataset.getObjectLinked(this.getBaseUri(), IDX.HAS_TARGET);
         }
 
@@ -30,7 +30,7 @@ export function IndexEntryMixin<
             return this.mixins.dataset.getObjectUri(this.getBaseUri(), IDX.HAS_SUB_INDEX);
         }
 
-        public getShape(): NamedNode | BlankNode | undefined {
+        public getShape(): Quad_Subject | undefined {
             return this.mixins.dataset.getObjectLinked(this.getBaseUri(), IDX.HAS_SHAPE);
         }
 
