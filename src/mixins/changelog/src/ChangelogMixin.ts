@@ -14,6 +14,16 @@ export function ChangelogMixin<
         [AddedQuadsSymbol]: Quad[] = [];
         [DeletedQuadsSymbol]: Quad[] = [];
 
+        public add(quad: Quad): this {
+            this[AddedQuadsSymbol].push(quad);
+            return super.add(quad);
+        }
+
+        public delete(quad: Quad): this {
+            this[DeletedQuadsSymbol].push(quad);
+            return super.delete(quad);
+        }
+
         public get mixins(): TMixins & ChangelogMixinNamespace {
             const parentMixins = super.mixins as TMixins & Partial<{ changelog: Partial<ChangelogMixinOperations> }>;
 
@@ -21,16 +31,6 @@ export function ChangelogMixin<
                 ...parentMixins,
                 changelog: {
                     ...(parentMixins.changelog ?? {}),
-
-                    add: (quad: Quad): this => {
-                        this[AddedQuadsSymbol].push(quad);
-                        return super.add(quad);
-                    },
-
-                    delete: (quad: Quad): this => {
-                        this[DeletedQuadsSymbol].push(quad);
-                        return super.delete(quad);
-                    },
 
                     getChangelogDeletedQuads: (): Quad[] => {
                         return this[DeletedQuadsSymbol];
