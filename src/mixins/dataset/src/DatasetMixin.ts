@@ -681,7 +681,7 @@ export function DatasetMixin<
             const addQuadWithLinkedObjectsRecursively = (matchedDataset: DatasetRdfjs) => {
                 for (const quad of matchedDataset) {
                     dataset.add(quad);
-                    if (quad.object.termType === 'BlankNode' || quad.object.termType === 'NamedNode') {
+                    if (quad.object.termType === 'BlankNode') {
                         const relatedBlankNode = this.match(quad.object);
                         addQuadWithLinkedObjectsRecursively(relatedBlankNode);
                     }
