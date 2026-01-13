@@ -1,0 +1,27 @@
+{
+  "type": "module",
+  "name": "@semantizer/types",
+  "description": "Semantizer types definition",
+  "version": "1.0.0-3.0.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/types"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
+  },
+  "devDependencies": {
+    "@rdfjs/types": "^2.0.0",
+    "typescript": "^5.5.2"
+  }
+}

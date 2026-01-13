@@ -1,0 +1,33 @@
+{
+  "type": "module",
+  "name": "@semantizer/util-index-querying-strategy-shacl",
+  "description": "A Semantizer util to query indexes using SHACL comparison.",
+  "version": "1.0.0-1.0.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/utils/index-querying-strategy-shacl"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
+  },
+  "dependencies": {
+    "@semantizer/mixin-index": "*",
+    "@semantizer/http-error": "*",
+    "@semantizer/util-index-querying-strategy-shacl-final": "*"
+  },
+  "devDependencies": {
+    "@semantizer/types": "*",
+    "typescript": "^5.5.2"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "type": "module",
+  "name": "@semantizer/core",
+  "description": "This package contains the base implementation of Semantizer.",
+  "version": "1.0.0-2.1.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/core"
+  },
+  "homepage": "https://github.com/semantizer/semantizer-typescript/src/packages/core/",
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
+  },
+  "devDependencies": {
+    "@semantizer/types": "*",
+    "typescript": "^5.5.2"
+  }
+}

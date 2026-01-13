@@ -1,0 +1,34 @@
+{
+  "type": "module",
+  "name": "@semantizer/loader-n3",
+  "description": "A Semantizer package to load datasets from the network using the N3 library",
+  "version": "1.0.0-1.1.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/loader-n3"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
+  },
+  "dependencies": {
+    "n3": "^1.24.0",
+    "@semantizer/util-loader-base": "*",
+    "@semantizer/http-error": "*"
+  },
+  "devDependencies": {
+    "@semantizer/types": "*",
+    "@types/n3": "^1.24.1",
+    "typescript": "^5.5.2"
+  }
+}

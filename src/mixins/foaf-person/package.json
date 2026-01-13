@@ -1,0 +1,26 @@
+{
+  "type": "module",
+  "name": "@semantizer/mixin-foaf-person",
+  "description": "",
+  "version": "1.0.0-1.0.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
+  },
+  "dependencies": {
+    "@semantizer/mixin-dataset": "*"
+  },
+  "devDependencies": {
+    "@semantizer/types": "*",
+    "typescript": "^5.5.2"
+  }
+}

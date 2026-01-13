@@ -1,0 +1,36 @@
+{
+  "type": "module",
+  "name": "@semantizer/default",
+  "description": "A basic Semantizer setup to use for development including some core packages and the dataset mixin",
+  "version": "1.0.0-2.1.0",
+  "license": "MIT",
+  "author": "Maxime Lecoq-Gaillard",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "src/packages/default"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -w",
+    "prepublishOnly": "npm run build",
+    "nx-release-publish": "npm publish"
+  },
+  "dependencies": {
+    "@rdfjs/data-model": "^2.0.2",
+    "@semantizer/core": "*",
+    "@semantizer/core-rdfjs": "*",
+    "@semantizer/loader-quad-stream-rdfjs": "*",
+    "@semantizer/loader-rdfjs": "*"
+  },
+  "devDependencies": {
+    "@semantizer/types": "*",
+    "@types/rdfjs__data-model": "^2.0.9",
+    "typescript": "^5.5.2"
+  }
+}

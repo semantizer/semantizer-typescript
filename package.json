@@ -1,0 +1,33 @@
+{
+  "name": "@semantizer/source",
+  "description": "A library to manipulate local or distant RDF documents.",
+  "author": "Maxime Lecoq <maxime@lecoqlibre.fr>",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/semantizer/semantizer-typescript.git",
+    "directory": "/"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "npx nx run-many -t build",
+    "build-types": "npx nx run @semantizer/types:build",
+    "version": "npx nx release version",
+    "version-dry": "npx nx release version --dry-run",
+    "publish": "npx nx release publish"
+  },
+  "devDependencies": {
+    "@nx/js": "^21.0.3",
+    "@swc-node/register": "~1.9.1",
+    "@swc/core": "~1.5.7",
+    "@swc/helpers": "~0.5.11",
+    "nx": "21.0.3",
+    "typescript": "~5.5.2"
+  },
+  "workspaces": [
+    "src/packages/*",
+    "src/utils/*",
+    "src/mixins/*"
+  ],
+  "dependencies": {}
+}
